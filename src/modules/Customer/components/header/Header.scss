@@ -1,0 +1,68 @@
+@import "../../../../assets/css/variables";
+
+.custom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100vw;
+  background: var(--linearColor);
+
+  .header-left {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      width: 100px;
+      margin-right: 20px;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+
+    .main-menu {
+      background: none;
+      font-weight: 600;
+      color: var(--primaryColor1);
+      width: 500px;
+      display: flex;
+      justify-content: flex-end;
+      .ant-menu-item {
+        &:hover {
+          background: var(--menuItemHover);
+          border-bottom: 5px solid var(--lineMenuItemHover);
+        }
+
+        &.ant-menu-item-selected {
+          background-color: var(--menuItemHover);
+          border-bottom: 5px solid var(--lineMenuItemHover);
+          color: var(--primaryColor1);
+        }
+
+        // Loại bỏ dòng gạch dưới mặc định của Ant Design
+        &::after {
+          display: none !important;
+        }
+      }
+    }
+    .ant-btn {
+        background-image: var(--linearColor);
+          font-weight: 600;
+          box-shadow: -1px 1px 8px rgba(0, 0, 0, 0.5);
+          border: none;
+          &:hover{
+          box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.8);
+          background-image: var(--linearColor);
+          color: var(--primaryColor1);
+          }
+    }
+
+    .ant-avatar {
+      background-color: #1890ff;
+      margin-left: 15px;
+    }
+  }
+}
