@@ -1,0 +1,31 @@
+.custom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--linearColor);
+    padding: 0 20px;
+    color: white;
+    border-bottom: 5px solid rgba(0, 0, 0, 0.107);
+  
+    .branch-info {
+      .ant-select {
+        width: 200px; 
+      }
+    }
+  
+    .actions {
+      display: flex;
+      align-items: center;
+        justify-content: center;
+      .ant-btn {
+        margin-right: 10px;
+        font-size: 24px;
+        align-self: flex-end;
+      }
+  
+      .ant-avatar {
+        margin-left: 10px; 
+      }
+    }
+  }
+  
