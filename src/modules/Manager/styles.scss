@@ -1,0 +1,85 @@
+@import "../../assets/css/variables";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--fontFamily);
+}
+
+body {
+  background: var(--linearColor);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.manager-layout {
+  height: 93vh;
+  width: 97vw;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  overflow: hidden;
+
+  .background {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    z-index: 0;
+  }
+
+  .sider {
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-right: none;
+    z-index: 1;
+    .logo {
+      width: 150px;
+      margin-left: 30px;
+    }
+
+    .ant-menu {
+      background: transparent;
+      border-right: none;
+    }
+
+    .ant-menu-item {
+      font-weight: 700;
+      margin-top: 15px;
+      color: var(--primaryColor);
+      span {
+        margin-left: 20px;
+      }
+      &:hover {
+        background-color: var(--menuItemHover);
+        border-left: 5px solid var(--lineMenuItemHover);
+        border-radius: 0 20px 20px 0;
+      }
+    }
+
+    .ant-layout-sider-trigger{
+      background: none;
+      color: var(--primaryColor);
+    }
+
+    .ant-menu-item-selected {
+      background-color: var(--menuItemHover);
+      border-left: 5px solid var(--lineMenuItemHover);
+      border-radius: 0 20px 20px 0;
+      color: var(--primaryColor1);
+    }
+  }
+
+  .site-layout {
+    z-index: 1;
+    background: transparent;
+    border-radius: 15px;
+  }
+}

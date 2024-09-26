@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import "../styles.scss";
 import { FaGoogle, FaFacebookF, FaGithub, FaInstagram } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { DASHBOARD, MANAGER } from "../../../routes";
 
 const Authenticate: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
+
 
   const handleSignUpClick = () => {
     setIsSignUp(true);
@@ -60,7 +64,7 @@ const Authenticate: React.FC = () => {
           <input type="text" placeholder="Phone..." />
           <input type="password" placeholder="Password..." />
           <a href="#">Forget Your Password?</a>
-          <button type="button">Sign In</button>
+          <button type="button" onClick={()=>navigate(`${MANAGER}/${DASHBOARD}`)}>Sign In</button>
         </form>
       </div>
       <div className="toggle-container">
