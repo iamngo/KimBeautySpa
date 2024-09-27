@@ -16,19 +16,161 @@ body {
   width: 100%;
 }
 
-.customer-layout{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.customer-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-    .site-layout{
-        width: 100%;
-        height: auto;
-    }
-}
-
-.home-page{
+  .site-layout {
     width: 100%;
     height: auto;
+  }
+}
+
+.home-page {
+  padding-top: 65px;
+  background: var(--linearColor);
+  width: 100%;
+  height: auto;
+  font-family: var(--fontFamily);
+  color: var(--primaryColor);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .intro-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 0;
+    max-width: 1200px;
+
+    .intro-section-left,
+    .intro-section-right {
+      flex: 1;
+    }
+
+    .intro-section-left {
+      padding-top: 20px;
+      gap: 20px;
+      display: grid;
+      p {
+        font-size: 16px;
+        line-height: 30px;
+      }
+      .btn-primary {
+        width: fit-content;
+        background-color: #000;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .intro-section-right {
+      position: relative;
+
+      img,
+      h1,
+      h3 {
+        margin-left: 70px;
+        position: relative;
+        z-index: 1;
+        padding: 5px;
+      }
+      .background {
+        position: absolute;
+        width: 100%;
+        height: 400px;
+        background-color: #f3dcdc;
+        top: -30px;
+        z-index: 0;
+      }
+    }
+  }
+
+  .services-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto;
+
+    .section-title {
+      text-align: start;
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+
+      .service-item {
+        background-color: #fdf6ed;
+        text-align: center;
+        display: flex;
+        img {
+          flex: 1;
+        }
+
+        h3 {
+          font-size: 20px;
+          margin: 15px;
+        }
+
+        p {
+          font-size: 16px;
+          line-height: 1.6;
+          text-align: justify;
+          padding: 0 20px;
+        }
+      }
+    }
+  }
+
+  .commitment-section {
+    padding: 20px;
+    background-image: url("/public/images/commitment/image\ 5.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    height: 600px;
+    h2 {
+      font-size: 2em;
+      margin: 20px;
+    }
+
+    .commitment-items {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+
+      .commitment-item {
+        width: 25%;
+        padding: 20px;
+        background-color: #ffffffbf;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+
+        h3 {
+          font-size: 1.5em;
+          margin-bottom: 10px;
+        }
+
+        p {
+          font-size: 1.1em;
+          text-align: justify;
+          line-height: 30px;
+        }
+      }
+    }
+  }
 }

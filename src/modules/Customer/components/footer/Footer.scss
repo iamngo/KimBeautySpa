@@ -1,0 +1,30 @@
+.footer {
+  background: var(--linearColor);
+  padding: 15px;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  h4 {
+    margin-bottom: 10px;
+    font-size: 1.5em;
+  }
+
+  p {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    span {
+      margin-left: 20px;
+      line-height: 28px;
+    }
+  }
+  .social-icons {
+    align-items: start;
+    .icon {
+      color: black;
+      border: 1px solid black;
+      border-radius: 50%;
+    }
+  }
+}

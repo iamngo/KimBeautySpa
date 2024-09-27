@@ -7,7 +7,10 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100vw;
   background: var(--linearColor);
-
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
   .header-left {
     display: flex;
     align-items: center;
