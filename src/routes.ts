@@ -3,4 +3,4 @@ export const HOME = "/";
 export const MANAGER = "/manager";
 export const DASHBOARD = "dashboard";
 export const SERVICE = "services"
-ex
+export const TREATMENTS = "treatments"

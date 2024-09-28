@@ -5,7 +5,7 @@ import "./Header.scss";
 import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
-import { HOME, SERVICE } from "../../../../routes";
+import { HOME, SERVICE, TREATMENTS } from "../../../../routes";
 
 const { Header } = Layout;
 
@@ -50,7 +50,7 @@ const HeaderHomepage: React.FC = () => {
     } else if (key === "services") {
       navigate(`${SERVICE}`);
     } else if (key === "treatments") {
-      navigate("/treatments");
+      navigate(`${TREATMENTS}`);
     } else if (key === "offer") {
       navigate("/offer");
     }
