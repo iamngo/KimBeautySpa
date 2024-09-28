@@ -1,0 +1,22 @@
+@import "../../../../assets/css/variables";
+@import "../../../../assets/css/mixin";
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-logo {
+  max-width: 100px;
+  width: 100%;
+  height: auto;
+}
+
+.ant-modal,
+.ant-form-item-label > label {
+  color: var(--primaryColor) !important;
+}
+
+.btn-custom {
+  @include btn-custom; 
+}
