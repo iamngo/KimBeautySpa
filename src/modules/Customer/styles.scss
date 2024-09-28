@@ -1,4 +1,5 @@
 @import "../../assets/css/variables";
+@import "../../assets/css/mixin";
 
 * {
   margin: 0;
@@ -21,15 +22,18 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
 
   .site-layout {
     width: 100%;
     height: auto;
+    .ant-layout-content {
+      width: 100%;
+    }
   }
 }
 
 .home-page {
-  padding-top: 65px;
   background: var(--linearColor);
   width: 100%;
   height: auto;
@@ -173,5 +177,73 @@ body {
         }
       }
     }
+  }
+}
+
+.services-page {
+  padding: 65px 100px;
+  width: 100vw;
+  background: var(--linearColor);
+  color: var(--primaryColor);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .services-utils {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    .search {
+      width: 500px;
+      .ant-btn{
+
+        @include btn-custom;
+      }
+    }
+  }
+  .service-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    .service-category {
+      h2 {
+        margin-bottom: 10px;
+      }
+      .service-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .card {
+        flex: 1 1 calc(25% - 20px);
+        max-width: calc(25% - 20px);
+      }
+      .show-more-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        .btn-showmore {
+          @include btn-custom;
+        }
+      }
+    }
+  }
+  .ant-pagination-item{
+    border-radius: 50%;
+    font-weight: 700;
+    color: var(--primaryColor);
+
+  }
+  .ant-pagination-item-active{
+
+      background: var(--pinkHover);
+      border: none;
+      a{
+        color: var(--primaryColor);
+      }
   }
 }

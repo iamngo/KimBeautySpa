@@ -97,7 +97,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ visible, setVisible }) =>
           </Select>
         </Form.Item>
         <Form.Item>
-          <Button htmlType="submit" block>
+          <Button htmlType="submit" block className="btn-custom">
             Xác nhận
           </Button>
         </Form.Item>

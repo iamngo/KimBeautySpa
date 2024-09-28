@@ -1,4 +1,5 @@
 @import "../../../../assets/css/variables";
+@import "../../../../assets/css/mixin";
 
 .logo-container {
   text-align: center;
@@ -15,15 +16,7 @@
 .ant-form-item-label > label {
   color: var(--primaryColor) !important;
 }
-.ant-btn {
-  background: var(--linearColor);
-  color: var(--primaryColor);
-  font-weight: 600;
-  border: none;
 
-  &:hover {
-    background: var(--linearColorHover) !important;
-    color: var(--primaryColor1) !important;
-    border: none;
-  }
+.btn-custom {
+  @include btn-custom; 
 }

@@ -1,0 +1,14 @@
+@import "./variables";
+
+@mixin btn-custom {
+    background: var(--linearColor);
+    color: var(--primaryColor);
+    font-weight: 600;
+    border: none;
+  
+    &:hover {
+      background: var(--linearColorHover) !important;
+      color: var(--primaryColor1) !important;
+      border: none;
+    }
+  }
