@@ -74,7 +74,7 @@ const HeaderHomepage: React.FC = () => {
           <Menu.Item key="treatments">Liệu trình</Menu.Item>
           <Menu.Item key="offer">Khuyến mãi</Menu.Item>
         </Menu>
-        <Button onClick={handleRegisterClick}>Đăng ký ngay</Button>
+        <Button onClick={handleRegisterClick}>Đặt lịch ngay</Button>
         <Dropdown
           overlay={avatarMenu}
           trigger={["click"]}
