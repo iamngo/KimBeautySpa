@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Pagination, Select } from "antd";
 import "../styles.scss";
 import CustomCard from "../components/card/Card";
+import { useNavigate } from "react-router-dom";
+import { HOME, SERVICE_DETAIL } from "../../../routes";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -66,17 +68,16 @@ const services = [
 
 const categories = ["Tất cả", "Hair Care", "Facial Care"];
 
-const handleDetailClick = () => {
-  console.log("Xem chi tiết");
-};
 
-const handleConsultClick = () => {
-  console.log("Nhận tư vấn");
-};
 
 const ServicesPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Tất cả");
   const [visibleCount, setVisibleCount] = useState<number>(4); // Số lượng dịch vụ hiển thị
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   // Lọc dịch vụ theo loại đã chọn, nếu là "Tất cả" thì không lọc
   const filteredServices =
@@ -86,6 +87,11 @@ const ServicesPage: React.FC = () => {
 
   const handleShowMore = () => {
     setVisibleCount(visibleCount + 4); // Tăng số lượng dịch vụ khi nhấn nút "Xem thêm"
+  };
+
+  
+  const handleConsultClick = () => {
+    console.log("Nhận tư vấn");
   };
 
   // Nhóm dịch vụ theo loại
@@ -126,7 +132,7 @@ const ServicesPage: React.FC = () => {
                   key={service.id}
                   title={service.name}
                   imageUrl={service.image}
-                  onDetailClick={handleDetailClick}
+                  onDetailClick={()=> navigate(`${HOME}${SERVICE_DETAIL}/${service.id}`)}
                   onConsultClick={handleConsultClick}
                 />
               ))}

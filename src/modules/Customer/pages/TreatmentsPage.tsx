@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Pagination, Select } from "antd";
 import "../styles.scss";
 import CustomCard from "../components/card/Card";
@@ -77,6 +77,10 @@ const handleConsultClick = () => {
 const TreatmentsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Tất cả");
   const [visibleCount, setVisibleCount] = useState<number>(4); // Số lượng dịch vụ hiển thị
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   // Lọc dịch vụ theo loại đã chọn, nếu là "Tất cả" thì không lọc
   const filteredTreatments =

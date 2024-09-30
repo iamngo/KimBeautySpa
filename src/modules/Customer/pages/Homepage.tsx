@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Slide from "../components/slides/Slide";
 import "../styles.scss"; // Nếu bạn đã có style chung
 
 const Homepage = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
   return (
     <div className="home-page">
       {/* Phần Slide */}
