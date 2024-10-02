@@ -5,7 +5,7 @@ import "./Header.scss";
 import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
-import { HOME, SERVICE, TREATMENTS } from "../../../../routes";
+import { HOME, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
 
 const { Header } = Layout;
 
@@ -15,9 +15,10 @@ const HeaderHomepage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleMenuClick = ({ key }: { key: string }) => {
-    // Xử lý khi click vào menu con
+    if (key === "gifts") {
+      navigate(`${REWARD_POINTS}`);
+    }
     if (key === "logout") {
-      // Đăng xuất
       console.log("Logout clicked");
     }
   };
