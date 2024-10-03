@@ -5,7 +5,7 @@ import "./Header.scss";
 import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
-import { HOME, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
+import { HOME, MY_SERVICES, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
 
 const { Header } = Layout;
 
@@ -17,6 +17,8 @@ const HeaderHomepage: React.FC = () => {
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "gifts") {
       navigate(`${REWARD_POINTS}`);
+    }if (key === "services") {
+      navigate(`${MY_SERVICES}`);
     }
     if (key === "logout") {
       console.log("Logout clicked");
