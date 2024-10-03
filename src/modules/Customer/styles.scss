@@ -375,7 +375,6 @@ body {
   align-items: center;
 
   .header-reward-page {
-    margin: 20px 0;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -401,7 +400,7 @@ body {
         transition: color 0.3s ease;
 
         .icon {
-          font-size: 40px;
+          font-size: 30px;
         }
 
         &:hover {
@@ -447,16 +446,16 @@ body {
         }
         .ant-slider {
           width: 100%;
-          .ant-slider-track{
+          .ant-slider-track {
             background-color: var(--star);
           }
-          .ant-slider-rail{
+          .ant-slider-rail {
             background-color: var(--lineMenuItemHover);
           }
-          .ant-slider-handle::after{
+          .ant-slider-handle::after {
             box-shadow: 0 0 0 2px #ff91c8;
           }
-          .ant-slider-dot{
+          .ant-slider-dot {
             border: none;
           }
         }
@@ -492,7 +491,7 @@ body {
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         transition: transform 0.3s ease;
-        
+
         &:hover {
           transform: translateY(-10px);
         }
@@ -516,6 +515,106 @@ body {
           &:hover {
             background-color: var(--primaryColor1);
           }
+        }
+      }
+    }
+  }
+}
+
+.service-plan-page {
+  width: 100vw;
+  padding: 65px 100px;
+  background: var(--linearColor);
+  color: var(--primaryColor);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .header-section {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .search-bar {
+      margin: 20px 0;
+      max-width: 500px;
+      flex: 1;
+      .ant-btn {
+        @include btn-custom;
+      }
+    }
+  }
+
+  .legend{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    p{
+      display: flex;
+      align-items: center;
+    }
+    .red-box,.green-box,.blue-box{
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+    .red-box{
+      background-color: #ff0000;
+    }.green-box{
+      background-color: #00e827;
+    }.blue-box{
+      background-color: #0037ff;
+    }
+  }
+
+  .calendar-section {
+    .ant-picker-calendar {
+      background-color: #BE0F78;
+      border-radius: 10px;
+      border: none;
+      max-width: 800px;
+      margin: 20px ;
+      font-size: 20px;
+
+    }
+
+    .ant-picker-calendar-date-value{
+    }
+  }
+
+  .service-details{
+    width: 100%;
+    margin-top: 20px;
+    .details-card{
+      background-color: #fffcf9;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      padding: 20px;
+      transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.01);
+    }
+      .info-card{
+        display: flex;
+        gap: 40px;
+      }
+      .service-image{
+        border-radius: 20px;
+      }
+      .info-section{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-size: 20px;
+      }
+      .actions{
+        align-self: flex-end;
+        display: flex;
+        gap: 40px;
+        .btn-payment{
+          @include btn-custom
         }
       }
     }
