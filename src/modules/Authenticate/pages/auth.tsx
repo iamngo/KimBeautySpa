@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../styles.scss";
 import { FaGoogle, FaFacebookF, FaGithub, FaInstagram } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { DASHBOARD, MANAGER } from "../../../routes";
+import { DASHBOARD, HOME, MANAGER } from "../../../routes";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { CgSpinner } from "react-icons/cg";
 import { Input, DatePicker, Radio, Button, message } from "antd";
@@ -94,8 +94,10 @@ const Authenticate: React.FC = () => {
     setLoading(true);
     try {
       const response = await login(ph, password);
-      console.log(response);
-  
+      console.log(response.data.data.access_token);
+
+      
+      
       // Kiểm tra nếu có lỗi trong phần response.data.error
       if (response.data?.error) {
         const errorCode = response.data.error.code;
@@ -108,9 +110,16 @@ const Authenticate: React.FC = () => {
           message.error(`${errorCode}: ${errorMessage}`);
         }
       } else {
-        message.success("Đăng nhập thành công!");
-        // Điều hướng tới trang dashboard sau khi đăng nhập thành công
+        const payload = response.data.data.access_token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      message.success("Đăng nhập thành công!");
+      console.log(decodedPayload);
+      if(decodedPayload.type === 'customer'){
+        navigate(`${HOME}`);
+      } else{
         navigate(`${MANAGER}/${DASHBOARD}`);
+
+      }
       }
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error.response ? error.response.data : error);
