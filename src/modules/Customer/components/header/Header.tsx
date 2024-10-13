@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Layout, Menu, Avatar, Dropdown, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { Layout, Menu, Avatar, Dropdown, Button, message } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import "./Header.scss";
 import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
-import { HOME, MY_SERVICES, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
+import { HOME, LOGIN, MY_SERVICES, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
 
 const { Header } = Layout;
 
@@ -13,7 +13,18 @@ const HeaderHomepage: React.FC = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken") || '';
+    if(accessToken !== ''){
+      const payload = accessToken.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      console.log(decodedPayload.id);
+      setUserId(decodedPayload.id);
+    }
+  }, [userId]);
+  
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "gifts") {
       navigate(`${REWARD_POINTS}`);
@@ -21,7 +32,9 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${MY_SERVICES}`);
     }
     if (key === "logout") {
-      console.log("Logout clicked");
+      localStorage.removeItem('accessToken');
+      setUserId(null);
+      message.success('Đăng xuất thành công!');
     }
   };
 
@@ -37,7 +50,7 @@ const HeaderHomepage: React.FC = () => {
         Cập nhật thông tin
       </Menu.Item>
       <Menu.Item key="logout" icon={<LogoutOutlined />}>
-        Logout
+        Đăng xuất
       </Menu.Item>
     </Menu>
   );
@@ -78,18 +91,23 @@ const HeaderHomepage: React.FC = () => {
           <Menu.Item key="offer">Khuyến mãi</Menu.Item>
         </Menu>
         <Button onClick={handleRegisterClick}>Đặt lịch ngay</Button>
-        <Dropdown
-          overlay={avatarMenu}
-          trigger={["click"]}
-          visible={menuVisible}
-          onVisibleChange={setMenuVisible}
-        >
-          <Avatar
-            size="large"
-            icon={<UserOutlined />}
-            style={{ cursor: "pointer" }}
-          />
-        </Dropdown>
+        {
+          userId !== null ? (<Dropdown
+            overlay={avatarMenu}
+            trigger={["click"]}
+            visible={menuVisible}
+            onVisibleChange={setMenuVisible}
+          >
+            <Avatar
+              size="large"
+              icon={<UserOutlined />}
+              style={{ cursor: "pointer" }}
+            />
+          </Dropdown>): (
+            <div style={{cursor: 'pointer', color: 'var(--primaryColor)'}} onClick={()=>navigate(`${LOGIN}`)}>Đăng nhập / Đăng ký</div>
+          )
+        }
+        
       </div>
       <ModalRegister visible={visible} setVisible={setVisible} />
     </Header>

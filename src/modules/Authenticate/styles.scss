@@ -1,4 +1,5 @@
 @import "../../assets/css/variables";
+@import '../../assets/css/mixin';
 
 * {
   margin: 0;
@@ -17,15 +18,15 @@ body {
 }
 
 .container {
-  margin-top: 110px;
+  margin-top: 70px;
   background-color: #fff;
   border-radius: 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
   position: relative;
   overflow: hidden;
-  width: 768px;
+  width: 770px;
   max-width: 100%;
-  min-height: 480px;
+  min-height: 570px;
   color: var(--primaryColor);
 }
 
@@ -226,6 +227,14 @@ body {
 
 .container.active .toggle-right {
   transform: translateX(100%);
+}
+
+.ant-form-item-explain-error{
+  font-size: 12px;
+}
+
+.btn-signup{
+  @include btn-custom;
 }
 
 
