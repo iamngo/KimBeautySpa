@@ -109,7 +109,7 @@ const HeaderHomepage: React.FC = () => {
         }
         
       </div>
-      <ModalRegister visible={visible} setVisible={setVisible} />
+      <ModalRegister visible={visible} setVisible={setVisible} userId={userId}/>
     </Header>
   );
 };
