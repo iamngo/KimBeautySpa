@@ -1,21 +1,104 @@
 import { useState, useEffect } from "react";
 import { Button, Form, Input, Modal, DatePicker, Select } from "antd";
 import { FormInstance } from "antd/es/form";
-import './styles.scss';
+import "./styles.scss";
+import {
+  getAllBranch,
+  getAllServiceCategory,
+  getInfoByAccountId,
+  getServiceByCategory,
+  getWorkingTimeByServiceIdAndDate,
+} from "../../../../services/api";
 
 // Định nghĩa kiểu cho props
 interface ModalRegisterProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
+  userId: number;
 }
 
-const ModalRegister: React.FC<ModalRegisterProps> = ({ visible, setVisible }) => {
+const ModalRegister: React.FC<ModalRegisterProps> = ({
+  visible,
+  setVisible,
+  userId,
+}) => {
   const [form] = Form.useForm<FormInstance>();
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
+  const token = localStorage.getItem("accessToken");
+  const [customer, setCustomer] = useState(null);
+  const [branch, setBranch] = useState<any[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
+  const [serviceCategory, setServiceCategory] = useState<any[]>([]);
+  const [servicesByCategory, setServicesByCategory] = useState<any>({});
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
+    null
+  );
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [listTime, setListTime] = useState(null);
 
   useEffect(() => {
     setVisibleModal(visible);
-  }, [visible]);
+    getInfoCustomer();
+    getBranch();
+    getServiceCategory();
+  }, [visible, userId]);
+
+  useEffect(() => {
+    getTimeByServiceIdAndDate();
+    console.log(listTime);
+  }, [selectedBranch, selectedDate, selectedServiceId]);
+
+  const getInfoCustomer = async () => {
+    const response = await getInfoByAccountId(token, userId);
+    setCustomer(response.data);
+  };
+
+  const getBranch = async () => {
+    const response = await getAllBranch(token, 1, 5);
+    setBranch(response.data);
+  };
+
+  const getServiceCategory = async () => {
+    const response = await getAllServiceCategory(token, 1, 5);
+    setServiceCategory(response.data);
+
+    // Fetch services for each category
+    const services = {};
+    for (const category of response.data) {
+      const servicesResponse = await getServiceByCategory(token, category.id);
+      services[category.id] = servicesResponse.data;
+    }
+    setServicesByCategory(services); // Save all services categorized
+  };
+
+  const handleDateChange = (date: any, dateString: string) => {
+    if (date) {
+      const formattedDate = date.format("YYYY-MM-DD");
+      setSelectedDate(formattedDate);
+      console.log("Formatted date:", formattedDate);
+    } else {
+      setSelectedDate(null);
+    }
+  };
+
+  const getTimeByServiceIdAndDate = async () => {
+    const response = await getWorkingTimeByServiceIdAndDate(
+      token,
+      selectedServiceId,
+      selectedDate,
+      selectedBranch
+    );
+    setListTime(response.data);
+  };
+
+  useEffect(() => {
+    if (customer) {
+      form.setFieldsValue({
+        fullName: customer.fullName,
+        phone: customer.phone,
+      });
+    }
+  }, [customer, form]);
 
   const handleCancel = () => {
     form.resetFields();
@@ -31,17 +114,13 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ visible, setVisible }) =>
   };
 
   return (
-    <Modal
-      open={visibleModal}
-      onCancel={handleCancel}
-      footer={null}
-    >
+    <Modal open={visibleModal} onCancel={handleCancel} footer={null}>
       {/* Thêm logo vào form */}
       <div className="logo-container">
         <img
-          src="/public/logo-homepage.svg" 
+          src="/public/logo-homepage.svg"
           alt="Logo"
-          className="modal-logo" 
+          className="modal-logo"
         />
         <h2>Đặt lịch hẹn</h2>
       </div>
@@ -49,7 +128,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ visible, setVisible }) =>
       <Form layout="vertical" form={form} onFinish={onFinish}>
         <Form.Item
           label="Họ và tên:"
-          name="name"
+          name="fullName"
           rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
         >
           <Input placeholder="Nhập họ và tên" />
@@ -62,9 +141,20 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ visible, setVisible }) =>
           <Input placeholder="Nhập số điện thoại" />
         </Form.Item>
         <Form.Item label="Chọn dịch vụ:" name="service">
-          <Select placeholder="Chọn dịch vụ">
-            <Select.Option value="massage">Massage</Select.Option>
-            <Select.Option value="facial">Chăm sóc da</Select.Option>
+          <Select
+            placeholder="Chọn dịch vụ"
+            onChange={(value) => setSelectedServiceId(value)}
+          >
+            {/* Sử dụng OptGroup để nhóm dịch vụ theo phân loại */}
+            {serviceCategory.map((category) => (
+              <Select.OptGroup key={category.id} label={category.name}>
+                {servicesByCategory[category.id]?.map((service) => (
+                  <Select.Option key={service.id} value={service.id}>
+                    {service.name}
+                  </Select.Option>
+                ))}
+              </Select.OptGroup>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item label="Hoặc chọn liệu trình:" name="treatment">
@@ -78,18 +168,40 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({ visible, setVisible }) =>
           name="branch"
           rules={[{ required: true, message: "Vui lòng chọn chi nhánh" }]}
         >
-          <Select placeholder="Chọn chi nhánh">
-            <Select.Option value="branch1">Chi nhánh 1</Select.Option>
-            <Select.Option value="branch2">Chi nhánh 2</Select.Option>
+          <Select
+            placeholder="Chọn chi nhánh"
+            onChange={(value) => setSelectedBranch(value)}
+          >
+            {branch.map((item) => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.name} - {item.address}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item
+          label="Chọn ngày:"
+          name="time"
+          rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
+        >
+          <DatePicker style={{ width: "100%" }} onChange={handleDateChange} />
+        </Form.Item>
+        {selectedBranch && selectedServiceId && selectedDate && <Form.Item
           label="Chọn thời gian:"
           name="time"
           rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
         >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
+          <Select placeholder="Chọn thời gian">
+            {listTime &&
+              listTime.map(
+                (timeSlot: { id: number; time: string; status: string }) => (
+                  <Select.Option key={timeSlot.id} value={timeSlot.id}>
+                    {timeSlot.time}
+                  </Select.Option>
+                )
+              )}
+          </Select>
+        </Form.Item>}
         <Form.Item label="Chọn nhân viên:" name="staff">
           <Select placeholder="Chọn nhân viên">
             <Select.Option value="staff1">Nhân viên 1</Select.Option>
