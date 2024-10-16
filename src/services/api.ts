@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ACCOUNT, API_URL, BRANCH, CATEGORY, CUSTOMER, SERVICE, SERVICE_CATEGORY, TIME, WORKING_TIME } from "../utils/constants";
+import { ACCOUNT, API_URL, BRANCH, CATEGORY, CUSTOMER, EMPLOYEE, SERVICE, SERVICE_CATEGORY, TIME, WORKING_TIME } from "../utils/constants";
 
 
 export const login = async (phone: string, password: string) => {
@@ -68,6 +68,27 @@ export const getWorkingTimeByServiceIdAndDate = async (token: string | null, ser
       Authorization: `Bearer ${token}`,
     },
     params: { serviceId, date, branchId },
+  }
+  );
+  return response.data;
+};
+
+export const getAllEmployee = async (token: string | null, page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${EMPLOYEE}`,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  }
+  );
+  return response.data;
+};
+
+export const getServiceById = async (token: string | null, id: number) => {
+  const response = await axios.get(`${API_URL}/${SERVICE}/${id}`,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   }
   );
   return response.data;

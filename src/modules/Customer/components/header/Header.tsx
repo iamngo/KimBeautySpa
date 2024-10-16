@@ -6,29 +6,50 @@ import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
 import { HOME, LOGIN, MY_SERVICES, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
+import { getAllServiceCategory, getServiceByCategory } from "../../../../services/api";
 
 const { Header } = Layout;
+const { SubMenu } = Menu;
 
 const HeaderHomepage: React.FC = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
+  const [serviceCategory, setServiceCategory] = useState<any[]>([]);
+  const [servicesByCategory, setServicesByCategory] = useState<any>({});
+  const token = localStorage.getItem("accessToken");
+  const [categoryName, setCategoryName] = useState<string>('');
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || '';
-    if(accessToken !== ''){
+    if (accessToken !== '') {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
-      console.log(decodedPayload.id);
       setUserId(decodedPayload.id);
     }
+    getServiceCategory();
   }, [userId]);
-  
+
+  const getServiceCategory = async () => {
+    const response = await getAllServiceCategory(token, 1, 10);
+    setServiceCategory(response.data);
+  };
+
+  const getServiceByServiceCategory = async (serviceCategory: any) => {
+    const response = await getServiceByCategory(token, serviceCategory.id);
+    setServicesByCategory((prevServicesByCategory) => ({
+      ...prevServicesByCategory,
+      [serviceCategory.id]: response.data,
+    }));
+    setCategoryName(serviceCategory.name);
+  };
+
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "gifts") {
       navigate(`${REWARD_POINTS}`);
-    }if (key === "services") {
+    }
+    if (key === "services") {
       navigate(`${MY_SERVICES}`);
     }
     if (key === "logout") {
@@ -65,6 +86,11 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${HOME}`);
     } else if (key === "services") {
       navigate(`${SERVICE}`);
+    } else if (key.startsWith("service-")) { 
+      const serviceId = key.split("-")[1];
+      navigate(`/services/${serviceId}`,{
+        state: { category: categoryName } // Truyền category qua state
+      });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
     } else if (key === "offer") {
@@ -86,13 +112,35 @@ const HeaderHomepage: React.FC = () => {
           onClick={handleMenuSelect}
         >
           <Menu.Item key="home">Trang chủ</Menu.Item>
-          <Menu.Item key="services">Dịch vụ</Menu.Item>
+
+          {/* Submenu for service categories */}
+          <SubMenu
+            key="services"
+            title="Dịch vụ"
+            onTitleMouseEnter={() => getServiceCategory()} 
+          >
+            {serviceCategory.map((category) => (
+              <SubMenu
+                key={`service-category-${category.id}`}
+                title={category.name}
+                onTitleMouseEnter={() => getServiceByServiceCategory(category)} 
+              >
+                {(servicesByCategory[category.id] || []).map((service: any) => (
+                  <Menu.Item key={`service-${service.id}`}>
+                    {service.name}
+                  </Menu.Item>
+                ))}
+              </SubMenu>
+            ))}
+          </SubMenu>
+
           <Menu.Item key="treatments">Liệu trình</Menu.Item>
           <Menu.Item key="offer">Khuyến mãi</Menu.Item>
         </Menu>
+
         <Button onClick={handleRegisterClick}>Đặt lịch ngay</Button>
-        {
-          userId !== null ? (<Dropdown
+        {userId !== null ? (
+          <Dropdown
             overlay={avatarMenu}
             trigger={["click"]}
             visible={menuVisible}
@@ -103,13 +151,17 @@ const HeaderHomepage: React.FC = () => {
               icon={<UserOutlined />}
               style={{ cursor: "pointer" }}
             />
-          </Dropdown>): (
-            <div style={{cursor: 'pointer', color: 'var(--primaryColor)'}} onClick={()=>navigate(`${LOGIN}`)}>Đăng nhập / Đăng ký</div>
-          )
-        }
-        
+          </Dropdown>
+        ) : (
+          <div
+            style={{ cursor: 'pointer', color: 'var(--primaryColor)' }}
+            onClick={() => navigate(`${LOGIN}`)}
+          >
+            Đăng nhập / Đăng ký
+          </div>
+        )}
       </div>
-      <ModalRegister visible={visible} setVisible={setVisible} userId={userId}/>
+      <ModalRegister visible={visible} setVisible={setVisible} userId={userId} />
     </Header>
   );
 };
