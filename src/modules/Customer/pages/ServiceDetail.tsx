@@ -1,47 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { Breadcrumb, Button, Carousel, Rate, Tooltip } from "antd";
-import { useParams, useNavigate } from "react-router-dom"; // Để lấy ID của dịch vụ từ URL và điều hướng
+import { useParams, useNavigate, useLocation } from "react-router-dom"; // Để lấy ID của dịch vụ từ URL và điều hướng
 import "../styles.scss";
 import { RxHeartFilled } from "react-icons/rx";
 import { IoHeartOutline } from "react-icons/io5";
+import { getServiceById } from "../../../services/api";
 
-// Dữ liệu dịch vụ mẫu
-const services = [
-  {
-    id: 1,
-    name: "Chăm sóc tóc",
-    image: "/public/images/service/image1.png",
-    additionalImages: [
-      "/public/images/service/image1.png",
-      "/public/images/service/image2.png",
-      "/public/images/service/image3.png",
-      "/public/images/service/image4.png",
-      "/public/images/service/image1.png",
-    ],
-    category: "Hair Care",
-    price: "59.000.000 ₫",
-    discount: "10%",
-    finalPrice: "53.000.000 ₫",
-    description: `Bước vào quy trình điều trị, chuyên viên sẽ  dùng khăn thấm nước muối sinh lý để lau sạch vùng da đầu trước khi thực hiện. Kế tiếp, chuyên viên sẽ tiến hành xịt tê để giảm cảm giác khó chịu cho khách hàng trong quá trình phi kim điều trị. Sau đó, chuyên viên sẽ tiến hành phi kim Nano tinh chất huyết thanh kích mọc tóc vào vùng nang tóc cần điều trị.  Chưa hết, khách hàng sẽ được sát khuẩn lại vùng điều trị bằng cồn và thoa tinh chất huyết thanh mọc tóc lên vùng điều trị. Cuối cùng, chuyên viên sẽ chiếu ánh sáng sinh học đỏ lên vùng da điều trị để hỗ trợ tinh chất thẩm thấu tốt hơn.`,
-  },
-  // Thêm các dịch vụ khác
-];
 
 const ServiceDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Lấy ID của dịch vụ từ URL
+  const { id } = useParams<{ id: string }>(); 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { category } = location.state || {};
   const [isFavorite, setIsFavorite] = useState(false);
+  const [service, setService] = useState<any>(null);
+  const token = localStorage.getItem("accessToken");
 
   // Toggle yêu thích
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
+
+  useEffect(() => {
+    const fetchServiceDetail = async () => {
+      const response = await getServiceById(token, id); // Gọi API để lấy thông tin chi tiết dịch vụ
+      setService(response.data);
+    };
+
+    fetchServiceDetail();
+  }, [id]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   // Tìm kiếm dịch vụ theo ID
-  const service = services.find((s) => s.id === parseInt(id!));
+  // const service = services.find((s) => s.id === parseInt(id!));
   const [selectedImage, setSelectedImage] = useState(service?.image || "");
 
   if (!service) {
@@ -55,16 +49,15 @@ const ServiceDetail: React.FC = () => {
   return (
     <div className="service-detail-page">
       <Breadcrumb className="breadcrumb">
-        <Breadcrumb.Item onClick={() => navigate(-1)}>Dịch vụ</Breadcrumb.Item>
-        <Breadcrumb.Item>{service.category}</Breadcrumb.Item>
+        <Breadcrumb.Item>{category}</Breadcrumb.Item>
         <Breadcrumb.Item>{service.name}</Breadcrumb.Item>
       </Breadcrumb>
 
       <div className="service-detail-content">
         {/* Hình ảnh dịch vụ */}
         <div className="service-image">
-          <img src={selectedImage} alt={service.name} />
-          <div className="image-carousel">
+          <img style={{border: '1px solid black'}} src={service.image} alt={service.name} />
+          {/* <div className="image-carousel">
             <Carousel
               slidesToShow={3}
               arrows
@@ -81,7 +74,7 @@ const ServiceDetail: React.FC = () => {
                 </div>
               ))}
             </Carousel>
-          </div>
+          </div> */}
         </div>
 
         {/* Thông tin dịch vụ */}

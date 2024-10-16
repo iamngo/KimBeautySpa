@@ -50,6 +50,23 @@
           display: none !important;
         }
       }
+      .ant-menu-submenu{
+        &:hover {
+          background: var(--menuItemHover);
+          border-bottom: 5px solid var(--lineMenuItemHover);
+        }
+        &.ant-menu-submenu-selected{
+          background-color: var(--menuItemHover);
+          border-bottom: 5px solid var(--lineMenuItemHover);
+          .ant-menu-title-content{
+            color: var(--primaryColor1) !important;
+
+          }
+        }
+        &::after {
+          display: none !important;
+        }
+      }
     }
     .ant-btn {
         background-image: var(--linearColor);

@@ -1,6 +1,7 @@
 export const API_URL = "http://localhost:3000";
 export const ACCOUNT = 'account';
 export const CUSTOMER = 'customer';
+export const EMPLOYEE = 'employee';
 export const BRANCH = 'branch';
 export const SERVICE_CATEGORY = 'service-category';
 export const CATEGORY = 'category';

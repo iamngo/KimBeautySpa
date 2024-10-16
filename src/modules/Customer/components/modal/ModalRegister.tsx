@@ -4,6 +4,7 @@ import { FormInstance } from "antd/es/form";
 import "./styles.scss";
 import {
   getAllBranch,
+  getAllEmployee,
   getAllServiceCategory,
   getInfoByAccountId,
   getServiceByCategory,
@@ -35,17 +36,18 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   );
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [listTime, setListTime] = useState(null);
+  const [employees, setEmployees] = useState<any[]>([]);
 
   useEffect(() => {
     setVisibleModal(visible);
     getInfoCustomer();
     getBranch();
     getServiceCategory();
+    getEmployees();
   }, [visible, userId]);
 
   useEffect(() => {
     getTimeByServiceIdAndDate();
-    console.log(listTime);
   }, [selectedBranch, selectedDate, selectedServiceId]);
 
   const getInfoCustomer = async () => {
@@ -59,7 +61,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const getServiceCategory = async () => {
-    const response = await getAllServiceCategory(token, 1, 5);
+    const response = await getAllServiceCategory(token, 1, 10);
     setServiceCategory(response.data);
 
     // Fetch services for each category
@@ -71,11 +73,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     setServicesByCategory(services); // Save all services categorized
   };
 
-  const handleDateChange = (date: any, dateString: string) => {
+  const handleDateChange = (date: any) => {
     if (date) {
       const formattedDate = date.format("YYYY-MM-DD");
       setSelectedDate(formattedDate);
-      console.log("Formatted date:", formattedDate);
     } else {
       setSelectedDate(null);
     }
@@ -90,6 +91,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     );
     setListTime(response.data);
   };
+
+  const getEmployees = async () => {
+    const response = await getAllEmployee(token, 1, 10);
+    setEmployees(response.data);
+  }
 
   useEffect(() => {
     if (customer) {
@@ -181,7 +187,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         </Form.Item>
         <Form.Item
           label="Chọn ngày:"
-          name="time"
+          name="date"
           rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
         >
           <DatePicker style={{ width: "100%" }} onChange={handleDateChange} />
@@ -204,8 +210,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         </Form.Item>}
         <Form.Item label="Chọn nhân viên:" name="staff">
           <Select placeholder="Chọn nhân viên">
-            <Select.Option value="staff1">Nhân viên 1</Select.Option>
-            <Select.Option value="staff2">Nhân viên 2</Select.Option>
+          {employees.map((item) => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.fullName}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item>
