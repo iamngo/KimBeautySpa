@@ -5,8 +5,19 @@ import "./Header.scss";
 import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
-import { HOME, LOGIN, MY_SERVICES, REWARD_POINTS, SERVICE, TREATMENTS } from "../../../../routes";
-import { getAllServiceCategory, getServiceByCategory } from "../../../../services/api";
+import {
+  HOME,
+  LOGIN,
+  MY_SERVICES,
+  REWARD_POINTS,
+  SERVICE,
+  TREATMENTS,
+} from "../../../../routes";
+import {
+  getAllServiceCategory,
+  getServiceByCategory,
+} from "../../../../services/api";
+import ModalUpdateProfile from "../modal/ModalUpdateProfile";
 
 const { Header } = Layout;
 const { SubMenu } = Menu;
@@ -19,11 +30,12 @@ const HeaderHomepage: React.FC = () => {
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
   const [servicesByCategory, setServicesByCategory] = useState<any>({});
   const token = localStorage.getItem("accessToken");
-  const [categoryName, setCategoryName] = useState<string>('');
+  const [categoryName, setCategoryName] = useState<string>("");
+  const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken") || '';
-    if (accessToken !== '') {
+    const accessToken = localStorage.getItem("accessToken") || "";
+    if (accessToken !== "") {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
       setUserId(decodedPayload.id);
@@ -52,10 +64,13 @@ const HeaderHomepage: React.FC = () => {
     if (key === "services") {
       navigate(`${MY_SERVICES}`);
     }
+    if (key === "profile") {
+      setUpdateProfileVisible(true);
+    }
     if (key === "logout") {
-      localStorage.removeItem('accessToken');
+      localStorage.removeItem("accessToken");
       setUserId(null);
-      message.success('Đăng xuất thành công!');
+      message.success("Đăng xuất thành công!");
     }
   };
 
@@ -86,10 +101,10 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${HOME}`);
     } else if (key === "services") {
       navigate(`${SERVICE}`);
-    } else if (key.startsWith("service-")) { 
+    } else if (key.startsWith("service-")) {
       const serviceId = key.split("-")[1];
-      navigate(`/services/${serviceId}`,{
-        state: { category: categoryName } // Truyền category qua state
+      navigate(`/services/${serviceId}`, {
+        state: { category: categoryName }, // Truyền category qua state
       });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
@@ -117,13 +132,13 @@ const HeaderHomepage: React.FC = () => {
           <SubMenu
             key="services"
             title="Dịch vụ"
-            onTitleMouseEnter={() => getServiceCategory()} 
+            onTitleMouseEnter={() => getServiceCategory()}
           >
             {serviceCategory.map((category) => (
               <SubMenu
                 key={`service-category-${category.id}`}
                 title={category.name}
-                onTitleMouseEnter={() => getServiceByServiceCategory(category)} 
+                onTitleMouseEnter={() => getServiceByServiceCategory(category)}
               >
                 {(servicesByCategory[category.id] || []).map((service: any) => (
                   <Menu.Item key={`service-${service.id}`}>
@@ -142,9 +157,9 @@ const HeaderHomepage: React.FC = () => {
         {userId !== null ? (
           <Dropdown
             overlay={avatarMenu}
-            trigger={["click"]}
+            trigger={["hover"]}
             visible={menuVisible}
-            onVisibleChange={setMenuVisible}
+            onVisibleChange={(flag) => setMenuVisible(flag)}
           >
             <Avatar
               size="large"
@@ -154,14 +169,22 @@ const HeaderHomepage: React.FC = () => {
           </Dropdown>
         ) : (
           <div
-            style={{ cursor: 'pointer', color: 'var(--primaryColor)' }}
+            style={{ cursor: "pointer", color: "var(--primaryColor)" }}
             onClick={() => navigate(`${LOGIN}`)}
           >
             Đăng nhập / Đăng ký
           </div>
         )}
       </div>
-      <ModalRegister visible={visible} setVisible={setVisible} userId={userId} />
+      <ModalRegister
+        visible={visible}
+        setVisible={setVisible}
+        userId={userId}
+      />
+      <ModalUpdateProfile
+        visible={updateProfileVisible}
+        setVisible={setUpdateProfileVisible}
+      />
     </Header>
   );
 };
