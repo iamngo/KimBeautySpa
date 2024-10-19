@@ -5,6 +5,7 @@ import "../styles.scss";
 import { RxHeartFilled } from "react-icons/rx";
 import { IoHeartOutline } from "react-icons/io5";
 import { getServiceById } from "../../../services/api";
+import { HOME } from "../../../routes";
 
 
 const ServiceDetail: React.FC = () => {
@@ -49,7 +50,9 @@ const ServiceDetail: React.FC = () => {
   return (
     <div className="service-detail-page">
       <Breadcrumb className="breadcrumb">
-        <Breadcrumb.Item>{category}</Breadcrumb.Item>
+        <Breadcrumb.Item onClick={() => navigate(`${HOME}category-services/${category.id}`, {
+      state: { category: category },
+    })}>{category?.name}</Breadcrumb.Item>
         <Breadcrumb.Item>{service.name}</Breadcrumb.Item>
       </Breadcrumb>
 

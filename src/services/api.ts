@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ACCOUNT, API_URL, BRANCH, CATEGORY, CUSTOMER, EMPLOYEE, SERVICE, SERVICE_CATEGORY, TIME, WORKING_TIME } from "../utils/constants";
+import { ACCOUNT, API_URL, BED, BRANCH, CATEGORY, CUSTOMER, EMPLOYEE, SERVICE, SERVICE_CATEGORY, TIME, WORKING_TIME } from "../utils/constants";
 
 
 export const login = async (phone: string, password: string) => {
@@ -89,6 +89,17 @@ export const getServiceById = async (token: string | null, id: number) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  }
+  );
+  return response.data;
+};
+
+export const getBedByServiceIdAndDate = async (token: string | null, serviceId: number | null, date: string | null, branchId: number | null) => {
+  const response = await axios.get(`${API_URL}/${BED}/${SERVICE}/beds`,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { branchId , serviceId, date},
   }
   );
   return response.data;

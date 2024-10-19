@@ -1,56 +1,30 @@
 import React, { useState } from "react";
-import { Button, Calendar, Badge, Input, CalendarProps, List } from "antd";
-import type { Moment } from "moment";
-import moment from "moment";
+import { Button, Calendar, Badge, Input, CalendarProps, List, Tabs } from "antd";
 import "../styles.scss";
+import TabPane from "antd/es/tabs/TabPane";
 
 const MyServicePlanPage: React.FC = () => {
-  const [date, setDate] = useState(moment());
   const [searchValue, setSearchValue] = useState("");
   const { Search } = Input;
+  const [activeTab, setActiveTab] = useState("scheduled");
 
-  // Các sự kiện mẫu
-  const getListData = (value: Moment) => {
-    let listData;
-    switch (value.date()) {
-      case 10:
-        listData = [{ type: "success", content: "Lịch thực hiện dịch vụ A" }];
-        break;
-      case 15:
-        listData = [{ type: "warning", content: "Lịch thực hiện dịch vụ B" }];
-        break;
-      case 21:
-        listData = [{ type: "error", content: "Hủy lịch dịch vụ C" }];
-        break;
-      case 25:
-        listData = [{ type: "success", content: "Lịch thực hiện dịch vụ D" }];
-        break;
-      default:
-        listData = [];
-    }
-    return listData || [];
+  const services = [
+    { id: 1, type: "success", status: "completed", content: "Dịch vụ A - Đã hoàn thành" },
+    { id: 2, type: "warning", status: "scheduled", content: "Dịch vụ B - Đã đặt hẹn" },
+    { id: 3, type: "error", status: "ongoing", content: "Dịch vụ C - Đang thực hiện" },
+    { id: 4, type: "success", status: "completed", content: "Dịch vụ D - Đã hoàn thành" },
+  ];
+
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
   };
 
-  const dateCellRender = (value: Moment) => {
-    const listData = getListData(value);
-    return (
-      <ul className="events">
-        {listData.map((item) => (
-          <li key={item.content}>
-            <Badge status={item.type as any} text={item.content} />
-          </li>
-        ))}
-      </ul>
-    );
-  };
+  const filteredServices = services.filter((service) => service.status === activeTab);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
 
-  const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
-  };
 
   return (
     <div className="service-plan-page">
@@ -64,21 +38,33 @@ const MyServicePlanPage: React.FC = () => {
           />
         </div>
       </div>
-      <div className="calendar-section">
-      <div className="legend">
-        <p>
-          <div className="red-box"></div> Lịch đã đặt hẹn
-        </p>
-        <p>
-          <div className="green-box"></div> Lịch đang thực hiện
-        </p>
-        <p>
-          <div className="blue-box"></div> Lịch đã hoàn thành
-        </p>
-      </div>
-        <div className="calendar">
-        <Calendar fullscreen={false} onPanelChange={onPanelChange} />
-        </div>
+      <div className="tabs-section">
+        <Tabs activeKey={activeTab} onChange={handleTabChange}>
+          <TabPane tab="Đã đặt hẹn" key="scheduled" />
+          <TabPane tab="Đang thực hiện" key="ongoing" />
+          <TabPane tab="Đã hoàn thành" key="completed" />
+        </Tabs>
+
+        <List
+          itemLayout="horizontal"
+          dataSource={filteredServices}
+          renderItem={(item) => (
+            <List.Item>
+              <List.Item.Meta
+                title={item.content}
+                description={item.content}
+              />
+              <div className="actions">
+                {item.status === "scheduled" && (
+                  <Button type="default">Hủy lịch</Button>
+                )}
+                {item.status === "ongoing" && (
+                  <Button type="primary">Thanh toán</Button>
+                )}
+              </div>
+            </List.Item>
+          )}
+        />
       </div>
 
       <div className="service-details">

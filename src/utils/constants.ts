@@ -8,3 +8,4 @@ export const CATEGORY = 'category';
 export const SERVICE = 'service';
 export const WORKING_TIME = 'working-time';
 export const TIME = 'times';
+export const BED = 'bed';

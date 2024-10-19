@@ -6,10 +6,12 @@ import {
   getAllBranch,
   getAllEmployee,
   getAllServiceCategory,
+  getBedByServiceIdAndDate,
   getInfoByAccountId,
   getServiceByCategory,
   getWorkingTimeByServiceIdAndDate,
 } from "../../../../services/api";
+import moment from "moment";
 
 // Định nghĩa kiểu cho props
 interface ModalRegisterProps {
@@ -36,6 +38,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   );
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [listTime, setListTime] = useState(null);
+  const [time, setTime] = useState(null);
+  const [bed, setBed] = useState(null);
   const [employees, setEmployees] = useState<any[]>([]);
 
   useEffect(() => {
@@ -49,6 +53,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   useEffect(() => {
     getTimeByServiceIdAndDate();
   }, [selectedBranch, selectedDate, selectedServiceId]);
+
+  useEffect(() => {
+    getBedByServiceAndDate();
+    console.log(`${selectedDate} ${time}:00`);
+  }, [selectedBranch, selectedDate, selectedServiceId, time]);
 
   const getInfoCustomer = async () => {
     const response = await getInfoByAccountId(token, userId);
@@ -92,10 +101,24 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     setListTime(response.data);
   };
 
+  const getBedByServiceAndDate = async () => {
+    const response = await getBedByServiceIdAndDate(
+      token,
+      selectedServiceId,
+      `${selectedDate} ${time}:00`,
+      selectedBranch
+    );
+    setBed(response.data);
+  };
+
   const getEmployees = async () => {
     const response = await getAllEmployee(token, 1, 10);
     setEmployees(response.data);
-  }
+  };
+
+  const disabledDate = (current) => {
+    return current && current < moment().startOf("day");
+  };
 
   useEffect(() => {
     if (customer) {
@@ -190,27 +213,36 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
           name="date"
           rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
         >
-          <DatePicker style={{ width: "100%" }} onChange={handleDateChange} />
+          <DatePicker
+            style={{ width: "100%" }}
+            onChange={handleDateChange}
+            disabledDate={disabledDate}
+          />
         </Form.Item>
-        {selectedBranch && selectedServiceId && selectedDate && <Form.Item
-          label="Chọn thời gian:"
-          name="time"
-          rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
-        >
-          <Select placeholder="Chọn thời gian">
-            {listTime &&
-              listTime.map(
-                (timeSlot: { id: number; time: string; status: string }) => (
-                  <Select.Option key={timeSlot.id} value={timeSlot.id}>
-                    {timeSlot.time}
-                  </Select.Option>
-                )
-              )}
-          </Select>
-        </Form.Item>}
+        {selectedBranch && selectedServiceId && selectedDate && (
+          <Form.Item
+            label="Chọn thời gian:"
+            name="time"
+            rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
+          >
+            <Select
+              placeholder="Chọn thời gian"
+              onChange={(value) => setTime(value)}
+            >
+              {listTime &&
+                listTime.map(
+                  (timeSlot: { id: number; time: string; status: string }) => (
+                    <Select.Option key={timeSlot.id} value={timeSlot.time}>
+                      {timeSlot.time}
+                    </Select.Option>
+                  )
+                )}
+            </Select>
+          </Form.Item>
+        )}
         <Form.Item label="Chọn nhân viên:" name="staff">
           <Select placeholder="Chọn nhân viên">
-          {employees.map((item) => (
+            {employees.map((item) => (
               <Select.Option key={item.id} value={item.id}>
                 {item.fullName}
               </Select.Option>

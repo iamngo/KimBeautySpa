@@ -30,8 +30,9 @@ const HeaderHomepage: React.FC = () => {
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
   const [servicesByCategory, setServicesByCategory] = useState<any>({});
   const token = localStorage.getItem("accessToken");
-  const [categoryName, setCategoryName] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
   const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
+  const [selectedKey, setSelectedKey] = useState<string>("home");
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -54,7 +55,7 @@ const HeaderHomepage: React.FC = () => {
       ...prevServicesByCategory,
       [serviceCategory.id]: response.data,
     }));
-    setCategoryName(serviceCategory.name);
+    setCategory(serviceCategory);
   };
 
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -97,20 +98,31 @@ const HeaderHomepage: React.FC = () => {
 
   // Handle Menu navigation
   const handleMenuSelect = ({ key }: { key: string }) => {
+    setSelectedKey(key); 
+  
     if (key === "home") {
       navigate(`${HOME}`);
     } else if (key === "services") {
       navigate(`${SERVICE}`);
     } else if (key.startsWith("service-")) {
       const serviceId = key.split("-")[1];
-      navigate(`/services/${serviceId}`, {
-        state: { category: categoryName }, // Truyền category qua state
+      navigate(`/${SERVICE}/${serviceId}`, {
+        state: { category: category }, 
       });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
     } else if (key === "offer") {
       navigate("/offer");
     }
+  };
+
+  const handleSubmenuCategoryServiceClick = (category: any) => {
+    console.log(category);
+    
+    setSelectedKey(`service-category-${category.id}`); 
+    navigate(`category-services/${category.id}`, {
+      state: { category: category },
+    });
   };
 
   return (
@@ -123,7 +135,7 @@ const HeaderHomepage: React.FC = () => {
         <Menu
           mode="horizontal"
           className="main-menu"
-          defaultSelectedKeys={["home"]}
+          selectedKeys={[selectedKey]}
           onClick={handleMenuSelect}
         >
           <Menu.Item key="home">Trang chủ</Menu.Item>
@@ -134,11 +146,12 @@ const HeaderHomepage: React.FC = () => {
             title="Dịch vụ"
             onTitleMouseEnter={() => getServiceCategory()}
           >
-            {serviceCategory.map((category) => (
+            {serviceCategory?.map((category) => (
               <SubMenu
                 key={`service-category-${category.id}`}
                 title={category.name}
                 onTitleMouseEnter={() => getServiceByServiceCategory(category)}
+                onTitleClick={() => handleSubmenuCategoryServiceClick(category)}
               >
                 {(servicesByCategory[category.id] || []).map((service: any) => (
                   <Menu.Item key={`service-${service.id}`}>
