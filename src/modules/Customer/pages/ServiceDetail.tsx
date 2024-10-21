@@ -24,7 +24,7 @@ const ServiceDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchServiceDetail = async () => {
-      const response = await getServiceById(token, id); // Gọi API để lấy thông tin chi tiết dịch vụ
+      const response = await getServiceById( id); // Gọi API để lấy thông tin chi tiết dịch vụ
       setService(response.data);
     };
 

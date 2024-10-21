@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Form, Input, Modal, DatePicker, Select } from "antd";
+import { Button, Form, Input, Modal, DatePicker, Select, message } from "antd";
 import { FormInstance } from "antd/es/form";
 import "./styles.scss";
 import {
@@ -7,9 +7,11 @@ import {
   getAllEmployee,
   getAllServiceCategory,
   getBedByServiceIdAndDate,
+  getCategoryServiceById,
   getInfoByAccountId,
   getServiceByCategory,
   getWorkingTimeByServiceIdAndDate,
+  registerAppointment,
 } from "../../../../services/api";
 import moment from "moment";
 
@@ -31,6 +33,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [customer, setCustomer] = useState(null);
   const [branch, setBranch] = useState<any[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
+  const [selectedBed, setSelectedBed] = useState<number | null>(null);
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
   const [servicesByCategory, setServicesByCategory] = useState<any>({});
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
@@ -39,8 +42,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [listTime, setListTime] = useState(null);
   const [time, setTime] = useState(null);
-  const [bed, setBed] = useState(null);
+  const [bed, setBed] = useState<any[]>([]);
+  const [room, setRoom] = useState(null);
   const [employees, setEmployees] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   useEffect(() => {
     setVisibleModal(visible);
@@ -53,6 +58,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   useEffect(() => {
     getTimeByServiceIdAndDate();
   }, [selectedBranch, selectedDate, selectedServiceId]);
+
+  useEffect(() => {
+    fetchCategoryById();
+  }, [selectedServiceId]);
 
   useEffect(() => {
     getBedByServiceAndDate();
@@ -70,13 +79,13 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const getServiceCategory = async () => {
-    const response = await getAllServiceCategory(token, 1, 10);
+    const response = await getAllServiceCategory( 1, 10);
     setServiceCategory(response.data);
 
     // Fetch services for each category
     const services = {};
     for (const category of response.data) {
-      const servicesResponse = await getServiceByCategory(token, category.id);
+      const servicesResponse = await getServiceByCategory( category.id);
       services[category.id] = servicesResponse.data;
     }
     setServicesByCategory(services); // Save all services categorized
@@ -103,18 +112,27 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
-      token,
       selectedServiceId,
       `${selectedDate} ${time}:00`,
-      selectedBranch
+      selectedBranch,
+      room?.roomId
     );
     setBed(response.data);
+    console.log(response.data);
+    
   };
 
   const getEmployees = async () => {
     const response = await getAllEmployee(token, 1, 10);
     setEmployees(response.data);
   };
+
+  const fetchCategoryById = async () => {
+    const response = await getCategoryServiceById( selectedCategoryId);
+    setRoom(response.data);
+    // console.log(response.data.roomId);
+    
+  }
 
   const disabledDate = (current) => {
     return current && current < moment().startOf("day");
@@ -138,6 +156,30 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const onFinish = async (values: any) => {
+    try {
+      const appointment = {
+        dateTime: `${values.date.format('YYYY-MM-DD')} ${values.time}:00`,
+        status: 'confirmed',
+        category: 'services', 
+        serviceOrTreatmentId: values.service,
+        employeeId: values.staff,
+        customerId: userId,
+        branchId: values.branch,
+        bedId: values.bed
+      }
+      console.log("Appointment payload being sent:", JSON.stringify(appointment));
+      const response = await registerAppointment(appointment);
+      console.log(response);
+      if (response.data !== null) {
+        message.success("Đăng ký thành công!");
+    setVisibleModal(false);
+      }else{
+        console.log(response.error);
+        
+      }
+    } catch (error) {
+      console.log("Validation failed:", error);
+    }
     // Xử lý logic sau khi submit form tại đây
     console.log("Form values:", values);
   };
@@ -172,7 +214,13 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         <Form.Item label="Chọn dịch vụ:" name="service">
           <Select
             placeholder="Chọn dịch vụ"
-            onChange={(value) => setSelectedServiceId(value)}
+            onChange={(value) => {
+              setSelectedServiceId(value); 
+              const categoryId = Object.keys(servicesByCategory).find(categoryId => 
+                servicesByCategory[categoryId].some((service) => service.id === value)
+              );
+              setSelectedCategoryId(Number(categoryId)); // Lưu ID của category
+            }}
           >
             {/* Sử dụng OptGroup để nhóm dịch vụ theo phân loại */}
             {serviceCategory.map((category) => (
@@ -240,6 +288,24 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             </Select>
           </Form.Item>
         )}
+        {selectedBranch && selectedServiceId && selectedDate && time && (
+  <Form.Item
+    label="Chọn giường:"
+    name="bed"
+    rules={[{ required: true, message: "Vui lòng chọn giường" }]}
+  >
+    <Select
+      placeholder="Chọn giường"
+      onChange={(value) => setSelectedBed(value)}
+    >
+      {bed.map((item) => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+    </Select>
+  </Form.Item>
+)}
         <Form.Item label="Chọn nhân viên:" name="staff">
           <Select placeholder="Chọn nhân viên">
             {employees.map((item) => (

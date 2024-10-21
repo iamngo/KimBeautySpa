@@ -45,12 +45,12 @@ const HeaderHomepage: React.FC = () => {
   }, [userId]);
 
   const getServiceCategory = async () => {
-    const response = await getAllServiceCategory(token, 1, 10);
+    const response = await getAllServiceCategory(1, 100);
     setServiceCategory(response.data);
   };
 
   const getServiceByServiceCategory = async (serviceCategory: any) => {
-    const response = await getServiceByCategory(token, serviceCategory.id);
+    const response = await getServiceByCategory(serviceCategory.id);
     setServicesByCategory((prevServicesByCategory) => ({
       ...prevServicesByCategory,
       [serviceCategory.id]: response.data,
@@ -63,7 +63,7 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${REWARD_POINTS}`);
     }
     if (key === "services") {
-      navigate(`${MY_SERVICES}`);
+      navigate(`${MY_SERVICES}`, {state: {userId: userId}});
     }
     if (key === "profile") {
       setUpdateProfileVisible(true);
@@ -98,8 +98,8 @@ const HeaderHomepage: React.FC = () => {
 
   // Handle Menu navigation
   const handleMenuSelect = ({ key }: { key: string }) => {
-    setSelectedKey(key); 
-  
+    setSelectedKey(key);
+
     if (key === "home") {
       navigate(`${HOME}`);
     } else if (key === "services") {
@@ -107,7 +107,7 @@ const HeaderHomepage: React.FC = () => {
     } else if (key.startsWith("service-")) {
       const serviceId = key.split("-")[1];
       navigate(`/${SERVICE}/${serviceId}`, {
-        state: { category: category }, 
+        state: { category: category },
       });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
@@ -118,8 +118,8 @@ const HeaderHomepage: React.FC = () => {
 
   const handleSubmenuCategoryServiceClick = (category: any) => {
     console.log(category);
-    
-    setSelectedKey(`service-category-${category.id}`); 
+
+    setSelectedKey(`service-category-${category.id}`);
     navigate(`category-services/${category.id}`, {
       state: { category: category },
     });
@@ -181,11 +181,22 @@ const HeaderHomepage: React.FC = () => {
             />
           </Dropdown>
         ) : (
-          <div
-            style={{ cursor: "pointer", color: "var(--primaryColor)" }}
-            onClick={() => navigate(`${LOGIN}`)}
-          >
-            Đăng nhập / Đăng ký
+          <div style={{ color: "var(--primaryColor)" }}>
+            <Button
+              size="small"
+              className="btn-signup"
+              onClick={() => navigate(`${LOGIN}`, { state: { signUp: false } })}
+            >
+              Đăng nhập
+            </Button>{" "}
+            /{" "}
+            <Button
+              size="small"
+              className="btn-signup"
+              onClick={() => navigate(`${LOGIN}`, { state: { signUp: true } })}
+            >
+              Đăng ký
+            </Button>
           </div>
         )}
       </div>
