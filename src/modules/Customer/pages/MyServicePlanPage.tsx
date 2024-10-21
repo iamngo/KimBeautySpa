@@ -1,56 +1,46 @@
-import React, { useState } from "react";
-import { Button, Calendar, Badge, Input, CalendarProps, List } from "antd";
-import type { Moment } from "moment";
-import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Button, Calendar, Badge, Input, CalendarProps, List, Tabs } from "antd";
 import "../styles.scss";
+import TabPane from "antd/es/tabs/TabPane";
+import { getAppointmentByCustomerId, getInfoByAccountId } from "../../../services/api";
+import { useLocation } from "react-router-dom";
 
 const MyServicePlanPage: React.FC = () => {
-  const [date, setDate] = useState(moment());
   const [searchValue, setSearchValue] = useState("");
   const { Search } = Input;
+  const [activeTab, setActiveTab] = useState("confirmed");
+  const location = useLocation();
+  const token = localStorage.getItem("accessToken");
+  const [appointment, setAppointment] = useState();
 
-  // Các sự kiện mẫu
-  const getListData = (value: Moment) => {
-    let listData;
-    switch (value.date()) {
-      case 10:
-        listData = [{ type: "success", content: "Lịch thực hiện dịch vụ A" }];
-        break;
-      case 15:
-        listData = [{ type: "warning", content: "Lịch thực hiện dịch vụ B" }];
-        break;
-      case 21:
-        listData = [{ type: "error", content: "Hủy lịch dịch vụ C" }];
-        break;
-      case 25:
-        listData = [{ type: "success", content: "Lịch thực hiện dịch vụ D" }];
-        break;
-      default:
-        listData = [];
+
+  
+  useEffect(() => {    
+    fetchAppointment();
+  },[location.state.userId])
+
+
+  const fetchAppointment = async () => {
+    const customer = await getInfoByAccountId(token, location.state.userId);
+    if(customer.data !== null) {
+      const response = await getAppointmentByCustomerId(token, customer.data.id);
+      setAppointment(response.data);
+      console.log(response.data);
+
     }
-    return listData || [];
+  }
+ 
+
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
   };
 
-  const dateCellRender = (value: Moment) => {
-    const listData = getListData(value);
-    return (
-      <ul className="events">
-        {listData.map((item) => (
-          <li key={item.content}>
-            <Badge status={item.type as any} text={item.content} />
-          </li>
-        ))}
-      </ul>
-    );
-  };
+  const filteredAppointment = appointment?.filter((service) => service.status === activeTab);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
 
-  const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>['mode']) => {
-    console.log(value.format('YYYY-MM-DD'), mode);
-  };
 
   return (
     <div className="service-plan-page">
@@ -64,21 +54,33 @@ const MyServicePlanPage: React.FC = () => {
           />
         </div>
       </div>
-      <div className="calendar-section">
-      <div className="legend">
-        <p>
-          <div className="red-box"></div> Lịch đã đặt hẹn
-        </p>
-        <p>
-          <div className="green-box"></div> Lịch đang thực hiện
-        </p>
-        <p>
-          <div className="blue-box"></div> Lịch đã hoàn thành
-        </p>
-      </div>
-        <div className="calendar">
-        <Calendar fullscreen={false} onPanelChange={onPanelChange} />
-        </div>
+      <div className="tabs-section">
+        <Tabs activeKey={activeTab} onChange={handleTabChange}>
+          <TabPane tab="Đã đặt hẹn" key="confirmed" />
+          <TabPane tab="Đang thực hiện" key="performing" />
+          <TabPane tab="Đã hoàn thành" key="finished" />
+        </Tabs>
+
+        <List
+          itemLayout="horizontal"
+          dataSource={filteredAppointment}
+          renderItem={(item) => (
+            <List.Item>
+              <List.Item.Meta
+                title={item.content}
+                description={item.content}
+              />
+              <div className="actions">
+                {item.status === "scheduled" && (
+                  <Button type="default">Hủy lịch</Button>
+                )}
+                {item.status === "ongoing" && (
+                  <Button type="primary">Thanh toán</Button>
+                )}
+              </div>
+            </List.Item>
+          )}
+        />
       </div>
 
       <div className="service-details">

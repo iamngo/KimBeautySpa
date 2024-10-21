@@ -545,40 +545,83 @@ body {
     }
   }
 
-  .legend{
+  .tabs-section {
     width: 100%;
-    display: flex;
-    justify-content: space-around;
-    p{
-      display: flex;
-      align-items: center;
-    }
-    .red-box,.green-box,.blue-box{
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
-    }
-    .red-box{
-      background-color: #ff0000;
-    }.green-box{
-      background-color: #00e827;
-    }.blue-box{
-      background-color: #0037ff;
-    }
-  }
+    margin: 20px 0;
 
-  .calendar-section {
-    .ant-picker-calendar {
-      background-color: #BE0F78;
-      border-radius: 10px;
-      border: none;
-      max-width: 800px;
-      margin: 20px ;
-      font-size: 20px;
-
+    .ant-tabs-tab {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333 !important;
+      padding: 10px;
+    }
+    .ant-tabs-tab-active {
+      background-color: #ff9d9a78 !important; 
+      border-radius: 8px 8px 0 0; 
     }
 
-    .ant-picker-calendar-date-value{
+    .ant-tabs-tab-btn{
+      color: var(--primaryColor) !important;
+    }
+    
+
+    .ant-tabs-ink-bar {
+      background-color: var(--lineMenuItemHover);
+    }
+
+    .ant-list {
+      margin-top: 10px;
+
+      .ant-list-item {
+        background-color: #fffcf9;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.01);
+        }
+
+        .ant-list-item-meta {
+          display: flex;
+
+          .ant-list-item-meta-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+          }
+
+          .ant-list-item-meta-description {
+            font-size: 14px;
+            color: #999;
+          }
+        }
+
+        .actions {
+          button {
+            margin-left: 10px;
+          }
+
+          .ant-btn {
+            border-radius: 4px;
+          }
+
+          .ant-btn-primary {
+            background-color: #52c41a;
+            border-color: #52c41a;
+          }
+
+          .ant-btn-default {
+            background-color: #fff;
+            border-color: #d9d9d9;
+            color: #333;
+          }
+        }
+      }
     }
   }
 

@@ -1,13 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Slide from "../components/slides/Slide";
-import "../styles.scss"; // Nếu bạn đã có style chung
+import "../styles.scss"; 
+import ModalRegister from "../components/modal/ModalRegister";
 
 const Homepage = () => {
+  const [visible, setVisible] = useState(false);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken") || "";
+    if (accessToken !== "") {
+      const payload = accessToken.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      setUserId(decodedPayload.id);
+    }
+  }, [userId]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
+  const handleRegisterClick = () => {
+    setVisible(true);
+  };
+
   return (
     <div className="home-page">
+      <ModalRegister
+        visible={visible}
+        setVisible={setVisible}
+        userId={userId}
+      />
       {/* Phần Slide */}
       <Slide />
 
@@ -25,7 +48,7 @@ const Homepage = () => {
             để những mệt mỏi hàng ngày làm bạn hao mòn, đến với Kim Beauty & Spa
             và cảm nhận sự khác biệt!
           </p>
-          <button className="btn-primary">Đặt lịch ngay</button>
+          <button className="btn-primary" onClick={handleRegisterClick}>Đặt lịch ngay</button>
         </div>
         <div className="intro-section-right">
           <div className="background"></div>

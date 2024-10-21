@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles.scss";
 import { FaGoogle, FaFacebookF, FaGithub, FaInstagram } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DASHBOARD, HOME, MANAGER } from "../../../routes";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { CgSpinner } from "react-icons/cg";
@@ -27,7 +27,8 @@ interface Customer {
 }
 
 const Authenticate: React.FC = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const location = useLocation();
+  const [isSignUp, setIsSignUp] = useState(location.state.signUp);
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [showOTP, setShowOTP] = useState(false);
@@ -182,7 +183,7 @@ const Authenticate: React.FC = () => {
       console.log(dataToSend);
       const response = await register(dataToSend);
       console.log(response);
-      
+
       if (response.data !== null) {
         message.success("Đăng ký thành công!");
         navigate(`${HOME}`);

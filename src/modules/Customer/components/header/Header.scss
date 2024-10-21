@@ -79,6 +79,14 @@
           color: var(--primaryColor1);
           }
     }
+    .btn-signup{
+      background-image:none;
+      box-shadow: none;
+      &:hover{
+        box-shadow: none;
+        color: var(--primaryColor1);
+        }
+    }
 
     .ant-avatar {
       background-color: #1890ff;

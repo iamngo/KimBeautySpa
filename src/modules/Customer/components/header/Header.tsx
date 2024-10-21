@@ -30,8 +30,9 @@ const HeaderHomepage: React.FC = () => {
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
   const [servicesByCategory, setServicesByCategory] = useState<any>({});
   const token = localStorage.getItem("accessToken");
-  const [categoryName, setCategoryName] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
   const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
+  const [selectedKey, setSelectedKey] = useState<string>("home");
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -44,17 +45,17 @@ const HeaderHomepage: React.FC = () => {
   }, [userId]);
 
   const getServiceCategory = async () => {
-    const response = await getAllServiceCategory(token, 1, 10);
+    const response = await getAllServiceCategory(1, 100);
     setServiceCategory(response.data);
   };
 
   const getServiceByServiceCategory = async (serviceCategory: any) => {
-    const response = await getServiceByCategory(token, serviceCategory.id);
+    const response = await getServiceByCategory(serviceCategory.id);
     setServicesByCategory((prevServicesByCategory) => ({
       ...prevServicesByCategory,
       [serviceCategory.id]: response.data,
     }));
-    setCategoryName(serviceCategory.name);
+    setCategory(serviceCategory);
   };
 
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -62,7 +63,7 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${REWARD_POINTS}`);
     }
     if (key === "services") {
-      navigate(`${MY_SERVICES}`);
+      navigate(`${MY_SERVICES}`, {state: {userId: userId}});
     }
     if (key === "profile") {
       setUpdateProfileVisible(true);
@@ -97,20 +98,31 @@ const HeaderHomepage: React.FC = () => {
 
   // Handle Menu navigation
   const handleMenuSelect = ({ key }: { key: string }) => {
+    setSelectedKey(key);
+
     if (key === "home") {
       navigate(`${HOME}`);
     } else if (key === "services") {
       navigate(`${SERVICE}`);
     } else if (key.startsWith("service-")) {
       const serviceId = key.split("-")[1];
-      navigate(`/services/${serviceId}`, {
-        state: { category: categoryName }, // Truyền category qua state
+      navigate(`/${SERVICE}/${serviceId}`, {
+        state: { category: category },
       });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
     } else if (key === "offer") {
       navigate("/offer");
     }
+  };
+
+  const handleSubmenuCategoryServiceClick = (category: any) => {
+    console.log(category);
+
+    setSelectedKey(`service-category-${category.id}`);
+    navigate(`category-services/${category.id}`, {
+      state: { category: category },
+    });
   };
 
   return (
@@ -123,7 +135,7 @@ const HeaderHomepage: React.FC = () => {
         <Menu
           mode="horizontal"
           className="main-menu"
-          defaultSelectedKeys={["home"]}
+          selectedKeys={[selectedKey]}
           onClick={handleMenuSelect}
         >
           <Menu.Item key="home">Trang chủ</Menu.Item>
@@ -134,11 +146,12 @@ const HeaderHomepage: React.FC = () => {
             title="Dịch vụ"
             onTitleMouseEnter={() => getServiceCategory()}
           >
-            {serviceCategory.map((category) => (
+            {serviceCategory?.map((category) => (
               <SubMenu
                 key={`service-category-${category.id}`}
                 title={category.name}
                 onTitleMouseEnter={() => getServiceByServiceCategory(category)}
+                onTitleClick={() => handleSubmenuCategoryServiceClick(category)}
               >
                 {(servicesByCategory[category.id] || []).map((service: any) => (
                   <Menu.Item key={`service-${service.id}`}>
@@ -168,11 +181,22 @@ const HeaderHomepage: React.FC = () => {
             />
           </Dropdown>
         ) : (
-          <div
-            style={{ cursor: "pointer", color: "var(--primaryColor)" }}
-            onClick={() => navigate(`${LOGIN}`)}
-          >
-            Đăng nhập / Đăng ký
+          <div style={{ color: "var(--primaryColor)" }}>
+            <Button
+              size="small"
+              className="btn-signup"
+              onClick={() => navigate(`${LOGIN}`, { state: { signUp: false } })}
+            >
+              Đăng nhập
+            </Button>{" "}
+            /{" "}
+            <Button
+              size="small"
+              className="btn-signup"
+              onClick={() => navigate(`${LOGIN}`, { state: { signUp: true } })}
+            >
+              Đăng ký
+            </Button>
           </div>
         )}
       </div>
