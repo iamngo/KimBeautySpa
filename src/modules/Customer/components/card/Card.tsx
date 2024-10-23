@@ -16,19 +16,25 @@ const CustomCard: React.FC<ServiceCardProps> = ({
   onConsultClick,
 }) => {
   return (
-    
-    <Card className="card" cover={<img alt={title} src={imageUrl} />} hoverable>
-      <div className="card-content">
-      <Tooltip title={title} placement="rightTop"><h3>{title}</h3> </Tooltip>
-        <div className="card-actions">
-          <Button type="default" onClick={onConsultClick}>
-            Nhận tư vấn
-          </Button>
-          <Button onClick={onDetailClick} className="btn-detail">Xem chi tiết</Button>
+    <Tooltip title={title} placement="rightTop">
+      <Card
+        className="card"
+        cover={<img alt={title} src={imageUrl} />}
+        hoverable
+      >
+        <div className="card-content">
+          <h3>{title}</h3>
+          <div className="card-actions">
+            <Button type="default" onClick={onConsultClick}>
+              Nhận tư vấn
+            </Button>
+            <Button onClick={onDetailClick} className="btn-detail">
+              Xem chi tiết
+            </Button>
+          </div>
         </div>
-      </div>
-    </Card>
-   
+      </Card>
+    </Tooltip>
   );
 };
 
