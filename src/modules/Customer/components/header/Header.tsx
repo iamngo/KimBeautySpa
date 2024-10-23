@@ -9,6 +9,7 @@ import {
   HOME,
   LOGIN,
   MY_SERVICES,
+  PROMOTION,
   REWARD_POINTS,
   SERVICE,
   TREATMENTS,
@@ -111,8 +112,8 @@ const HeaderHomepage: React.FC = () => {
       });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
-    } else if (key === "offer") {
-      navigate("/offer");
+    } else if (key === "promotion") {
+      navigate(`${PROMOTION}`);
     }
   };
 
@@ -163,7 +164,7 @@ const HeaderHomepage: React.FC = () => {
           </SubMenu>
 
           <Menu.Item key="treatments">Liệu trình</Menu.Item>
-          <Menu.Item key="offer">Khuyến mãi</Menu.Item>
+          <Menu.Item key="promotion">Khuyến mãi</Menu.Item>
         </Menu>
 
         <Button onClick={handleRegisterClick}>Đặt lịch ngay</Button>

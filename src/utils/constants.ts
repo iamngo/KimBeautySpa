@@ -10,3 +10,4 @@ export const WORKING_TIME = 'working-time';
 export const TIME = 'times';
 export const APPOINTMENT = 'appointment';
 export const BED = 'bed';
+export const PRICES = 'prices';

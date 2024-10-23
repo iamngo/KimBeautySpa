@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Collapse, List, Tabs, Empty } from "antd";
+import { Button, Input, Collapse, List, Tabs, Empty, message } from "antd";
 import "../styles.scss";
 import TabPane from "antd/es/tabs/TabPane";
 import {
+  cancelBookAppointment,
   getAppointmentByCustomerId,
+  getBranchById,
+  getEmployeeById,
   getInfoByAccountId,
+  getPricesByForeignKeyId,
   getServiceById,
 } from "../../../services/api";
 import { useLocation } from "react-router-dom";
@@ -37,9 +41,21 @@ const MyServicePlanPage: React.FC = () => {
             const service = await getServiceById(
               appointment.serviceOrTreatmentId
             );
+            const branch = await getBranchById(token, appointment.branchId);
+            const employee = await getEmployeeById(
+              token,
+              appointment.employeeId
+            );
+            const price = await getPricesByForeignKeyId(
+              token,
+              appointment.serviceOrTreatmentId
+            );
             return {
               ...appointment,
               service: service.data,
+              branch: branch.data,
+              employee: employee.data,
+              price: price.data[0],
             };
           })
         );
@@ -65,12 +81,28 @@ const MyServicePlanPage: React.FC = () => {
   const formatDateTime = (dateTime: string | Date) => {
     const date = new Date(dateTime);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
-    const day = String(date.getDate()).padStart(2, "0"); // Đảm bảo ngày có 2 chữ số
-    const hours = String(date.getHours()).padStart(2, "0"); // Giờ
-    const minutes = String(date.getMinutes()).padStart(2, "0"); // Phút
-    const seconds = String(date.getSeconds()).padStart(2, "0"); // Giây
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  const handleCancelBookingAppointment = async (id: number, date: Date) => {
+    const currentDate = new Date();
+    const twoDaysLater = new Date(currentDate.setDate(currentDate.getDate() + 2));
+  
+    if (new Date(date) > twoDaysLater) {
+      const response = await cancelBookAppointment(id);
+      if (response.data !== null) {
+        message.success('Hủy lịch hẹn thành công!');
+        
+        await fetchAppointment();
+      }
+    } else {
+      message.warning('Bạn chỉ có thể hủy lịch trước 2 ngày!');
+    }
   };
 
   return (
@@ -109,7 +141,7 @@ const MyServicePlanPage: React.FC = () => {
                     </span>
                     <div className="actions">
                       {item.status === "confirmed" && (
-                        <Button type="default" size="small">
+                        <Button type="default" size="small" onClick={() => handleCancelBookingAppointment(item.id, item.dateTime)}>
                           Hủy lịch
                         </Button>
                       )}
@@ -134,7 +166,8 @@ const MyServicePlanPage: React.FC = () => {
                       <strong>Dịch vụ:</strong> {item.service?.name}
                     </p>
                     <p>
-                      <strong>Chi nhánh:</strong> Tên chi nhánh
+                      <strong>Chi nhánh:</strong>{" "}
+                      {`${item.branch?.name} - ${item.branch?.address}`}
                     </p>
                     <p>
                       <strong>Thời gian:</strong>{" "}
@@ -143,17 +176,33 @@ const MyServicePlanPage: React.FC = () => {
                       </span>
                     </p>
                     <p>
-                      <strong>Nhân viên:</strong> Tên nhân viên
+                      <strong>Nhân viên:</strong> {item.employee?.fullName}
                     </p>
                     <p>
-                      <strong>Giá tiền:</strong> 1.000.000đ
+                      <strong>Giá tiền:</strong>&nbsp;
+                      <s>
+                       <small>
+                          {item.price?.price?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                       </small>
+                      </s>&nbsp;&nbsp;
+                      <span style={{ color: "red" }}>
+                        <b>
+                          {item.price?.specialPrice?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </b>
+                      </span>
                     </p>
                   </div>
                 </div>
               </Panel>
             ))
           ) : (
-            <Empty description="Không có dữ liệu" /> 
+            <Empty description="Không có dữ liệu" />
           )}
         </Collapse>
       </div>
