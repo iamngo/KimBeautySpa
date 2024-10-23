@@ -223,6 +223,7 @@ body {
         gap: 20px;
       }
       .card {
+        margin: 10px 0;
         flex: 1 1 calc(25% - 20px);
         max-width: calc(25% - 20px);
       }
@@ -569,97 +570,46 @@ body {
       background-color: var(--lineMenuItemHover);
     }
 
-    .ant-list {
-      margin-top: 10px;
-
-      .ant-list-item {
-        background-color: #fffcf9;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: transform 0.3s ease;
-
-        &:hover {
-          transform: scale(1.01);
-        }
-
-        .ant-list-item-meta {
-          display: flex;
-
-          .ant-list-item-meta-title {
-            font-size: 16px;
-            font-weight: 500;
-            color: #333;
-          }
-
-          .ant-list-item-meta-description {
-            font-size: 14px;
-            color: #999;
-          }
-        }
-
-        .actions {
-          button {
-            margin-left: 10px;
-          }
-
-          .ant-btn {
-            border-radius: 4px;
-          }
-
-          .ant-btn-primary {
-            background-color: #52c41a;
-            border-color: #52c41a;
-          }
-
-          .ant-btn-default {
-            background-color: #fff;
-            border-color: #d9d9d9;
-            color: #333;
-          }
-        }
-      }
-    }
-  }
-
-  .service-details{
-    width: 100%;
-    margin-top: 20px;
-    .details-card{
-      background-color: #fffcf9;
+    .info-card{
       display: flex;
-      justify-content: space-between;
-      margin-top: 30px;
-      padding: 20px;
-      transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.01);
+      gap: 40px;
     }
-      .info-card{
-        display: flex;
-        gap: 40px;
-      }
-      .service-image{
-        border-radius: 20px;
-      }
-      .info-section{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        font-size: 20px;
-      }
-      .actions{
-        align-self: flex-end;
-        display: flex;
-        gap: 40px;
-        .btn-payment{
-          @include btn-custom
+    .service-image{
+      border-radius: 20px;
+    }
+    .info-section{
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 20px;
+    }
+    .ant-collapse {
+      border: none;
+  
+      .ant-collapse-header {
+        font-weight: bold;
+        font-size: 16px;
+        padding: 10px;
+        transition: background-color 0.3s ease; 
+        background-color:  #fdfbfbb3;
+        &:hover {
+          background-color: #ff9d9a78 !important; 
+
         }
       }
+  
+      .ant-collapse-content {
+        background-color:  #fdfbfb83;
+
+      }
+      .ant-btn{
+        @include btn-custom;
+      }
+  
     }
+  
+   
+  
   }
+
 }

@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Calendar, Badge, Input, CalendarProps, List, Tabs } from "antd";
+import { Button, Input, Collapse, List, Tabs, Empty } from "antd";
 import "../styles.scss";
 import TabPane from "antd/es/tabs/TabPane";
-import { getAppointmentByCustomerId, getInfoByAccountId } from "../../../services/api";
+import {
+  getAppointmentByCustomerId,
+  getInfoByAccountId,
+  getServiceById,
+} from "../../../services/api";
 import { useLocation } from "react-router-dom";
+
+const { Panel } = Collapse;
 
 const MyServicePlanPage: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -11,36 +17,61 @@ const MyServicePlanPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("confirmed");
   const location = useLocation();
   const token = localStorage.getItem("accessToken");
-  const [appointment, setAppointment] = useState();
+  const [appointment, setAppointment] = useState<any[]>([]);
 
-
-  
-  useEffect(() => {    
+  useEffect(() => {
     fetchAppointment();
-  },[location.state.userId])
-
+  }, [location.state.userId]);
 
   const fetchAppointment = async () => {
     const customer = await getInfoByAccountId(token, location.state.userId);
-    if(customer.data !== null) {
-      const response = await getAppointmentByCustomerId(token, customer.data.id);
-      setAppointment(response.data);
-      console.log(response.data);
+    if (customer.data !== null) {
+      const response = await getAppointmentByCustomerId(
+        token,
+        customer.data.id
+      );
 
+      if (response.data !== null) {
+        const appointmentsWithService = await Promise.all(
+          response.data.map(async (appointment) => {
+            const service = await getServiceById(
+              appointment.serviceOrTreatmentId
+            );
+            return {
+              ...appointment,
+              service: service.data,
+            };
+          })
+        );
+
+        setAppointment(appointmentsWithService);
+        console.log(appointmentsWithService);
+      }
     }
-  }
- 
+  };
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
   };
 
-  const filteredAppointment = appointment?.filter((service) => service.status === activeTab);
+  const filteredAppointment = appointment?.filter(
+    (service) => service.status === activeTab
+  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
 
+  const formatDateTime = (dateTime: string | Date) => {
+    const date = new Date(dateTime);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const day = String(date.getDate()).padStart(2, "0"); // Đảm bảo ngày có 2 chữ số
+    const hours = String(date.getHours()).padStart(2, "0"); // Giờ
+    const minutes = String(date.getMinutes()).padStart(2, "0"); // Phút
+    const seconds = String(date.getSeconds()).padStart(2, "0"); // Giây
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
 
   return (
     <div className="service-plan-page">
@@ -61,29 +92,73 @@ const MyServicePlanPage: React.FC = () => {
           <TabPane tab="Đã hoàn thành" key="finished" />
         </Tabs>
 
-        <List
-          itemLayout="horizontal"
-          dataSource={filteredAppointment}
-          renderItem={(item) => (
-            <List.Item>
-              <List.Item.Meta
-                title={item.content}
-                description={item.content}
-              />
-              <div className="actions">
-                {item.status === "scheduled" && (
-                  <Button type="default">Hủy lịch</Button>
-                )}
-                {item.status === "ongoing" && (
-                  <Button type="primary">Thanh toán</Button>
-                )}
-              </div>
-            </List.Item>
+        <Collapse accordion>
+          {filteredAppointment.length > 0 ? (
+            filteredAppointment.map((item, index) => (
+              <Panel
+                header={
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span>
+                      {item.service?.name || "Tên dịch vụ không xác định"}{" "}
+                    </span>
+                    <div className="actions">
+                      {item.status === "confirmed" && (
+                        <Button type="default" size="small">
+                          Hủy lịch
+                        </Button>
+                      )}
+                      {item.status === "performing" && (
+                        <Button type="primary" size="small">
+                          Thanh toán
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                }
+                key={index}
+              >
+                <div className="info-card">
+                  <img
+                    src="https://via.placeholder.com/200"
+                    alt="Service"
+                    className="service-image"
+                  />
+                  <div className="info-section">
+                    <p>
+                      <strong>Dịch vụ:</strong> {item.service?.name}
+                    </p>
+                    <p>
+                      <strong>Chi nhánh:</strong> Tên chi nhánh
+                    </p>
+                    <p>
+                      <strong>Thời gian:</strong>{" "}
+                      <span style={{ color: "red" }}>
+                        <b>{formatDateTime(item.dateTime)}</b>
+                      </span>
+                    </p>
+                    <p>
+                      <strong>Nhân viên:</strong> Tên nhân viên
+                    </p>
+                    <p>
+                      <strong>Giá tiền:</strong> 1.000.000đ
+                    </p>
+                  </div>
+                </div>
+              </Panel>
+            ))
+          ) : (
+            <Empty description="Không có dữ liệu" /> 
           )}
-        />
+        </Collapse>
       </div>
 
-      <div className="service-details">
+      {/* <div className="service-details">
         <h2>Chi tiết dịch vụ - Liệu trình của bạn</h2>
         <div className="details-card">
           <div className="info-card">
@@ -111,12 +186,11 @@ const MyServicePlanPage: React.FC = () => {
             </div>
           </div>
           <div className="actions">
-          <Button type="default">Hủy lịch</Button>
-          <Button type="primary" className="btn-payment">Thanh toán</Button>
+            <Button type="default">Hủy lịch</Button>
+            <Button type="primary" className="btn-payment">Thanh toán</Button>
+          </div>
         </div>
-        </div>
-        
-      </div>
+      </div> */}
     </div>
   );
 };

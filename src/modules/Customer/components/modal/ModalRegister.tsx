@@ -95,6 +95,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     if (date) {
       const formattedDate = date.format("YYYY-MM-DD");
       setSelectedDate(formattedDate);
+      
+      if (moment().isSame(date, "day")) {
+        getTimeByServiceIdAndDate();
+      }
     } else {
       setSelectedDate(null);
     }
@@ -107,7 +111,20 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       selectedDate,
       selectedBranch
     );
-    setListTime(response.data);
+    
+    const currentDate = moment();
+    const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
+  
+    // Nếu ngày được chọn là ngày hiện tại, chỉ hiển thị các giờ sau thời gian hiện tại cộng thêm 1 giờ
+    if (selectedDateMoment.isSame(currentDate, "day")) {
+      const oneHourLater = currentDate.add(1, "hours").format("HH:mm");
+      const filteredTimes = response.data.filter(
+        (timeSlot: { time: string }) => timeSlot.time > oneHourLater
+      );
+      setListTime(filteredTimes);
+    } else {
+      setListTime(response.data);
+    }
   };
 
   const getBedByServiceAndDate = async () => {
@@ -163,13 +180,12 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         category: 'services', 
         serviceOrTreatmentId: values.service,
         employeeId: values.staff,
-        customerId: userId,
+        customerId: customer?.id,
         branchId: values.branch,
         bedId: values.bed
       }
       console.log("Appointment payload being sent:", JSON.stringify(appointment));
       const response = await registerAppointment(appointment);
-      console.log(response);
       if (response.data !== null) {
         message.success("Đăng ký thành công!");
     setVisibleModal(false);
@@ -180,7 +196,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     } catch (error) {
       console.log("Validation failed:", error);
     }
-    // Xử lý logic sau khi submit form tại đây
     console.log("Form values:", values);
   };
 
