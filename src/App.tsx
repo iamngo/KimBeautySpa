@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { CATEGORY_SERVICE, DASHBOARD, HOME, LOGIN, MANAGER, MY_SERVICES, REWARD_POINTS, SERVICE, SERVICE_DETAIL, SERVICE_DETAIL_URL, TREATMENTS } from "./routes";
+import { CATEGORY_SERVICE, DASHBOARD, HOME, LOGIN, MANAGER, MY_SERVICES, PROMOTION, REWARD_POINTS, SERVICE, SERVICE_DETAIL, SERVICE_DETAIL_URL, TREATMENTS } from "./routes";
 import Authenticate from "./modules/Authenticate/pages/auth";
 import ManagerLayout from "./modules/Manager/pages/ManagerLayout";
 import Dashboard from "./modules/Manager/pages/Dashboard";
@@ -11,6 +11,7 @@ import TreatmentsPage from "./modules/Customer/pages/TreatmentsPage";
 import ServiceDetail from "./modules/Customer/pages/ServiceDetail";
 import RewardPage from "./modules/Customer/pages/RewardPage";
 import MyServicePlanPage from "./modules/Customer/pages/MyServicePlanPage";
+import PromotionPage from "./modules/Customer/pages/PromotionPage";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
         <Route path={SERVICE_DETAIL_URL} element={<ServiceDetail />} />
         <Route path={REWARD_POINTS} element={<RewardPage />} />
         <Route path={MY_SERVICES} element={<MyServicePlanPage />} />
+        <Route path={PROMOTION} element={<PromotionPage />} />
       </Route>
 
       <Route path={MANAGER} element={<ManagerLayout />}>

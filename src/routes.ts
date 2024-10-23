@@ -5,6 +5,7 @@ export const DASHBOARD = "dashboard";
 export const SERVICE = "services"
 export const CATEGORY_SERVICE = "category-services/:id"
 export const TREATMENTS = "treatments"
+export const PROMOTION = "promotion"
 export const SERVICE_DETAIL_URL = "services/:id"
 export const SERVICE_DETAIL = "service"
 export const REWARD_POINTS = "reward-points"
