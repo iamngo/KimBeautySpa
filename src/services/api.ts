@@ -168,14 +168,9 @@ export const getAppointmentByCustomerId = async (
 };
 
 export const getPricesByForeignKeyId = async (
-  token: string | null,
   id: number
 ) => {
-  const response = await axios.get(`${API_URL}/${PRICES}/foreign-key/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.get(`${API_URL}/${PRICES}/foreign-key/${id}`);
   return response.data;
 };
 

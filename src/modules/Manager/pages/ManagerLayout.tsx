@@ -73,8 +73,8 @@ const ManagerLayout: React.FC = () => {
         </Menu>
       </Sider>
       <Layout className="site-layout">
-        <CustomHeader/>
         <Content>
+        <CustomHeader/>
           <Outlet />
         </Content>
       </Layout>
