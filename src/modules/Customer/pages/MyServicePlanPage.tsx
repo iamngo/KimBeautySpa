@@ -47,7 +47,6 @@ const MyServicePlanPage: React.FC = () => {
               appointment.employeeId
             );
             const price = await getPricesByForeignKeyId(
-              token,
               appointment.serviceOrTreatmentId
             );
             return {

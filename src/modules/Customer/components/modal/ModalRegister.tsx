@@ -15,17 +15,21 @@ import {
 } from "../../../../services/api";
 import moment from "moment";
 
-// Định nghĩa kiểu cho props
+
 interface ModalRegisterProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
-  userId: number;
+  userId: number | null;
+  serviceId: number | null;
+  categoryId: number | null;
 }
 
 const ModalRegister: React.FC<ModalRegisterProps> = ({
   visible,
   setVisible,
   userId,
+  serviceId,
+  categoryId
 }) => {
   const [form] = Form.useForm<FormInstance>();
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
@@ -67,6 +71,16 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     getBedByServiceAndDate();
     console.log(`${selectedDate} ${time}:00`);
   }, [selectedBranch, selectedDate, selectedServiceId, time]);
+
+  useEffect(() => {
+    if (serviceId && categoryId) {
+      form.setFieldsValue({
+        service: serviceId, 
+      });
+      setSelectedCategoryId(categoryId);
+      setSelectedServiceId(serviceId);
+    }
+  }, [serviceId, categoryId, form]);
 
   const getInfoCustomer = async () => {
     const response = await getInfoByAccountId(token, userId);
