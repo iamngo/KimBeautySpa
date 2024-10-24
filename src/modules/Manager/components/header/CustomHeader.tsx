@@ -7,7 +7,7 @@ const { Option } = Select;
 
 const CustomHeader: React.FC = () => {
   return (
-    <Header className="custom-header">
+    <Header className="custom-header-admin">
       <div className="branch-info">
       <Select defaultValue="Chi nhánh số 1" style={{ width: 200 }} suffixIcon={<FaCodeBranch />}>
           <Option value="1">Chi nhánh số 1</Option>
