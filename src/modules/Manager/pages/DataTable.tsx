@@ -45,8 +45,8 @@ const DataTable = <T extends object>({
             </Select>
           </div>
           <div className="btn">
-            <Button icon={<MdLabelImportantOutline />}>Import</Button>
-            <Button icon={<TiExportOutline />}>Export</Button>
+            <Button icon={<MdLabelImportantOutline />}>Nhập dữ liệu</Button>
+            <Button icon={<TiExportOutline />}>Xuất dữ liệu</Button>
           </div>
         </div>
           <Table

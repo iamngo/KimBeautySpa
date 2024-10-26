@@ -8,6 +8,8 @@ import { Account } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
+import AccountModal from "../components/modal/AccountModal";
+import { MODE } from "../../../utils/constants";
 
 const AccountPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -17,7 +19,9 @@ const AccountPage: React.FC = () => {
   const token = localStorage.getItem("accessToken") || "";
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>(""); 
-
+  const [visibleModal, setVisibleModal] = useState<boolean>(false);
+  const [mode, setMode] = useState("");
+  const [dataEdit, setDataEdit] = useState<Account>();
 
   useEffect(() => {
     fetchAccounts();
@@ -54,26 +58,38 @@ const AccountPage: React.FC = () => {
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", sorter: (a: Account, b: Account) => a.id - b.id},
-    { title: "Phone", dataIndex: "phone", key: "phone" },
-    { title: "Type", dataIndex: "type", key: "type", sorter: (a: Account, b: Account) => a.type.localeCompare(b.type)},
-    { title: "Status", dataIndex: "status", key: "status", sorter: (a: Account, b: Account) => a.status.localeCompare(b.status)}, 
+    { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
+    { title: "Loại", dataIndex: "type", key: "type", sorter: (a: Account, b: Account) => a.type.localeCompare(b.type)},
+    { title: "Trạng thái", dataIndex: "status", key: "status", sorter: (a: Account, b: Account) => a.status.localeCompare(b.status)}, 
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (text: string, record: Account) => (
         <div>
-          <Button type="link"><BiEdit /></Button>
+          <Button type="link" onClick={() => handleEditAccount(record)}><BiEdit /></Button>
           <Button type="link" danger><MdDeleteForever /></Button>
         </div>
       ),
     },
   ];
 
+  const handleAddAccount = () => {
+    setVisibleModal(true);
+    setMode(MODE.ADD);
+  }
+  const handleEditAccount = (account: Account) => {
+    setVisibleModal(true);
+    setMode(MODE.EDIT);
+    setDataEdit(account);
+    
+  }
+
   return (
     <div className="manage-account">
+      <AccountModal visible={visibleModal} setVisible={setVisibleModal} mode={mode} account={dataEdit}/>
       <div className="header-container">
         <Search placeholder="Search account by phone..." onChange={(e) => handleSearchChange(e.target.value)} className="ant-input-search" size="large" />
-        <Button type="primary" icon={<TiPlusOutline />} size="large">Add Account</Button>
+        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddAccount}>Thêm tài khoản mới</Button>
       </div>
       {loading ? (
         <Skeleton active />
