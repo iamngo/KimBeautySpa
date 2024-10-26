@@ -6,10 +6,15 @@ export interface Account {
   }
   
   export interface Customer {
-    id: string;
-    name: string;
+    id: number;
+    accountId: number;
+    address: string;
+    dob: string;
+    fullName: string;
     email: string;
-    // other fields specific to Customer
+    gender: boolean;
+    image: string;
+    phone: string;
   }
   
   export interface Employee {

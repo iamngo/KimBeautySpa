@@ -200,3 +200,17 @@ export const getAllAccount = async (
   });
   return response.data;
 };
+
+export const getAllCustomer = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${CUSTOMER}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  });
+  return response.data;
+};
