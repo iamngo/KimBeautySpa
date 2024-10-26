@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "./DataTable";
@@ -15,6 +15,9 @@ const AccountPage: React.FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedColumns, setSelectedColumns] = useState(["id", "phone", "type", "status", "actions"]);
   const token = localStorage.getItem("accessToken") || "";
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [debouncedKeyword, setDebouncedKeyword] = useState<string>(""); 
+
 
   useEffect(() => {
     fetchAccounts();
@@ -27,9 +30,23 @@ const AccountPage: React.FC = () => {
     setLoading(false);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
+  const handleSearchChange = (value: string) => {
+    setSearchText(value); 
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    const newTimeoutId = setTimeout(() => {
+      setDebouncedKeyword(value); 
+    }, 1000); 
+
+    setTimeoutId(newTimeoutId); 
   };
+
+  const filteredServices = useMemo(() => {
+    return accounts.filter((account: Account) =>
+      account.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
+    );
+  }, [debouncedKeyword, accounts]);
 
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(value.includes("all") ? ["id", "phone", "type", "status", "actions"] : value);
@@ -55,7 +72,7 @@ const AccountPage: React.FC = () => {
   return (
     <div className="manage-account">
       <div className="header-container">
-        <Search placeholder="Search accounts" onChange={handleSearchChange} className="ant-input-search" size="large" />
+        <Search placeholder="Search account by phone..." onChange={(e) => handleSearchChange(e.target.value)} className="ant-input-search" size="large" />
         <Button type="primary" icon={<TiPlusOutline />} size="large">Add Account</Button>
       </div>
       {loading ? (
@@ -63,7 +80,7 @@ const AccountPage: React.FC = () => {
       ) : (
         <DataTable<Account>
           columns={columns}
-          data={accounts}
+          data={filteredServices}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
