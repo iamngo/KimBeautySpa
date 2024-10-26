@@ -184,3 +184,19 @@ export const getAllServiceDiscount = async (page: number, limit: number) => {
   });
   return response.data;
 };
+
+
+//manage
+export const getAllAccount = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${ACCOUNT}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  });
+  return response.data;
+};
