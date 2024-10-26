@@ -3,27 +3,29 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "./DataTable";
 import "../styles.scss";
-import { getAllAccount } from "../../../services/api";
-import { Account } from "../types"; 
+import { getAllCustomer } from "../../../services/api";
+import { Customer } from "../types"; 
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 
-const AccountPage: React.FC = () => {
+const CustomerPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [selectedColumns, setSelectedColumns] = useState(["id", "phone", "type", "status", "actions"]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState(["id", "accountId", "fullName", "dob","address","phone","gender","image","email", "actions"]);
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
-    fetchAccounts();
+    fetchCustomers();
   }, []);
 
-  const fetchAccounts = async () => {
+  const fetchCustomers = async () => {
     setLoading(true);
-    const response = await getAllAccount(token, 1, 100);
-    setAccounts(response.data);
+    const response = await getAllCustomer(token, 1, 100);
+    setCustomers(response.data);
+    console.log(response.data);
+    
     setLoading(false);
   };
 
@@ -32,18 +34,23 @@ const AccountPage: React.FC = () => {
   };
 
   const handleColumnChange = (value: string[]) => {
-    setSelectedColumns(value.includes("all") ? ["id", "phone", "type", "status", "actions"] : value);
+    setSelectedColumns(value.includes("all") ? ["id", "accountId", "fullName", "dob","address","phone","gender","image","email", "actions"] : value);
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", sorter: (a: Account, b: Account) => a.id - b.id},
+    { title: "ID", dataIndex: "id", key: "id", sorter: (a: Customer, b: Customer) => a.id - b.id},
+    { title: "AccountId", dataIndex: "accountId", key: "accountId", sorter: (a: Customer, b: Customer) => a.accountId - b.accountId },
+    { title: "Full Name", dataIndex: "fullName", key: "fullName", sorter: (a: Customer, b: Customer) => a.fullName.localeCompare(b.fullName)}, 
+    { title: "Date Of Birth", dataIndex: "dob", key: "dob"},
+    { title: "Address", dataIndex: "address", key: "address", sorter: (a: Customer, b: Customer) => a.address.localeCompare(b.address)},
     { title: "Phone", dataIndex: "phone", key: "phone" },
-    { title: "Type", dataIndex: "type", key: "type", sorter: (a: Account, b: Account) => a.type.localeCompare(b.type)},
-    { title: "Status", dataIndex: "status", key: "status", sorter: (a: Account, b: Account) => a.status.localeCompare(b.status)}, 
+    { title: "Gender", dataIndex: "gender", key: "gender"},
+    { title: "Image", dataIndex: "image", key: "image"}, 
+    { title: "Email", dataIndex: "email", key: "email"}, 
     {
       title: "Actions",
       key: "actions",
-      render: (text: string, record: Account) => (
+      render: (text: string, record: Customer) => (
         <div>
           <Button type="link"><BiEdit /></Button>
           <Button type="link" danger><MdDeleteForever /></Button>
@@ -61,9 +68,9 @@ const AccountPage: React.FC = () => {
       {loading ? (
         <Skeleton active />
       ) : (
-        <DataTable<Account>
+        <DataTable<Customer>
           columns={columns}
-          data={accounts}
+          data={customers}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
@@ -73,4 +80,4 @@ const AccountPage: React.FC = () => {
   );
 };
 
-export default AccountPage;
+export default CustomerPage;

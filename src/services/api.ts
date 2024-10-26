@@ -7,6 +7,7 @@ import {
   BRANCH,
   CATEGORY,
   CUSTOMER,
+  DISCOUNT,
   EMPLOYEE,
   PRICES,
   SERVICE,
@@ -167,14 +168,49 @@ export const getAppointmentByCustomerId = async (
   return response.data;
 };
 
-export const getPricesByForeignKeyId = async (
-  id: number
-) => {
+export const getPricesByForeignKeyId = async (id: number) => {
   const response = await axios.get(`${API_URL}/${PRICES}/foreign-key/${id}`);
   return response.data;
 };
 
 export const cancelBookAppointment = async (id: number) => {
   const response = await axios.delete(`${API_URL}/${APPOINTMENT}/${id}`);
+  return response.data;
+};
+
+export const getAllServiceDiscount = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${SERVICE}/${DISCOUNT}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+
+//manage
+export const getAllAccount = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${ACCOUNT}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllCustomer = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${CUSTOMER}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  });
   return response.data;
 };

@@ -12,6 +12,10 @@ import ServiceDetail from "./modules/Customer/pages/ServiceDetail";
 import RewardPage from "./modules/Customer/pages/RewardPage";
 import MyServicePlanPage from "./modules/Customer/pages/MyServicePlanPage";
 import PromotionPage from "./modules/Customer/pages/PromotionPage";
+import { ACCOUNT, CUSTOMER } from "./utils/constants";
+import Account from "./modules/Manager/pages/Account";
+import CustomerPage from "./modules/Manager/pages/Customer";
+import AccountPage from "./modules/Manager/pages/Account";
 
 const App: React.FC = () => {
   return (
@@ -29,6 +33,8 @@ const App: React.FC = () => {
 
       <Route path={MANAGER} element={<ManagerLayout />}>
         <Route path={DASHBOARD} element={<Dashboard />} />
+        <Route path={ACCOUNT} element={<AccountPage />} />
+        <Route path={CUSTOMER} element={<CustomerPage />} />
       </Route>
     </Routes>
   );

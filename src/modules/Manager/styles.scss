@@ -83,3 +83,25 @@ body {
     border-radius: 15px;
   }
 }
+
+.manage-account{
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  .header-container{
+    display: flex;
+    gap: 20px;
+  }
+}
+.feature{
+  display: flex;
+justify-content: space-between;
+margin: 10px 0;
+.btn{
+  display: flex;
+  gap: 20px;
+}
+.ant-table{
+  max-height: 500px;
+}
+}

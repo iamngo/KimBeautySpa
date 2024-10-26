@@ -11,3 +11,4 @@ export const TIME = 'times';
 export const APPOINTMENT = 'appointment';
 export const BED = 'bed';
 export const PRICES = 'prices';
+export const DISCOUNT = 'discount';

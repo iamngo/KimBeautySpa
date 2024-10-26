@@ -14,18 +14,25 @@ import {
 import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
 import CustomHeader from "../components/header/CustomHeader";
+import { ACCOUNT, CUSTOMER } from "../../../utils/constants";
 
 const { Content, Sider } = Layout;
 
 const ManagerLayout: React.FC = () => {
   const navigate = useNavigate();
 
-    const [selectedKey, setSelectedKey] = useState("1"); 
+  const [selectedKey, setSelectedKey] = useState("1");
 
   const handleMenuClick = (key: string) => {
-    setSelectedKey(key); 
-    if(key === '1'){
-        navigate(`${MANAGER}/${DASHBOARD}`)
+    setSelectedKey(key);
+    if (key === "1") {
+      navigate(`${MANAGER}/${DASHBOARD}`);
+    }
+    if (key === "2") {
+      navigate(`${MANAGER}/${ACCOUNT}`);
+    }
+    if (key === "3") {
+      navigate(`${MANAGER}/${CUSTOMER}`);
     }
   };
   return (
@@ -37,7 +44,7 @@ const ManagerLayout: React.FC = () => {
           src="/public/logo-name.svg"
           alt="kim-beauty-spa-logo"
         />
-         <Menu mode="inline" selectedKeys={[selectedKey]}>
+        <Menu mode="inline" selectedKeys={[selectedKey]}>
           <Menu.Item key="1" onClick={() => handleMenuClick("1")}>
             <FaHome />
             <span>Dashboard</span>
@@ -74,7 +81,7 @@ const ManagerLayout: React.FC = () => {
       </Sider>
       <Layout className="site-layout">
         <Content>
-        <CustomHeader/>
+          <CustomHeader />
           <Outlet />
         </Content>
       </Layout>

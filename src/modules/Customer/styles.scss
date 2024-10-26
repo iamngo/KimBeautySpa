@@ -181,7 +181,8 @@ body {
 }
 
 .services-page,
-.treatments-page {
+.treatments-page,
+.promotion-page {
   padding: 65px 100px;
   width: 100vw;
   background: var(--linearColor);
@@ -191,7 +192,8 @@ body {
   justify-content: center;
   align-items: center;
   .services-utils,
-  .treatments-utils {
+  .treatments-utils,
+  .promotion-utils {
     width: 100%;
     display: flex;
     justify-content: space-between;

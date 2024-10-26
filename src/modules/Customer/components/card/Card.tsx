@@ -5,6 +5,8 @@ import "./Card.scss";
 interface ServiceCardProps {
   title: string;
   imageUrl: string;
+  price?: number;
+  specialPrice?: number;
   onDetailClick: () => void;
   onConsultClick: () => void;
 }
@@ -14,6 +16,8 @@ const CustomCard: React.FC<ServiceCardProps> = ({
   imageUrl,
   onDetailClick,
   onConsultClick,
+  price,
+  specialPrice,
 }) => {
   return (
     <Tooltip title={title} placement="rightTop">
@@ -24,6 +28,27 @@ const CustomCard: React.FC<ServiceCardProps> = ({
       >
         <div className="card-content">
           <h3>{title}</h3>
+          {price && (
+            <p>
+              Giá:{" "}
+              <del>
+                {(price ?? 0).toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                } as Intl.NumberFormatOptions)}
+              </del>
+              &nbsp;&nbsp;
+              <i>
+                <b style={{ color: "red", fontSize: "16px" }}>
+                  {(specialPrice ?? 0).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  } as Intl.NumberFormatOptions)}
+                </b>
+              </i>
+            </p>
+          )}
+
           <div className="card-actions">
             <Button type="default" onClick={onConsultClick}>
               Nhận tư vấn
