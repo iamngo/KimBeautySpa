@@ -14,6 +14,7 @@ import {
 import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
 import CustomHeader from "../components/header/CustomHeader";
+import { ACCOUNT } from "../../../utils/constants";
 
 const { Content, Sider } = Layout;
 
@@ -27,6 +28,9 @@ const ManagerLayout: React.FC = () => {
     if(key === '1'){
         navigate(`${MANAGER}/${DASHBOARD}`)
     }
+    if(key === '2'){
+      navigate(`${MANAGER}/${ACCOUNT}`)
+  }
   };
   return (
     <Layout className="manager-layout">

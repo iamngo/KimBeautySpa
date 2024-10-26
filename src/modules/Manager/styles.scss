@@ -83,3 +83,13 @@ body {
     border-radius: 15px;
   }
 }
+
+.manage-account{
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  .header-container{
+    display: flex;
+    gap: 20px;
+  }
+}

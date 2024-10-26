@@ -240,7 +240,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         >
           <Input placeholder="Nhập số điện thoại" />
         </Form.Item>
-        <Form.Item label="Chọn dịch vụ:" name="service">
+        <Form.Item label="Chọn dịch vụ:" name="service" rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}>
           <Select
             placeholder="Chọn dịch vụ"
             onChange={(value) => {
@@ -263,12 +263,12 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Hoặc chọn liệu trình:" name="treatment">
+        {/* <Form.Item label="Hoặc chọn liệu trình:" name="treatment">
           <Select placeholder="Chọn liệu trình">
             <Select.Option value="therapy">Trị liệu cổ vai gáy</Select.Option>
             <Select.Option value="bodycare">Chăm sóc body</Select.Option>
           </Select>
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
           label="Chọn chi nhánh:"
           name="branch"
