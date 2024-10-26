@@ -15,6 +15,7 @@ import {
   TIME,
   WORKING_TIME,
 } from "../utils/constants";
+import { Account } from "../modules/Manager/types";
 
 export const login = async (phone: string, password: string) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}/login`, {
@@ -212,5 +213,10 @@ export const getAllCustomer = async (
     },
     params: { page, limit },
   });
+  return response.data;
+};
+
+export const createAccount = async ( account: Account) => {
+  const response = await axios.post(`${API_URL}/${ACCOUNT}`, account);
   return response.data;
 };
