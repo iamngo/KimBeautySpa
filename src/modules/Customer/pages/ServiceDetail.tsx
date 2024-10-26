@@ -70,7 +70,7 @@ const ServiceDetail: React.FC = () => {
         setVisible={setVisible}
         userId={userId}
         serviceId = {service.id}
-        categoryId = {category.id}
+        categoryId = {category?.id}
       />
       <Breadcrumb className="breadcrumb">
         <Breadcrumb.Item
