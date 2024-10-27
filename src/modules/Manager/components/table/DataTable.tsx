@@ -81,6 +81,14 @@ const DataTable = <T extends object>({
             "Số điện thoại": "phone",
             "Loại": "type",
             "Trạng thái": "status",
+            "AccountId" : 'accountId',
+            "Họ và tên" : "fullName",
+            "Ngày sinh" : "dob",
+            "Địa chỉ": "address",
+            "Giới tính":'gender',
+            "Hình ảnh":"image",
+            "Email": 'email',
+
           };
   
           const importedData = result.data.map((item: any) => {
@@ -116,7 +124,7 @@ const DataTable = <T extends object>({
           if (!allValid) {
             return;
           }
-  
+          
           setImportedData([ ...importedData, ...data]);
           localStorage.setItem(
             "importedData",

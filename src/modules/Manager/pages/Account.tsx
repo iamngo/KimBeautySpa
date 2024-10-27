@@ -52,7 +52,7 @@ const AccountPage: React.FC = () => {
     setTimeoutId(newTimeoutId);
   };
 
-  const filteredServices = useMemo(() => {
+  const filteredAccounts = useMemo(() => {
     return accounts.filter((account: Account) =>
       account.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
@@ -148,7 +148,7 @@ const AccountPage: React.FC = () => {
       />
       <div className="header-container">
         <Search
-          placeholder="Search account by phone..."
+          placeholder="Tìm kiếm tài khoản bằng số điện thoại"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
@@ -167,7 +167,7 @@ const AccountPage: React.FC = () => {
       ) : (
         <DataTable<Account>
           columns={columns}
-          data={filteredServices}
+          data={filteredAccounts}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}

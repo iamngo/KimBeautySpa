@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
@@ -8,14 +8,19 @@ import { Customer } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
+import CustomerModal from "../components/modal/CustomerModal";
+import { MODE } from "../../../utils/constants";
 
 const CustomerPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
+  const [visibleModal, setVisibleModal] = useState<boolean>(false);
+  const [mode, setMode] = useState("");
+  const [dataEdit, setDataEdit] = useState<Customer>();
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
-    "id",
-    "accountId",
     "fullName",
     "dob",
     "address",
@@ -40,9 +45,24 @@ const CustomerPage: React.FC = () => {
     setLoading(false);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
+  const handleSearchChange = (value: string) => {
+    setSearchText(value);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    const newTimeoutId = setTimeout(() => {
+      setDebouncedKeyword(value);
+    }, 1000);
+
+    setTimeoutId(newTimeoutId);
   };
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer: Customer) =>
+      customer.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
+    );
+  }, [debouncedKeyword, customers]);
+
 
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
@@ -63,6 +83,18 @@ const CustomerPage: React.FC = () => {
     );
   };
 
+  const handleDeleteCustomerFromLocalStorage = (phone: string) => {
+    const storedCustomers = localStorage.getItem("importedData");
+    if (storedCustomers) {
+      const accountsArray = JSON.parse(storedCustomers);
+      const updatedCustomers = accountsArray.filter(
+        (customer: Customer) => customer.phone !== phone
+      );
+      localStorage.setItem("importedData", JSON.stringify(updatedCustomers));
+      setCustomers(updatedCustomers);
+    }
+  };
+
   const columns = [
     {
       title: "ID",
@@ -77,50 +109,80 @@ const CustomerPage: React.FC = () => {
       sorter: (a: Customer, b: Customer) => a.accountId - b.accountId,
     },
     {
-      title: "Full Name",
+      title: "Họ và tên",
       dataIndex: "fullName",
       key: "fullName",
       sorter: (a: Customer, b: Customer) =>
         a.fullName.localeCompare(b.fullName),
     },
-    { title: "Date Of Birth", dataIndex: "dob", key: "dob" },
+    { title: "Ngày sinh", dataIndex: "dob", key: "dob" },
     {
-      title: "Address",
+      title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
       sorter: (a: Customer, b: Customer) => a.address.localeCompare(b.address),
     },
-    { title: "Phone", dataIndex: "phone", key: "phone" },
-    { title: "Gender", dataIndex: "gender", key: "gender" },
-    { title: "Image", dataIndex: "image", key: "image" },
+    { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
+    { title: "Giới tính", dataIndex: "gender", key: "gender", render: (gender: boolean) => (gender ? 'Nam' : 'Nữ')},
+    { title: "Hình ảnh", dataIndex: "image", key: "image" },
     { title: "Email", dataIndex: "email", key: "email" },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (text: string, record: Customer) => (
         <div>
-          <Button type="link">
-            <BiEdit />
-          </Button>
-          <Button type="link" danger>
-            <MdDeleteForever />
-          </Button>
+          {record.isNew ? (
+            <div>
+              <Button type="link" >
+                <TiPlusOutline />
+              </Button>
+               <Button type="link" danger>
+               <MdDeleteForever onClick={() => handleDeleteCustomerFromLocalStorage(record.phone)}/>
+             </Button>
+            </div>
+          ) : (
+            <div>
+              <Button type="link" onClick={() => handleEditCustomer(record)}>
+                <BiEdit />
+              </Button>
+               <Button type="link" danger>
+               <MdDeleteForever />
+             </Button>
+            </div>
+          )}
+         
         </div>
       ),
     },
   ];
 
+  const handleAddCustomer = () => {
+    setVisibleModal(true);
+    setMode(MODE.ADD);
+  };
+  const handleEditCustomer= (customer: Customer) => {
+    setVisibleModal(true);
+    setMode(MODE.EDIT);
+    setDataEdit(customer);
+  };
+
   return (
     <div className="manage-account">
+      <CustomerModal
+        visible={visibleModal}
+        setVisible={setVisibleModal}
+        mode={mode}
+        customer={dataEdit}
+      />
       <div className="header-container">
         <Search
-          placeholder="Search accounts"
-          onChange={handleSearchChange}
+          placeholder="Tìm kiếm khách hàng bằng số điện thoại"
+          onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
         />
-        <Button type="primary" icon={<TiPlusOutline />} size="large">
-          Add Account
+        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddCustomer}>
+          Thêm khách hàng
         </Button>
       </div>
       {loading ? (
@@ -128,7 +190,7 @@ const CustomerPage: React.FC = () => {
       ) : (
         <DataTable<Customer>
           columns={columns}
-          data={customers}
+          data={filteredCustomers}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
