@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
-import DataTable from "./DataTable";
+import DataTable from "../components/table/DataTable";
 import "../styles.scss";
 import { getAllAccount } from "../../../services/api";
-import { Account } from "../types"; 
+import { Account } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
@@ -15,10 +15,16 @@ const AccountPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [selectedColumns, setSelectedColumns] = useState(["id", "phone", "type", "status", "actions"]);
+  const [selectedColumns, setSelectedColumns] = useState([
+    "id",
+    "phone",
+    "type",
+    "status",
+    "actions",
+  ]);
   const token = localStorage.getItem("accessToken") || "";
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const [debouncedKeyword, setDebouncedKeyword] = useState<string>(""); 
+  const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
   const [dataEdit, setDataEdit] = useState<Account>();
@@ -35,15 +41,15 @@ const AccountPage: React.FC = () => {
   };
 
   const handleSearchChange = (value: string) => {
-    setSearchText(value); 
+    setSearchText(value);
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
     const newTimeoutId = setTimeout(() => {
-      setDebouncedKeyword(value); 
-    }, 1000); 
+      setDebouncedKeyword(value);
+    }, 1000);
 
-    setTimeoutId(newTimeoutId); 
+    setTimeoutId(newTimeoutId);
   };
 
   const filteredServices = useMemo(() => {
@@ -53,21 +59,70 @@ const AccountPage: React.FC = () => {
   }, [debouncedKeyword, accounts]);
 
   const handleColumnChange = (value: string[]) => {
-    setSelectedColumns(value.includes("all") ? ["id", "phone", "type", "status", "actions"] : value);
+    setSelectedColumns(
+      value.includes("all")
+        ? ["id", "phone", "type", "status", "actions"]
+        : value
+    );
+  };
+
+  const handleDeleteAccountFromLocalStorage = (phone: string) => {
+    const storedAccounts = localStorage.getItem("importedData");
+    if (storedAccounts) {
+      const accountsArray = JSON.parse(storedAccounts);
+      const updatedAccounts = accountsArray.filter(
+        (account: Account) => account.phone !== phone
+      );
+      localStorage.setItem("importedData", JSON.stringify(updatedAccounts));
+      setAccounts(updatedAccounts);
+    }
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", sorter: (a: Account, b: Account) => a.id - b.id},
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      sorter: (a: Account, b: Account) => a.id - b.id,
+    },
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
-    { title: "Loại", dataIndex: "type", key: "type", sorter: (a: Account, b: Account) => a.type.localeCompare(b.type)},
-    { title: "Trạng thái", dataIndex: "status", key: "status", sorter: (a: Account, b: Account) => a.status.localeCompare(b.status)}, 
+    {
+      title: "Loại",
+      dataIndex: "type",
+      key: "type",
+      sorter: (a: Account, b: Account) => a.type.localeCompare(b.type),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      sorter: (a: Account, b: Account) => a.status.localeCompare(b.status),
+    },
     {
       title: "Hành động",
       key: "actions",
       render: (text: string, record: Account) => (
         <div>
-          <Button type="link" onClick={() => handleEditAccount(record)}><BiEdit /></Button>
-          <Button type="link" danger><MdDeleteForever /></Button>
+          {record.isNew ? (
+            <div>
+              <Button type="link" onClick={() => handleEditAccount(record)}>
+                <TiPlusOutline />
+              </Button>
+               <Button type="link" danger>
+               <MdDeleteForever onClick={() => handleDeleteAccountFromLocalStorage(record.phone)}/>
+             </Button>
+            </div>
+          ) : (
+            <div>
+              <Button type="link" onClick={() => handleEditAccount(record)}>
+                <BiEdit />
+              </Button>
+               <Button type="link" danger>
+               <MdDeleteForever />
+             </Button>
+            </div>
+          )}
+         
         </div>
       ),
     },
@@ -76,20 +131,36 @@ const AccountPage: React.FC = () => {
   const handleAddAccount = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
-  }
+  };
   const handleEditAccount = (account: Account) => {
     setVisibleModal(true);
     setMode(MODE.EDIT);
     setDataEdit(account);
-    
-  }
+  };
 
   return (
     <div className="manage-account">
-      <AccountModal visible={visibleModal} setVisible={setVisibleModal} mode={mode} account={dataEdit}/>
+      <AccountModal
+        visible={visibleModal}
+        setVisible={setVisibleModal}
+        mode={mode}
+        account={dataEdit}
+      />
       <div className="header-container">
-        <Search placeholder="Search account by phone..." onChange={(e) => handleSearchChange(e.target.value)} className="ant-input-search" size="large" />
-        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddAccount}>Thêm tài khoản mới</Button>
+        <Search
+          placeholder="Search account by phone..."
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="ant-input-search"
+          size="large"
+        />
+        <Button
+          type="primary"
+          icon={<TiPlusOutline />}
+          size="large"
+          onClick={handleAddAccount}
+        >
+          Thêm tài khoản mới
+        </Button>
       </div>
       {loading ? (
         <Skeleton active />
