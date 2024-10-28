@@ -87,13 +87,13 @@ const EmployeePage: React.FC = () => {
   };
 
   const handleDeleteEmployeeFromLocalStorage = (phone: string) => {
-    const storedEmployees = localStorage.getItem("importedData");
+    const storedEmployees = localStorage.getItem("importedDataEmployee");
     if (storedEmployees) {
       const employeesArray = JSON.parse(storedEmployees);
       const updatedEmployees = employeesArray.filter(
         (employee: Employee) => employee.phone !== phone
       );
-      localStorage.setItem("importedData", JSON.stringify(updatedEmployees));
+      localStorage.setItem("importedDataEmployee", JSON.stringify(updatedEmployees));
       setEmployees(updatedEmployees);
     }
   };
@@ -224,6 +224,7 @@ const EmployeePage: React.FC = () => {
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
+          tableName="Employee"
         />
       )}
     </div>

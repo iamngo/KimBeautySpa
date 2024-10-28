@@ -84,13 +84,13 @@ const CustomerPage: React.FC = () => {
   };
 
   const handleDeleteCustomerFromLocalStorage = (phone: string) => {
-    const storedCustomers = localStorage.getItem("importedData");
+    const storedCustomers = localStorage.getItem("importedDataCustomer");
     if (storedCustomers) {
       const customersArray = JSON.parse(storedCustomers);
       const updatedCustomers = customersArray.filter(
         (customer: Customer) => customer.phone !== phone
       );
-      localStorage.setItem("importedData", JSON.stringify(updatedCustomers));
+      localStorage.setItem("importedDataCustomer", JSON.stringify(updatedCustomers));
       setCustomers(updatedCustomers);
     }
   };
@@ -194,6 +194,7 @@ const CustomerPage: React.FC = () => {
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
+          tableName="Customer"
         />
       )}
     </div>

@@ -67,13 +67,13 @@ const AccountPage: React.FC = () => {
   };
 
   const handleDeleteAccountFromLocalStorage = (phone: string) => {
-    const storedAccounts = localStorage.getItem("importedData");
+    const storedAccounts = localStorage.getItem("importedDataAccount");
     if (storedAccounts) {
       const accountsArray = JSON.parse(storedAccounts);
       const updatedAccounts = accountsArray.filter(
         (account: Account) => account.phone !== phone
       );
-      localStorage.setItem("importedData", JSON.stringify(updatedAccounts));
+      localStorage.setItem("importedDataAccount", JSON.stringify(updatedAccounts));
       setAccounts(updatedAccounts);
     }
   };
@@ -171,6 +171,7 @@ const AccountPage: React.FC = () => {
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
+          tableName="Account"
         />
       )}
     </div>

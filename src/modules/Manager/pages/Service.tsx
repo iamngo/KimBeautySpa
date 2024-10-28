@@ -85,13 +85,13 @@ const  ServicePage: React.FC = () => {
   };
 
   const handleDeleteServiceFromLocalStorage = (phone: string) => {
-    const storedServices = localStorage.getItem("importedData");
+    const storedServices = localStorage.getItem("importedDataService");
     if (storedServices) {
       const servicesArray = JSON.parse(storedServices);
       const updatedServices = servicesArray.filter(
         (service: Service) => service.phone !== phone
       );
-      localStorage.setItem("importedData", JSON.stringify(updatedServices));
+      localStorage.setItem("importedDataService", JSON.stringify(updatedServices));
       setServices(updatedServices);
     }
   };
@@ -195,6 +195,7 @@ const  ServicePage: React.FC = () => {
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
+          tableName="Service"
         />
       )}
     </div>

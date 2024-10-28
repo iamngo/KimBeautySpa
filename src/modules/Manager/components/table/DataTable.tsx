@@ -14,6 +14,7 @@ interface DataTableProps<T> extends TableProps<T> {
   loading: boolean;
   selectedColumns: string[];
   onColumnChange: (value: string[]) => void;
+  tableName: string
 }
 
 const DataTable = <T extends object>({
@@ -22,9 +23,11 @@ const DataTable = <T extends object>({
   loading,
   selectedColumns,
   onColumnChange,
+  tableName,
   ...tableProps
 }: DataTableProps<T>) => {
   const [importedData, setImportedData] = useState<T[]>([]);
+  const [dataTable, setDataTable] = useState<T[]>([]);
   const displayedColumns = columns.filter((column) =>
     selectedColumns.includes(column.key)
   );
@@ -32,13 +35,13 @@ const DataTable = <T extends object>({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const storedData = localStorage.getItem("importedData");
+    const storedData = localStorage.getItem(`importedData${tableName}`);
     if (storedData) {
-      setImportedData([...JSON.parse(storedData), ...data]);
+      setDataTable([...JSON.parse(storedData), ...data]);
     } else {
-      setImportedData(data);
+      setDataTable(data);
     }
-  }, [data]);
+  }, [importedData]);
 
   // Hàm xử lý xuất dữ liệu
   const handleExport = () => {
@@ -127,10 +130,10 @@ const DataTable = <T extends object>({
           if (!allValid) {
             return;
           }
-          
-          setImportedData(importedDataCSV, ...data);
+          message.success('Nhập dữ liệu thành công!');
+          setImportedData(importedDataCSV);
           localStorage.setItem(
-            "importedData",
+            `importedData${tableName}`,
             JSON.stringify(importedDataCSV)
           );
         },
@@ -184,7 +187,7 @@ const DataTable = <T extends object>({
       </div>
       <Table
         columns={displayedColumns}
-        dataSource={importedData}
+        dataSource={dataTable}
         // rowKey="id"
         loading={loading}
         scroll={{ y: 330 }}
