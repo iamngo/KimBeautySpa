@@ -14,7 +14,7 @@ import {
 import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
 import CustomHeader from "../components/header/CustomHeader";
-import { ACCOUNT, CUSTOMER } from "../../../utils/constants";
+import { ACCOUNT, CUSTOMER, EMPLOYEE } from "../../../utils/constants";
 
 const { Content, Sider } = Layout;
 
@@ -33,6 +33,9 @@ const ManagerLayout: React.FC = () => {
     }
     if (key === "3") {
       navigate(`${MANAGER}/${CUSTOMER}`);
+    }
+    if (key === "4") {
+      navigate(`${MANAGER}/${EMPLOYEE}`);
     }
   };
   return (

@@ -29,6 +29,8 @@ const ServicesPage: React.FC = () => {
   const getServiceByServiceCategory = async (serviceCategory: any) => {
     const response = await getServiceByCategory(serviceCategory.id);
     setServices(response.data);
+    console.log(response.data);
+    
   };
 
   const handleConsultClick = () => {

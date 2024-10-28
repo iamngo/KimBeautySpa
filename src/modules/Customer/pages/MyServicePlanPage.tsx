@@ -156,8 +156,8 @@ const MyServicePlanPage: React.FC = () => {
               >
                 <div className="info-card">
                   <img
-                    src="https://via.placeholder.com/200"
-                    alt="Service"
+                    src={item.service?.image}
+                    alt={item.service?.name}
                     className="service-image"
                   />
                   <div className="info-section">
@@ -205,40 +205,6 @@ const MyServicePlanPage: React.FC = () => {
           )}
         </Collapse>
       </div>
-
-      {/* <div className="service-details">
-        <h2>Chi tiết dịch vụ - Liệu trình của bạn</h2>
-        <div className="details-card">
-          <div className="info-card">
-            <img
-              src="https://via.placeholder.com/200"
-              alt="Service"
-              className="service-image"
-            />
-            <div className="info-section">
-              <p>
-                <strong>Dịch vụ:</strong> Tên dịch vụ
-              </p>
-              <p>
-                <strong>Chi nhánh:</strong> Tên chi nhánh
-              </p>
-              <p>
-                <strong>Thời gian:</strong> <span style={{color: 'red'}}><b>10:00 AM - 01:00 PM - T4 21/09/2024</b></span>
-              </p>
-              <p>
-                <strong>Nhân viên:</strong> Tên nhân viên
-              </p>
-              <p>
-                <strong>Giá tiền:</strong> 1.000.000đ
-              </p>
-            </div>
-          </div>
-          <div className="actions">
-            <Button type="default">Hủy lịch</Button>
-            <Button type="primary" className="btn-payment">Thanh toán</Button>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };

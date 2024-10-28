@@ -50,7 +50,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      title={mode === MODE.ADD ? "Thêm tài khoản" : "Sửa tài khoản"}
+      title={mode === MODE.ADD ? "Thêm tài khoản" : "Cập nhật tài khoản"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
         <Form.Item

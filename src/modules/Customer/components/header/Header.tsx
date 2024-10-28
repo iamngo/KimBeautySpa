@@ -211,6 +211,7 @@ const HeaderHomepage: React.FC = () => {
       <ModalUpdateProfile
         visible={updateProfileVisible}
         setVisible={setUpdateProfileVisible}
+        userId={userId}
       />
     </Header>
   );

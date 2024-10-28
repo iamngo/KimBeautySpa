@@ -4,6 +4,7 @@ import {
   API_URL,
   APPOINTMENT,
   BED,
+  BONUS,
   BRANCH,
   CATEGORY,
   CUSTOMER,
@@ -15,7 +16,7 @@ import {
   TIME,
   WORKING_TIME,
 } from "../utils/constants";
-import { Account } from "../modules/Manager/types";
+import { Account, Employee } from "../modules/Manager/types";
 
 export const login = async (phone: string, password: string) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}/login`, {
@@ -186,6 +187,27 @@ export const getAllServiceDiscount = async (page: number, limit: number) => {
   return response.data;
 };
 
+export const getIdBonus = async () => {
+  const response = await axios.get(`${API_URL}/${BONUS}/newest/active`);
+  return response.data;
+};
+
+export const updateInfoCustomer = async (
+  token: string | null,
+  formData
+) => {
+  const response = await axios.put(
+    `${API_URL}/${CUSTOMER}`,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
 
 //manage
 export const getAllAccount = async (
@@ -218,5 +240,22 @@ export const getAllCustomer = async (
 
 export const createAccount = async ( account: Account) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}`, account);
+  return response.data;
+};
+
+export const createEmployee = async (
+  token: string | null,
+  formData : FormData
+) => {
+  const response = await axios.post(
+    `${API_URL}/${EMPLOYEE}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
