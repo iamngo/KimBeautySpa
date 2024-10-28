@@ -4,6 +4,7 @@ import {
   API_URL,
   APPOINTMENT,
   BED,
+  BONUS,
   BRANCH,
   CATEGORY,
   CUSTOMER,
@@ -183,6 +184,11 @@ export const getAllServiceDiscount = async (page: number, limit: number) => {
   const response = await axios.get(`${API_URL}/${SERVICE}/${DISCOUNT}`, {
     params: { page, limit },
   });
+  return response.data;
+};
+
+export const getIdBonus = async () => {
+  const response = await axios.get(`${API_URL}/${BONUS}/newest/active`);
   return response.data;
 };
 

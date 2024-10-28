@@ -8,6 +8,7 @@ import {
   getAllServiceCategory,
   getBedByServiceIdAndDate,
   getCategoryServiceById,
+  getIdBonus,
   getInfoByAccountId,
   getServiceByCategory,
   getWorkingTimeByServiceIdAndDate,
@@ -50,6 +51,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [room, setRoom] = useState(null);
   const [employees, setEmployees] = useState<any[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [idBonus, setIdBonus] = useState(0);
 
   useEffect(() => {
     setVisibleModal(visible);
@@ -57,6 +59,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     getBranch();
     getServiceCategory();
     getEmployees();
+    getNewIdBonus();
   }, [visible, userId]);
 
   useEffect(() => {
@@ -118,6 +121,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     }
   };
 
+  const getNewIdBonus = async () => {
+    const response = await getIdBonus();
+    setIdBonus(response.data.id);
+
+  }
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
@@ -196,7 +204,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         employeeId: values.staff,
         customerId: customer?.id,
         branchId: values.branch,
-        bedId: values.bed
+        bedId: values.bed,
+        bonusId: idBonus
       }
       console.log("Appointment payload being sent:", JSON.stringify(appointment));
       const response = await registerAppointment(appointment);
