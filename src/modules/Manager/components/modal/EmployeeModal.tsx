@@ -1,22 +1,22 @@
 import { Button, Form, Input, Modal, Select, DatePicker, Radio, Upload } from "antd";
 import React, { useEffect } from "react";
-import { Customer } from "../../types";
+import { Employee } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
 import moment from "moment";
 
-interface CustomerModalProps {
+interface EmployeeModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   mode: string;
-  customer?: Customer;
+  employee?: Employee;
 }
 
-const CustomerModal: React.FC<CustomerModalProps> = ({
+const EmployeeModal: React.FC<EmployeeModalProps> = ({
   visible,
   setVisible,
   mode,
-  customer,
+  employee,
 }) => {
   const [form] = Form.useForm<FormInstance>();
 
@@ -24,22 +24,22 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
     if (visible) {
       if (mode === MODE.ADD) {
         form.resetFields(); 
-      } else if (mode === MODE.EDIT && customer) {
-        const formattedCustomer = {
-            ...customer,
-            dob: customer.dob ? moment(customer.dob) : null,
+      } else if (mode === MODE.EDIT && employee) {
+        const formattedEmployee = {
+            ...employee,
+            dob: employee.dob ? moment(employee.dob) : null,
           };
-          form.setFieldsValue(formattedCustomer);
+          form.setFieldsValue(formattedEmployee);
       }
     }
-  }, [visible, mode, customer, form]);
+  }, [visible, mode, employee, form]);
 
   const handleCancel = () => {
     form.resetFields();
     setVisible(false);
   };
 
-  const onFinish = async (values:Customer) => {
+  const onFinish = async (values:Employee) => {
     if (mode === MODE.ADD) {
       console.log(values);
     }
@@ -53,7 +53,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      title={mode === MODE.ADD ? "Thêm khách hàng" : "Cập nhật thông tin khách hàng"}
+      title={mode === MODE.ADD ? "Thêm nhân viên" : "Cập nhật thông tin nhân viên"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
         <Form.Item label="ID" name="id">
@@ -129,4 +129,4 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
   );
 };
 
-export default CustomerModal;
+export default EmployeeModal;

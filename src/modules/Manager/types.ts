@@ -23,4 +23,11 @@ export interface Account {
     position: string;
     // other fields specific to Employee
   }
+
+  export interface Service {
+    id: string;
+    name: string;
+    position: string;
+    // other fields specific to Employee
+  }
   

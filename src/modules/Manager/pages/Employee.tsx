@@ -4,22 +4,23 @@ import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
 import { getAllCustomer } from "../../../services/api";
-import { Customer } from "../types";
+import { Employee } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import CustomerModal from "../components/modal/CustomerModal";
 import { MODE } from "../../../utils/constants";
+import EmployeeModal from "../components/modal/EmployeeModal";
 
-const CustomerPage: React.FC = () => {
+const  EmployeePage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
-  const [dataEdit, setDataEdit] = useState<Customer>();
+  const [dataEdit, setDataEdit] = useState<Employee>();
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
     "fullName",
     "dob",
@@ -33,13 +34,13 @@ const CustomerPage: React.FC = () => {
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
-    fetchCustomers();
+    fetchEmployees();
   }, []);
 
-  const fetchCustomers = async () => {
+  const fetchEmployees = async () => {
     setLoading(true);
     const response = await getAllCustomer(token, 1, 100);
-    setCustomers(response.data);
+    setEmployees(response.data);
     console.log(response.data);
 
     setLoading(false);
@@ -57,11 +58,11 @@ const CustomerPage: React.FC = () => {
     setTimeoutId(newTimeoutId);
   };
 
-  const filteredCustomers = useMemo(() => {
-    return customers.filter((customer: Customer) =>
-      customer.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
+  const filteredEmployees = useMemo(() => {
+    return employees.filter((employee: Employee) =>
+      employee.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
-  }, [debouncedKeyword, customers]);
+  }, [debouncedKeyword, employees]);
 
 
   const handleColumnChange = (value: string[]) => {
@@ -83,15 +84,15 @@ const CustomerPage: React.FC = () => {
     );
   };
 
-  const handleDeleteCustomerFromLocalStorage = (phone: string) => {
-    const storedCustomers = localStorage.getItem("importedData");
-    if (storedCustomers) {
-      const customersArray = JSON.parse(storedCustomers);
-      const updatedCustomers = customersArray.filter(
-        (customer: Customer) => customer.phone !== phone
+  const handleDeleteEmployeeFromLocalStorage = (phone: string) => {
+    const storedEmployees = localStorage.getItem("importedData");
+    if (storedEmployees) {
+      const employeesArray = JSON.parse(storedEmployees);
+      const updatedEmployees = employeesArray.filter(
+        (employee: Employee) => employee.phone !== phone
       );
-      localStorage.setItem("importedData", JSON.stringify(updatedCustomers));
-      setCustomers(updatedCustomers);
+      localStorage.setItem("importedData", JSON.stringify(updatedEmployees));
+      setEmployees(updatedEmployees);
     }
   };
 
@@ -100,19 +101,19 @@ const CustomerPage: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      sorter: (a: Customer, b: Customer) => a.id - b.id,
+      sorter: (a: Employee, b: Employee) => a.id - b.id,
     },
     {
       title: "AccountId",
       dataIndex: "accountId",
       key: "accountId",
-      sorter: (a: Customer, b: Customer) => a.accountId - b.accountId,
+      sorter: (a: Employee, b: Employee) => a.accountId - b.accountId,
     },
     {
       title: "Họ và tên",
       dataIndex: "fullName",
       key: "fullName",
-      sorter: (a: Customer, b: Customer) =>
+      sorter: (a: Employee, b: Employee) =>
         a.fullName.localeCompare(b.fullName),
     },
     { title: "Ngày sinh", dataIndex: "dob", key: "dob" },
@@ -120,7 +121,7 @@ const CustomerPage: React.FC = () => {
       title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
-      sorter: (a: Customer, b: Customer) => a.address.localeCompare(b.address),
+      sorter: (a: Employee, b: Employee) => a.address.localeCompare(b.address),
     },
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
     { title: "Giới tính", dataIndex: "gender", key: "gender", render: (gender: boolean) => (gender ? 'Nam' : 'Nữ')},
@@ -129,7 +130,7 @@ const CustomerPage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
-      render: (text: string, record: Customer) => (
+      render: (text: string, record: Employee) => (
         <div>
           {record.isNew ? (
             <div>
@@ -137,12 +138,12 @@ const CustomerPage: React.FC = () => {
                 <TiPlusOutline />
               </Button>
                <Button type="link" danger>
-               <MdDeleteForever onClick={() => handleDeleteCustomerFromLocalStorage(record.phone)}/>
+               <MdDeleteForever onClick={() => handleDeleteEmployeeFromLocalStorage(record.phone)}/>
              </Button>
             </div>
           ) : (
             <div>
-              <Button type="link" onClick={() => handleEditCustomer(record)}>
+              <Button type="link" onClick={() => handleEditEmployee(record)}>
                 <BiEdit />
               </Button>
                <Button type="link" danger>
@@ -156,41 +157,41 @@ const CustomerPage: React.FC = () => {
     },
   ];
 
-  const handleAddCustomer = () => {
+  const handleAddEmployee = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditCustomer= (customer: Customer) => {
+  const handleEditEmployee= (employee: Employee) => {
     setVisibleModal(true);
     setMode(MODE.EDIT);
-    setDataEdit(customer);
+    setDataEdit(employee);
   };
 
   return (
     <div className="manage-account">
-      <CustomerModal
+      <EmployeeModal
         visible={visibleModal}
         setVisible={setVisibleModal}
         mode={mode}
-        customer={dataEdit}
+        employee={dataEdit}
       />
       <div className="header-container">
         <Search
-          placeholder="Tìm kiếm khách hàng bằng số điện thoại"
+          placeholder="Tìm kiếm nhân viên bằng số điện thoại"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
         />
-        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddCustomer}>
-          Thêm khách hàng
+        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddEmployee}>
+          Thêm nhân viên
         </Button>
       </div>
       {loading ? (
         <Skeleton active />
       ) : (
-        <DataTable<Customer>
+        <DataTable<Employee>
           columns={columns}
-          data={filteredCustomers}
+          data={filteredEmployees}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
@@ -200,4 +201,4 @@ const CustomerPage: React.FC = () => {
   );
 };
 
-export default CustomerPage;
+export default EmployeePage;
