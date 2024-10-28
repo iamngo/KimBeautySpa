@@ -12,10 +12,10 @@ import ServiceDetail from "./modules/Customer/pages/ServiceDetail";
 import RewardPage from "./modules/Customer/pages/RewardPage";
 import MyServicePlanPage from "./modules/Customer/pages/MyServicePlanPage";
 import PromotionPage from "./modules/Customer/pages/PromotionPage";
-import { ACCOUNT, CUSTOMER } from "./utils/constants";
-import Account from "./modules/Manager/pages/Account";
+import { ACCOUNT, CUSTOMER, EMPLOYEE } from "./utils/constants";
 import CustomerPage from "./modules/Manager/pages/Customer";
 import AccountPage from "./modules/Manager/pages/Account";
+import EmployeePage from "./modules/Manager/pages/Employee";
 
 const App: React.FC = () => {
   return (
@@ -35,6 +35,7 @@ const App: React.FC = () => {
         <Route path={DASHBOARD} element={<Dashboard />} />
         <Route path={ACCOUNT} element={<AccountPage />} />
         <Route path={CUSTOMER} element={<CustomerPage />} />
+        <Route path={EMPLOYEE} element={<EmployeePage />} />
       </Route>
     </Routes>
   );

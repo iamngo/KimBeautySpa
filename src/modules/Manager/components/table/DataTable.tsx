@@ -88,10 +88,13 @@ const DataTable = <T extends object>({
             "Giới tính":'gender',
             "Hình ảnh":"image",
             "Email": 'email',
+            "Vai trò": 'role',
+            "WageID": 'wageId',
+
 
           };
   
-          const importedData = result.data.map((item: any) => {
+          const importedDataCSV = result.data.map((item: any) => {
             const rowData: { [key: string]: any } = {};
             columns.forEach((col) => {
             if (col.key !== 'actions') { 
@@ -107,7 +110,7 @@ const DataTable = <T extends object>({
           });
   
           let allValid = true;
-          importedData.forEach((data, index) => {
+          importedDataCSV.forEach((data, index) => {
             const errors: string[] = [];
             columns.forEach((col) => {
               if (!data[col.key] && col.key !== 'actions') {
@@ -125,10 +128,10 @@ const DataTable = <T extends object>({
             return;
           }
           
-          setImportedData([ ...importedData, ...data]);
+          setImportedData(importedDataCSV, ...data);
           localStorage.setItem(
             "importedData",
-            JSON.stringify(importedData)
+            JSON.stringify(importedDataCSV)
           );
         },
       });
@@ -182,9 +185,9 @@ const DataTable = <T extends object>({
       <Table
         columns={displayedColumns}
         dataSource={importedData}
-        rowKey="id"
+        // rowKey="id"
         loading={loading}
-        scroll={{ y: 370 }}
+        scroll={{ y: 330 }}
         {...tableProps}
       />
     </>

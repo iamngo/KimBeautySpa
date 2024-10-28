@@ -3,16 +3,15 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllCustomer } from "../../../services/api";
+import { getAllCustomer, getAllEmployee } from "../../../services/api";
 import { Employee } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
-import CustomerModal from "../components/modal/CustomerModal";
 import { MODE } from "../../../utils/constants";
 import EmployeeModal from "../components/modal/EmployeeModal";
 
-const  EmployeePage: React.FC = () => {
+const EmployeePage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
@@ -29,6 +28,7 @@ const  EmployeePage: React.FC = () => {
     "gender",
     "image",
     "email",
+    "role",
     "actions",
   ]);
   const token = localStorage.getItem("accessToken") || "";
@@ -39,7 +39,7 @@ const  EmployeePage: React.FC = () => {
 
   const fetchEmployees = async () => {
     setLoading(true);
-    const response = await getAllCustomer(token, 1, 100);
+    const response = await getAllEmployee(token, 1, 100);
     setEmployees(response.data);
     console.log(response.data);
 
@@ -64,7 +64,6 @@ const  EmployeePage: React.FC = () => {
     );
   }, [debouncedKeyword, employees]);
 
-
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
@@ -78,6 +77,9 @@ const  EmployeePage: React.FC = () => {
             "gender",
             "image",
             "email",
+            "role",
+            "status",
+            "wageId",
             "actions",
           ]
         : value
@@ -124,9 +126,28 @@ const  EmployeePage: React.FC = () => {
       sorter: (a: Employee, b: Employee) => a.address.localeCompare(b.address),
     },
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
-    { title: "Giới tính", dataIndex: "gender", key: "gender", render: (gender: boolean) => (gender ? 'Nam' : 'Nữ')},
-    { title: "Hình ảnh", dataIndex: "image", key: "image" },
+    {
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      render: (gender: boolean) => (gender ? "Nam" : "Nữ"),
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => (
+        <img
+          src={image}
+          alt="Employee"
+          style={{ width: "50px", height: "50px", objectFit: "cover" }}
+        />
+      ),
+    },
     { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Vai trò", dataIndex: "role", key: "role" },
+    { title: "Trạng thái", dataIndex: "status", key: "status" },
+    { title: "WageID", dataIndex: "wageId", key: "wageId" },
     {
       title: "Hành động",
       key: "actions",
@@ -134,24 +155,27 @@ const  EmployeePage: React.FC = () => {
         <div>
           {record.isNew ? (
             <div>
-              <Button type="link" >
+              <Button type="link">
                 <TiPlusOutline />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever onClick={() => handleDeleteEmployeeFromLocalStorage(record.phone)}/>
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever
+                  onClick={() =>
+                    handleDeleteEmployeeFromLocalStorage(record.phone)
+                  }
+                />
+              </Button>
             </div>
           ) : (
             <div>
               <Button type="link" onClick={() => handleEditEmployee(record)}>
                 <BiEdit />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever />
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever />
+              </Button>
             </div>
           )}
-         
         </div>
       ),
     },
@@ -161,7 +185,7 @@ const  EmployeePage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditEmployee= (employee: Employee) => {
+  const handleEditEmployee = (employee: Employee) => {
     setVisibleModal(true);
     setMode(MODE.EDIT);
     setDataEdit(employee);
@@ -182,7 +206,12 @@ const  EmployeePage: React.FC = () => {
           className="ant-input-search"
           size="large"
         />
-        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddEmployee}>
+        <Button
+          type="primary"
+          icon={<TiPlusOutline />}
+          size="large"
+          onClick={handleAddEmployee}
+        >
           Thêm nhân viên
         </Button>
       </div>

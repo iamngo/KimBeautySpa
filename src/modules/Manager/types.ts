@@ -18,10 +18,20 @@ export interface Account {
   }
   
   export interface Employee {
-    id: string;
-    name: string;
-    position: string;
+    id: number;
+    accountId: number;
+    address: string;
+    dob: string;
+    fullName: string;
+    email: string;
+    gender: boolean;
+    image: string;
+    phone: string;
+    role: string,
+    status: string,
+    wageId: number
     // other fields specific to Employee
+    
   }
 
   export interface Service {
