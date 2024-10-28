@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Slide from "../components/slides/Slide";
-import "../styles.scss"; 
+import "../styles.scss";
 import ModalRegister from "../components/modal/ModalRegister";
+import { useNavigate } from "react-router-dom";
+import { DASHBOARD, MANAGER } from "../../../routes";
 
 const Homepage = () => {
   const [visible, setVisible] = useState(false);
   const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -13,6 +16,10 @@ const Homepage = () => {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
       setUserId(decodedPayload.id);
+      console.log(decodedPayload);
+      if (decodedPayload.type !== "customer") {
+        navigate(`${MANAGER}/${DASHBOARD}`);
+      }
     }
   }, [userId]);
 
@@ -30,6 +37,8 @@ const Homepage = () => {
         visible={visible}
         setVisible={setVisible}
         userId={userId}
+        serviceId={null}
+        categoryId={null}
       />
       {/* Phần Slide */}
       <Slide />
@@ -48,7 +57,9 @@ const Homepage = () => {
             để những mệt mỏi hàng ngày làm bạn hao mòn, đến với Kim Beauty & Spa
             và cảm nhận sự khác biệt!
           </p>
-          <button className="btn-primary" onClick={handleRegisterClick}>Đặt lịch ngay</button>
+          <button className="btn-primary" onClick={handleRegisterClick}>
+            Đặt lịch ngay
+          </button>
         </div>
         <div className="intro-section-right">
           <div className="background"></div>
@@ -129,22 +140,36 @@ const Homepage = () => {
       {/* Phần Cam Kết Dịch Vụ */}
       <section className="commitment-section">
         <h2>Cam kết dịch vụ</h2>
-        <h3>Kim Beauty Spa cam kết dịch vụ hài lòng cho Quý Khách khi sử dụng tất cả dịch vụ tại Spa</h3>
+        <h3>
+          Kim Beauty Spa cam kết dịch vụ hài lòng cho Quý Khách khi sử dụng tất
+          cả dịch vụ tại Spa
+        </h3>
         <div className="commitment-items">
           <div className="commitment-item">
             <img src="/public/images/commitment/image 7.png" alt="" />
             <h3>Cam kết</h3>
-            <p>Kim Beauty Spa cam kết mang đến những dịch vụ chăm sóc sức khỏe tốt nhất và những trải nghiệm hài lòng cho khách hàng của chúng tôi.</p>
+            <p>
+              Kim Beauty Spa cam kết mang đến những dịch vụ chăm sóc sức khỏe
+              tốt nhất và những trải nghiệm hài lòng cho khách hàng của chúng
+              tôi.
+            </p>
           </div>
           <div className="commitment-item">
-          <img src="/public/images/commitment/image 6.png" alt="" />
+            <img src="/public/images/commitment/image 6.png" alt="" />
             <h3>Sứ mệnh</h3>
-            <p>Chăm sóc sức khỏe khách hàng chính là sứ mệnh của chúng tôi. Chúng tôi không ngừng nâng cao chất lượng dịch vụ và sự hài lòng của khách hàng.</p>
+            <p>
+              Chăm sóc sức khỏe khách hàng chính là sứ mệnh của chúng tôi. Chúng
+              tôi không ngừng nâng cao chất lượng dịch vụ và sự hài lòng của
+              khách hàng.
+            </p>
           </div>
           <div className="commitment-item">
             <img src="/public/images/commitment/image 8.png" alt="" />
             <h3>Dịch vụ</h3>
-            <p>Chúng tôi luôn phát triển dịch vụ để đáp ứng đầy đủ nhu cầu của khách hàng.</p>
+            <p>
+              Chúng tôi luôn phát triển dịch vụ để đáp ứng đầy đủ nhu cầu của
+              khách hàng.
+            </p>
           </div>
         </div>
       </section>
