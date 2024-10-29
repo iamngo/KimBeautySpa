@@ -45,6 +45,16 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
           ...employee,
           dob: employee.dob ? moment(employee.dob) : null,
         };
+        if (employee.image) {
+          setFileList([
+            {
+              uid: '-1',
+              name: 'Ảnh nhân viên',
+              status: 'done',
+              url: employee.image, 
+            },
+          ]);
+        }
         form.setFieldsValue(formattedEmployee);
       }
     }

@@ -32,10 +32,12 @@ const EmployeePage: React.FC = () => {
     "actions",
   ]);
   const token = localStorage.getItem("accessToken") || "";
+  const storedEmployees = localStorage.getItem("importedDataEmployee");
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [storedEmployees]);
+
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -87,8 +89,9 @@ const EmployeePage: React.FC = () => {
   };
 
   const handleDeleteEmployeeFromLocalStorage = (phone: string) => {
-    const storedEmployees = localStorage.getItem("importedDataEmployee");
     if (storedEmployees) {
+      console.log(storedEmployees);
+      
       const employeesArray = JSON.parse(storedEmployees);
       const updatedEmployees = employeesArray.filter(
         (employee: Employee) => employee.phone !== phone
