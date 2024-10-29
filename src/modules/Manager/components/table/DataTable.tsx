@@ -35,7 +35,7 @@ const DataTable = <T extends object>({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const storedData = localStorage.getItem(`importedData${tableName}`);
+    const storedData = localStorage.getItem(`importedData${tableName}`);    
     if (storedData) {
       setDataTable([...JSON.parse(storedData), ...data]);
     } else {
@@ -76,39 +76,31 @@ const DataTable = <T extends object>({
         header: true,
         skipEmptyLines: true,
         complete: (result) => {
-          console.log("Columns from Props:", columns); 
-          console.log("Parsed Data from CSV:", result.data); 
-  
           const columnKeyMapping: { [key: string]: string } = {
-            "ID": "id",
             "Số điện thoại": "phone",
             "Loại": "type",
             "Trạng thái": "status",
-            "AccountId" : 'accountId',
-            "Họ và tên" : "fullName",
-            "Ngày sinh" : "dob",
+            "AccountId": "accountId",
+            "Họ và tên": "fullName",
+            "Ngày sinh": "dob",
             "Địa chỉ": "address",
-            "Giới tính":'gender',
-            "Hình ảnh":"image",
-            "Email": 'email',
-            "Vai trò": 'role',
-            "WageID": 'wageId',
-
-
+            "Giới tính": "gender",
+            "Hình ảnh": "image",
+            "Email": "email",
+            "Vai trò": "role",
+            "WageID": "wageId",
           };
-  
           const importedDataCSV = result.data.map((item: any) => {
             const rowData: { [key: string]: any } = {};
             columns.forEach((col) => {
-            if (col.key !== 'actions') { 
-              const csvKey = Object.keys(columnKeyMapping).find(
-                (key) => columnKeyMapping[key] === col.key
-              );
-              rowData[col.key] = csvKey ? item[csvKey] || undefined : undefined;
-            }
-          });
+              if (col.key !== "actions" && col.key !== "id") {
+                const csvKey = Object.keys(columnKeyMapping).find(
+                  (key) => columnKeyMapping[key] === col.key
+                );
+                rowData[col.key] = csvKey ? item[csvKey] || undefined : undefined;
+              }
+            });
             rowData.isNew = true;
-            console.log("Mapped Row Data:", rowData); 
             return rowData;
           });
   
@@ -116,7 +108,7 @@ const DataTable = <T extends object>({
           importedDataCSV.forEach((data, index) => {
             const errors: string[] = [];
             columns.forEach((col) => {
-              if (!data[col.key] && col.key !== 'actions') {
+              if (!data[col.key] && col.key !== "actions" && col.key !== "id") {
                 errors.push(`${col.title} is missing`);
               }
             });
@@ -130,7 +122,7 @@ const DataTable = <T extends object>({
           if (!allValid) {
             return;
           }
-          message.success('Nhập dữ liệu thành công!');
+          message.success("Nhập dữ liệu thành công!");
           setImportedData(importedDataCSV);
           localStorage.setItem(
             `importedData${tableName}`,
@@ -140,6 +132,7 @@ const DataTable = <T extends object>({
       });
     }
   };
+  
   
   
   
