@@ -1,9 +1,10 @@
-import { Button, Form, Input, Modal, Select, DatePicker, Radio, Upload } from "antd";
-import React, { useEffect } from "react";
+import { Button, Form, Input, Modal, Select, DatePicker, Radio, Upload, Row, Col } from "antd";
+import React, { useEffect, useState } from "react";
 import { Service } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
 import moment from "moment";
+import { getAllServiceCategory } from "../../../../services/api";
 
 interface ServiceModalProps {
   visible: boolean;
@@ -19,20 +20,29 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   service,
 }) => {
   const [form] = Form.useForm<FormInstance>();
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [categories, setCategories] = useState<[]>([]);
+
+
 
   useEffect(() => {
     if (visible) {
+      fetchCategory();
       if (mode === MODE.ADD) {
         form.resetFields(); 
       } else if (mode === MODE.EDIT && service) {
         const formattedService = {
             ...service,
-            dob: service.dob ? moment(service.dob) : null,
           };
           form.setFieldsValue(formattedService);
       }
     }
   }, [visible, mode, service, form]);
+
+  const fetchCategory = async () => {
+    const response = await getAllServiceCategory(1, 100);
+    setCategories(response.data);
+  };
 
   const handleCancel = () => {
     form.resetFields();
@@ -55,70 +65,84 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       footer={null}
       title={mode === MODE.ADD ? "Thêm dịch vụ" : "Cập nhật thông tin dịch vụ"}
     >
-      <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
-        <Form.Item label="ID" name="id">
-          <Input type="number" placeholder="ID khách hàng" disabled />
-        </Form.Item>
-        <Form.Item
-          label="Account ID"
-          name="accountId"
-          rules={[{ required: true, message: "Vui lòng nhập Account ID" }]}
-        >
-          <Input type="number" placeholder="Nhập Account ID" />
-        </Form.Item>
-        <Form.Item
-          label="Họ và tên"
-          name="fullName"
-          rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
-        >
-          <Input placeholder="Nhập họ và tên" />
-        </Form.Item>
-        <Form.Item
-          label="Địa chỉ"
-          name="address"
-          rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
-        >
-          <Input placeholder="Nhập địa chỉ" />
-        </Form.Item>
-        <Form.Item
-          label="Ngày sinh"
-          name="dob"
-          rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
-        >
-          <DatePicker style={{ width: "100%" }} placeholder="Chọn ngày sinh" />
-        </Form.Item>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: "Vui lòng nhập email" },
-            { type: "email", message: "Email không hợp lệ" },
-          ]}
-        >
-          <Input placeholder="Nhập email" />
-        </Form.Item>
-        <Form.Item
-          label="Giới tính"
-          name="gender"
-          rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
-        >
-          <Radio.Group>
-            <Radio value={true}>Nam</Radio>
-            <Radio value={false}>Nữ</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="Ảnh" name="image">
-          <Upload listType="picture-card">
-            <div>Upload</div>
-          </Upload>
-        </Form.Item>
-        <Form.Item
-          label="Số điện thoại"
-          name="phone"
-          rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
-        >
-          <Input placeholder="Nhập số điện thoại" />
-        </Form.Item>
+     <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
+      
+     <Row gutter={16}>
+          <Col span={12}>
+          <Form.Item label="Ảnh" name="image">
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                onChange={({ fileList }) => setFileList(fileList)}
+                beforeUpload={() => false}
+                maxCount={1}
+              >
+                <div>Upload</div>
+              </Upload>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+          <Form.Item label="ID" name="id">
+              <Input type="number" placeholder="ID" disabled />
+            </Form.Item>
+            
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Tên dịch vụ"
+              name="name"
+              rules={[{ required: true, message: "Vui lòng nhập tên dịch vụ" }]}
+            >
+              <Input placeholder="Nhập tên dịch vụ" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+          <Form.Item
+              label="Chọn phân loại dịch vụ"
+              name="category"
+              rules={[{ required: true, message: "Vui lòng chọn phân loại dịch vụ" }]}
+            >
+              <Select placeholder="Chọn phân loại dịch vụ">
+                {categories.map((category: any) => (
+                  <Select.Option key={category.id} value={category.id}>
+                    {category.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+          <Form.Item
+              label="Thời gian thực hiện"
+              name="duration"
+              rules={[
+                { required: true, message: "Vui lòng nhập thời gian thực hiện" },
+              ]}
+            >
+              <Input placeholder="Nhập thời gian thực hiện" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+          <Form.Item
+              label="Chọn trạng thái:"
+              name="status"
+              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+            >
+              <Select placeholder="Chọn trạng thái">
+                <Select.Option key={1} value="active">
+                  Active
+                </Select.Option>
+                <Select.Option key={2} value="inactive">
+                  Inactive
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">
             Xác nhận

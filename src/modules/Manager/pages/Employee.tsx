@@ -3,7 +3,7 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllCustomer, getAllEmployee } from "../../../services/api";
+import { getAllEmployee } from "../../../services/api";
 import { Employee } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";

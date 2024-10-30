@@ -22,7 +22,7 @@ import {
 import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
 import CustomHeader from "../components/header/CustomHeader";
-import { ACCOUNT, CUSTOMER, EMPLOYEE } from "../../../utils/constants";
+import { ACCOUNT, CUSTOMER, EMPLOYEE, SERVICE } from "../../../utils/constants";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -103,7 +103,7 @@ const ManagerLayout: React.FC = () => {
               <FaBoxes />
               <span>Sản phẩm</span>
             </Menu.Item>
-            <Menu.Item key="4-2" onClick={() => handleMenuClick("4-2", "service")}>
+            <Menu.Item key="4-2" onClick={() => handleMenuClick("4-2", SERVICE)}>
               <FaClipboard />
               <span>Dịch vụ</span>
             </Menu.Item>
