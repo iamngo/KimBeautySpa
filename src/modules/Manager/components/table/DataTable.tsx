@@ -183,7 +183,7 @@ const DataTable = <T extends object>({
         dataSource={dataTable}
         // rowKey="id"
         loading={loading}
-        scroll={{ y: 330 }}
+        scroll={{ y: 380 }}
         {...tableProps}
       />
     </>
