@@ -258,11 +258,12 @@ export const getAllEvent = async (page: number, limit: number) => {
   return response.data;
 };
 
-export const registerEmployee = async (data: {
-  account: Account;
-  employee: Employee;
-}) => {
-  const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data);
+export const registerEmployee = async (data: FormData) => {
+  const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data", // Đặt header để chỉ định kiểu dữ liệu
+    },
+  });
   return response.data;
 };
 
@@ -275,10 +276,7 @@ export const getWagesByRole = async (token: string | null, role: string) => {
   return response.data;
 };
 
-export const getAllService= async (
-  page: number,
-  limit: number
-) => {
+export const getAllService = async (page: number, limit: number) => {
   const response = await axios.get(`${API_URL}/${SERVICE}`, {
     params: { page, limit },
   });
