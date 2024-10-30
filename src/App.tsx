@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { CATEGORY_SERVICE, DASHBOARD, HOME, LOGIN, MANAGER, MY_SERVICES, PROMOTION, REWARD_POINTS, SERVICE, SERVICE_DETAIL, SERVICE_DETAIL_URL, TREATMENTS } from "./routes";
+import { CATEGORY_SERVICE, DASHBOARD, HOME, LOGIN, MANAGER, MY_SERVICES, PROMOTION, REWARD_POINTS, SERVICE_DETAIL_URL, TREATMENTS } from "./routes";
 import Authenticate from "./modules/Authenticate/pages/auth";
 import ManagerLayout from "./modules/Manager/pages/ManagerLayout";
 import Dashboard from "./modules/Manager/pages/Dashboard";
@@ -12,10 +12,11 @@ import ServiceDetail from "./modules/Customer/pages/ServiceDetail";
 import RewardPage from "./modules/Customer/pages/RewardPage";
 import MyServicePlanPage from "./modules/Customer/pages/MyServicePlanPage";
 import PromotionPage from "./modules/Customer/pages/PromotionPage";
-import { ACCOUNT, CUSTOMER, EMPLOYEE } from "./utils/constants";
+import { ACCOUNT, CUSTOMER, EMPLOYEE, SERVICE } from "./utils/constants";
 import CustomerPage from "./modules/Manager/pages/Customer";
 import AccountPage from "./modules/Manager/pages/Account";
 import EmployeePage from "./modules/Manager/pages/Employee";
+import ServicePage from "./modules/Manager/pages/Service";
 
 const App: React.FC = () => {
   return (
@@ -36,6 +37,7 @@ const App: React.FC = () => {
         <Route path={ACCOUNT} element={<AccountPage />} />
         <Route path={CUSTOMER} element={<CustomerPage />} />
         <Route path={EMPLOYEE} element={<EmployeePage />} />
+        <Route path={SERVICE} element={<ServicePage />} />
       </Route>
     </Routes>
   );

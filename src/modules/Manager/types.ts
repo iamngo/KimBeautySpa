@@ -35,9 +35,11 @@ export interface Account {
   }
 
   export interface Service {
-    id: string;
+    id: number;
     name: string;
-    position: string;
-    // other fields specific to Employee
+    image: string;
+    serviceCategoryId: number,
+    status: string,
+    duration: number
   }
   

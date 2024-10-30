@@ -41,7 +41,7 @@ const DataTable = <T extends object>({
     } else {
       setDataTable(data);
     }
-  }, [importedData]);
+  }, [importedData, data]);
 
   // Hàm xử lý xuất dữ liệu
   const handleExport = () => {
@@ -89,6 +89,10 @@ const DataTable = <T extends object>({
             "Email": "email",
             "Vai trò": "role",
             "WageID": "wageId",
+            "Tên dịch vụ": "name",
+            "Phân loại": "serviceCategoryId",
+            "Thời gian": "duration",
+            
           };
           const importedDataCSV = result.data.map((item: any) => {
             const rowData: { [key: string]: any } = {};

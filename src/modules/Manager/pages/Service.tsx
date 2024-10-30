@@ -3,7 +3,7 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllCustomer, getAllService } from "../../../services/api";
+import { getAllService, getAllServiceCategory } from "../../../services/api";
 import { Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
@@ -11,7 +11,7 @@ import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
 import ServiceModal from "../components/modal/ServiceModal";
 
-const  ServicePage: React.FC = () => {
+const ServicePage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
@@ -20,20 +20,21 @@ const  ServicePage: React.FC = () => {
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
+  const [categories, setCategories] = useState<[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
-    "fullName",
-    "dob",
-    "address",
-    "phone",
-    "gender",
+    "id",
+    "name",
     "image",
-    "email",
+    "serviceCategoryId",
+    "duration",
+    "status",
     "actions",
   ]);
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
     fetchServices();
+    fetchCategory();
   }, []);
 
   const fetchServices = async () => {
@@ -43,6 +44,11 @@ const  ServicePage: React.FC = () => {
     console.log(response.data);
 
     setLoading(false);
+  };
+
+  const fetchCategory = async () => {
+    const response = await getAllServiceCategory(1, 100);
+    setCategories(response.data);
   };
 
   const handleSearchChange = (value: string) => {
@@ -59,38 +65,37 @@ const  ServicePage: React.FC = () => {
 
   const filteredServices = useMemo(() => {
     return services.filter((service: Service) =>
-      service.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
+      service.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
   }, [debouncedKeyword, services]);
-
 
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
         ? [
             "id",
-            "accountId",
-            "fullName",
-            "dob",
-            "address",
-            "phone",
-            "gender",
+            "name",
             "image",
-            "email",
+            "serviceCategoryId",
+            "duration",
+            "status",
             "actions",
           ]
         : value
     );
   };
 
-  const handleDeleteServiceFromLocalStorage = (phone: string) => {
+  const handleDeleteServiceFromLocalStorage = (name: string) => {
     const storedServices = localStorage.getItem("importedDataService");
     if (storedServices) {
       const servicesArray = JSON.parse(storedServices);
       const updatedServices = servicesArray.filter(
-        (service: Service) => service.phone !== phone
+        (service: Service) => service.name !== name
       );
-      localStorage.setItem("importedDataService", JSON.stringify(updatedServices));
+      localStorage.setItem(
+        "importedDataService",
+        JSON.stringify(updatedServices)
+      );
       setServices(updatedServices);
     }
   };
@@ -103,29 +108,46 @@ const  ServicePage: React.FC = () => {
       sorter: (a: Service, b: Service) => a.id - b.id,
     },
     {
-      title: "AccountId",
-      dataIndex: "accountId",
-      key: "accountId",
-      sorter: (a: Service, b: Service) => a.accountId - b.accountId,
+      title: "Tên dịch vụ",
+      dataIndex: "name",
+      key: "name",
+      sorter: (a: Service, b: Service) => a.name.localeCompare(b.name),
     },
     {
-      title: "Họ và tên",
-      dataIndex: "fullName",
-      key: "fullName",
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => (
+        <img
+          src={image}
+          alt="Dịch vụ"
+          style={{ width: "50px", height: "50px", objectFit: "cover" }}
+        />
+      ),
+    },
+    {
+      title: "Phân loại",
+      dataIndex: "serviceCategoryId",
+      key: "serviceCategoryId",
+      render: (serviceCategoryId: number) => {
+        const category = categories.find(cat => cat.id === serviceCategoryId);
+        return category ? category.name : "Không xác định"; 
+    },
       sorter: (a: Service, b: Service) =>
-        a.fullName.localeCompare(b.fullName),
+        a.serviceCategoryId - b.serviceCategoryId,
     },
-    { title: "Ngày sinh", dataIndex: "dob", key: "dob" },
     {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
-      sorter: (a: Service, b: Service) => a.address.localeCompare(b.address),
+      title: "Thời gian",
+      dataIndex: "duration",
+      key: "duration",
+      sorter: (a: Service, b: Service) => a.duration - b.duration,
     },
-    { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
-    { title: "Giới tính", dataIndex: "gender", key: "gender", render: (gender: boolean) => (gender ? 'Nam' : 'Nữ')},
-    { title: "Hình ảnh", dataIndex: "image", key: "image" },
-    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      sorter: (a: Service, b: Service) => a.status.localeCompare(b.status),
+    },
     {
       title: "Hành động",
       key: "actions",
@@ -133,24 +155,27 @@ const  ServicePage: React.FC = () => {
         <div>
           {record.isNew ? (
             <div>
-              <Button type="link" >
+              <Button type="link">
                 <TiPlusOutline />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever onClick={() => handleDeleteServiceFromLocalStorage(record.phone)}/>
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever
+                  onClick={() =>
+                    handleDeleteServiceFromLocalStorage(record.name)
+                  }
+                />
+              </Button>
             </div>
           ) : (
             <div>
               <Button type="link" onClick={() => handleEditService(record)}>
                 <BiEdit />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever />
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever />
+              </Button>
             </div>
           )}
-         
         </div>
       ),
     },
@@ -160,7 +185,7 @@ const  ServicePage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditService= (service: Service) => {
+  const handleEditService = (service: Service) => {
     setVisibleModal(true);
     setMode(MODE.EDIT);
     setDataEdit(service);
@@ -176,12 +201,17 @@ const  ServicePage: React.FC = () => {
       />
       <div className="header-container">
         <Search
-          placeholder="Tìm kiếm dịch vụ bằng số điện thoại"
+          placeholder="Tìm kiếm dịch vụ bằng tên"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
         />
-        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddService}>
+        <Button
+          type="primary"
+          icon={<TiPlusOutline />}
+          size="large"
+          onClick={handleAddService}
+        >
           Thêm dịch vụ
         </Button>
       </div>
