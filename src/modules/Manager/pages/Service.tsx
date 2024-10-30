@@ -9,7 +9,6 @@ import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
-import EmployeeModal from "../components/modal/EmployeeModal";
 import ServiceModal from "../components/modal/ServiceModal";
 
 const  ServicePage: React.FC = () => {

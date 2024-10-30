@@ -16,7 +16,7 @@ import { Employee } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
 import moment from "moment";
-import { createEmployee } from "../../../../services/api";
+import { createEmployee, getWagesByRole, registerEmployee } from "../../../../services/api";
 
 interface EmployeeModalProps {
   visible: boolean;
@@ -25,21 +25,39 @@ interface EmployeeModalProps {
   employee?: Employee;
 }
 
+interface EmployeeFormValues {
+  id?: number;
+  accountId?: number;
+  fullName?: string;
+  address?: string;
+  dob?: moment.Moment;
+  email?: string;
+  gender?: boolean;
+  phone?: string;
+  role?: string;
+  status?: string;
+  wageId?: number; // Thêm wageId ở đây
+}
+
+
 const EmployeeModal: React.FC<EmployeeModalProps> = ({
   visible,
   setVisible,
   mode,
   employee,
 }) => {
-  const [form] = Form.useForm<FormInstance>();
+  
+  const [form] = Form.useForm<EmployeeFormValues>();
   const [fileList, setFileList] = useState<any[]>([]);
   const token = localStorage.getItem("accessToken");
+  const [wageId, setWageId] = useState(0);
 
 
   useEffect(() => {
     if (visible) {
       if (mode === MODE.ADD) {
         form.resetFields();
+        form.setFieldsValue({ status: "active", gender: true });
       } else if (mode === MODE.EDIT && employee) {
         const formattedEmployee = {
           ...employee,
@@ -60,41 +78,93 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
     }
   }, [visible, mode, employee, form]);
 
+
+
   const handleCancel = () => {
     form.resetFields();
     setVisible(false);
   };
 
+  const handleWageByRole = async (role: string) => {
+    try {
+      const response = await getWagesByRole(token, role); 
+      
+      if (response.data && response.data[0].id) {
+        form.setFieldsValue({ wageId: response.data[0].id }); 
+      setWageId(response.data[0].id); 
+      
+      }
+    } catch (error) {
+      console.error('Error fetching wage by role:', error);
+      message.error("Không thể lấy Wage ID cho vai trò đã chọn.");
+    }
+  };
+
   const onFinish = async (values: Employee) => {
     if (mode === MODE.ADD) {
-      const formData = new FormData();
-      if (fileList[0]?.originFileObj) {
-        formData.append("file", fileList[0].originFileObj);
-      }
-      formData.append(
-        "data",
-        JSON.stringify({
-          ...values,
-          accountId: Number(values.accountId),
+      try {
+        const account = {
+          phone: values.phone,
+          password: '123456',
+          type: "employee",
+          status: "active",
+        }
+        const employee = {
+          fullName: values.fullName,
           gender: values.gender,
           dob: values.dob.format("YYYY-MM-DD"),
-          wageId: Number(values.wageId)
-        })
-      );
-      try {
-        const response = await createEmployee(token, formData);
-        console.log(response);
-        if(response.data){
-          message.success('Thêm nhân viên thành công!');
-          form.resetFields();
-          setVisible(false);
-        }
-        else
-          message.error('Thêm thất bại!');
-      } catch (error) {
-        console.error(error);
+          phone: values.phone,
+          email: values.email,
+          address: values.address,
+          role: values.role,
+          status: values.status,
+          image : "image.png",
+          wageId: wageId
+        };
+        const dataToSend = {
+          account: account,
+          employee: employee,
+        };
         
+        const response = await registerEmployee(dataToSend);
+        console.log(response);
+  
+        if (response.data !== null) {
+          message.success("Đăng ký thành công!");
+          setVisible(!visible);
+        }
+      } catch (error) {
+        console.log("Validation failed:", error);
       }
+      // const formData = new FormData();
+      // if (fileList[0]?.originFileObj) {
+      //   formData.append("file", fileList[0].originFileObj);
+      // }
+      // formData.append(
+      //   "data",
+      //   JSON.stringify({
+      //     ...values,
+      //     accountId: Number(values.accountId),
+      //     gender: values.gender,
+      //     dob: values.dob.format("YYYY-MM-DD"),
+      //     wageId: Number(values.wageId)
+      //   })
+      // );
+      
+      // try {
+      //   const response = await createEmployee(token, formData);
+      //   console.log(response);
+      //   if(response.data){
+      //     message.success('Thêm nhân viên thành công!');
+      //     form.resetFields();
+      //     setVisible(false);
+      //   }
+      //   else
+      //     message.error('Thêm thất bại!');
+      // } catch (error) {
+      //   console.error(error);
+        
+      // }
     }
     if (mode === MODE.EDIT) {
       console.log(values);
@@ -121,9 +191,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
             <Form.Item
               label="Account ID"
               name="accountId"
-              rules={[{ required: true, message: "Vui lòng nhập Account ID" }]}
             >
-              <Input type="number" placeholder="Nhập Account ID" />
+              <Input disabled type="number" placeholder="Account ID" />
             </Form.Item>
           </Col>
         </Row>
@@ -222,8 +291,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
               name="role"
               rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
             >
-              <Select placeholder="Chọn vai trò">
-                <Select.Option key={1} value="manage">
+              <Select placeholder="Chọn vai trò" onChange={(value) => handleWageByRole(value)}>
+                <Select.Option key={1} value="manager">
                   Manager
                 </Select.Option>
                 <Select.Option key={2} value="admin">
@@ -260,7 +329,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
               name="wageId"
               rules={[{ required: true, message: "Vui lòng nhập Wage ID" }]}
             >
-              <Input type="number" placeholder="Nhập Wage ID" />
+              <Input disabled type="number" placeholder="Wage ID" />
             </Form.Item>
           </Col>
         </Row>

@@ -1,5 +1,5 @@
 export interface Account {
-    id: number;
+    id?: number;
     phone: string;
     type: string;
     status: string;
@@ -18,8 +18,8 @@ export interface Account {
   }
   
   export interface Employee {
-    id: number;
-    accountId: number;
+    id?: number;
+    accountId?: number;
     address: string;
     dob: string;
     fullName: string;
