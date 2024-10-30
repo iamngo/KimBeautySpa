@@ -13,6 +13,7 @@ export const BED = 'bed';
 export const BONUS = 'bonus';
 export const PRICES = 'prices';
 export const DISCOUNT = 'discount';
+export const EVENT = 'event';
 export const MODE = {
     ADD: 'add',
     EDIT: 'edit'

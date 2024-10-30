@@ -10,6 +10,7 @@ import {
   CUSTOMER,
   DISCOUNT,
   EMPLOYEE,
+  EVENT,
   PRICES,
   SERVICE,
   SERVICE_CATEGORY,
@@ -257,5 +258,15 @@ export const createEmployee = async (
       },
     }
   );
+  return response.data;
+};
+
+export const getAllEvent = async (
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${EVENT}`, {
+    params: { page, limit },
+  });
   return response.data;
 };

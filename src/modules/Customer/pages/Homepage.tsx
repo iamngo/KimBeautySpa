@@ -4,6 +4,7 @@ import "../styles.scss";
 import ModalRegister from "../components/modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
 import { DASHBOARD, MANAGER } from "../../../routes";
+import { getAllEvent } from "../../../services/api";
 
 const Homepage = () => {
   const [visible, setVisible] = useState(false);
@@ -31,6 +32,17 @@ const Homepage = () => {
     setVisible(true);
   };
 
+  const [event, setEvent] = useState();
+  useEffect(() => {
+    fetchEvent();
+  },[]);
+
+  const fetchEvent = async () => {
+    const response = await getAllEvent(1, 100);
+    setEvent(response.data)
+    
+  }
+
   return (
     <div className="home-page">
       <ModalRegister
@@ -41,7 +53,7 @@ const Homepage = () => {
         categoryId={null}
       />
       {/* Phần Slide */}
-      <Slide />
+      <Slide event={event}/>
 
       {/* Phần Giới Thiệu */}
       <section className="intro-section">
