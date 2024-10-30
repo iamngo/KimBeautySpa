@@ -16,7 +16,11 @@ import { Employee } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
 import moment from "moment";
-import { createEmployee, getWagesByRole, registerEmployee } from "../../../../services/api";
+import {
+  createEmployee,
+  getWagesByRole,
+  registerEmployee,
+} from "../../../../services/api";
 
 interface EmployeeModalProps {
   visible: boolean;
@@ -39,19 +43,16 @@ interface EmployeeFormValues {
   wageId?: number; // Thêm wageId ở đây
 }
 
-
 const EmployeeModal: React.FC<EmployeeModalProps> = ({
   visible,
   setVisible,
   mode,
   employee,
 }) => {
-  
   const [form] = Form.useForm<EmployeeFormValues>();
   const [fileList, setFileList] = useState<any[]>([]);
   const token = localStorage.getItem("accessToken");
   const [wageId, setWageId] = useState(0);
-
 
   useEffect(() => {
     if (visible) {
@@ -66,10 +67,10 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         if (employee.image) {
           setFileList([
             {
-              uid: '-1',
-              name: 'Ảnh nhân viên',
-              status: 'done',
-              url: employee.image, 
+              uid: "-1",
+              name: "Ảnh nhân viên",
+              status: "done",
+              url: employee.image,
             },
           ]);
         }
@@ -78,8 +79,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
     }
   }, [visible, mode, employee, form]);
 
-
-
   const handleCancel = () => {
     form.resetFields();
     setVisible(false);
@@ -87,15 +86,14 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
 
   const handleWageByRole = async (role: string) => {
     try {
-      const response = await getWagesByRole(token, role); 
-      
+      const response = await getWagesByRole(token, role);
+
       if (response.data && response.data[0].id) {
-        form.setFieldsValue({ wageId: response.data[0].id }); 
-      setWageId(response.data[0].id); 
-      
+        form.setFieldsValue({ wageId: response.data[0].id });
+        setWageId(response.data[0].id);
       }
     } catch (error) {
-      console.error('Error fetching wage by role:', error);
+      console.error("Error fetching wage by role:", error);
       message.error("Không thể lấy Wage ID cho vai trò đã chọn.");
     }
   };
@@ -103,12 +101,13 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
   const onFinish = async (values: Employee) => {
     if (mode === MODE.ADD) {
       try {
+        const formData = new FormData();
         const account = {
           phone: values.phone,
-          password: '123456',
+          password: "123456",
           type: "employee",
           status: "active",
-        }
+        };
         const employee = {
           fullName: values.fullName,
           gender: values.gender,
@@ -118,17 +117,21 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
           address: values.address,
           role: values.role,
           status: values.status,
-          image : "image.png",
-          wageId: wageId
+          image: "image.png",
+          wageId: wageId,
         };
         const dataToSend = {
           account: account,
           employee: employee,
         };
-        
-        const response = await registerEmployee(dataToSend);
+        formData.append(
+          "file",
+          fileList[0].originFileObj ? fileList[0].originFileObj : null
+        );
+        formData.append("data", JSON.stringify(dataToSend));
+        const response = await registerEmployee(formData);
         console.log(response);
-  
+
         if (response.data !== null) {
           message.success("Đăng ký thành công!");
           setVisible(!visible);
@@ -150,7 +153,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
       //     wageId: Number(values.wageId)
       //   })
       // );
-      
+
       // try {
       //   const response = await createEmployee(token, formData);
       //   console.log(response);
@@ -163,7 +166,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
       //     message.error('Thêm thất bại!');
       // } catch (error) {
       //   console.error(error);
-        
+
       // }
     }
     if (mode === MODE.EDIT) {
@@ -188,10 +191,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label="Account ID"
-              name="accountId"
-            >
+            <Form.Item label="Account ID" name="accountId">
               <Input disabled type="number" placeholder="Account ID" />
             </Form.Item>
           </Col>
@@ -291,7 +291,10 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
               name="role"
               rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
             >
-              <Select placeholder="Chọn vai trò" onChange={(value) => handleWageByRole(value)}>
+              <Select
+                placeholder="Chọn vai trò"
+                onChange={(value) => handleWageByRole(value)}
+              >
                 <Select.Option key={1} value="manager">
                   Manager
                 </Select.Option>
