@@ -34,7 +34,7 @@ const CustomerPage: React.FC = () => {
 
   useEffect(() => {
     fetchCustomers();
-  }, []);
+  }, [visibleModal]);
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -63,7 +63,6 @@ const CustomerPage: React.FC = () => {
     );
   }, [debouncedKeyword, customers]);
 
-
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
@@ -90,7 +89,10 @@ const CustomerPage: React.FC = () => {
       const updatedCustomers = customersArray.filter(
         (customer: Customer) => customer.phone !== phone
       );
-      localStorage.setItem("importedDataCustomer", JSON.stringify(updatedCustomers));
+      localStorage.setItem(
+        "importedDataCustomer",
+        JSON.stringify(updatedCustomers)
+      );
       setCustomers(updatedCustomers);
     }
   };
@@ -123,8 +125,24 @@ const CustomerPage: React.FC = () => {
       sorter: (a: Customer, b: Customer) => a.address.localeCompare(b.address),
     },
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
-    { title: "Giới tính", dataIndex: "gender", key: "gender", render: (gender: boolean) => (gender ? 'Nam' : 'Nữ')},
-    { title: "Hình ảnh", dataIndex: "image", key: "image" },
+    {
+      title: "Giới tính",
+      dataIndex: "gender",
+      key: "gender",
+      render: (gender: boolean) => (gender ? "Nam" : "Nữ"),
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => (
+        <img
+          src={image}
+          alt="Employee"
+          style={{ width: "50px", height: "50px", objectFit: "cover" }}
+        />
+      ),
+    },
     { title: "Email", dataIndex: "email", key: "email" },
     {
       title: "Hành động",
@@ -133,24 +151,27 @@ const CustomerPage: React.FC = () => {
         <div>
           {record.isNew ? (
             <div>
-              <Button type="link" >
+              <Button type="link">
                 <TiPlusOutline />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever onClick={() => handleDeleteCustomerFromLocalStorage(record.phone)}/>
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever
+                  onClick={() =>
+                    handleDeleteCustomerFromLocalStorage(record.phone)
+                  }
+                />
+              </Button>
             </div>
           ) : (
             <div>
               <Button type="link" onClick={() => handleEditCustomer(record)}>
                 <BiEdit />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever />
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever />
+              </Button>
             </div>
           )}
-         
         </div>
       ),
     },
@@ -160,7 +181,7 @@ const CustomerPage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditCustomer= (customer: Customer) => {
+  const handleEditCustomer = (customer: Customer) => {
     setVisibleModal(true);
     setMode(MODE.EDIT);
     setDataEdit(customer);
@@ -181,7 +202,12 @@ const CustomerPage: React.FC = () => {
           className="ant-input-search"
           size="large"
         />
-        <Button type="primary" icon={<TiPlusOutline />} size="large" onClick={handleAddCustomer}>
+        <Button
+          type="primary"
+          icon={<TiPlusOutline />}
+          size="large"
+          onClick={handleAddCustomer}
+        >
           Thêm khách hàng
         </Button>
       </div>
