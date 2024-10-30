@@ -10,10 +10,12 @@ import {
   CUSTOMER,
   DISCOUNT,
   EMPLOYEE,
+  EVENT,
   PRICES,
   SERVICE,
   SERVICE_CATEGORY,
   TIME,
+  WAGE,
   WORKING_TIME,
 } from "../utils/constants";
 import { Account, Employee } from "../modules/Manager/types";
@@ -192,22 +194,15 @@ export const getIdBonus = async () => {
   return response.data;
 };
 
-export const updateInfoCustomer = async (
-  token: string | null,
-  formData
-) => {
-  const response = await axios.put(
-    `${API_URL}/${CUSTOMER}`,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export const updateInfoCustomer = async (token: string | null, formData) => {
+  const response = await axios.put(`${API_URL}/${CUSTOMER}`, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };
-
 
 //manage
 export const getAllAccount = async (
@@ -238,24 +233,54 @@ export const getAllCustomer = async (
   return response.data;
 };
 
-export const createAccount = async ( account: Account) => {
+export const createAccount = async (account: Account) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}`, account);
   return response.data;
 };
 
 export const createEmployee = async (
   token: string | null,
-  formData : FormData
+  formData: FormData
 ) => {
-  const response = await axios.post(
-    `${API_URL}/${EMPLOYEE}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.post(`${API_URL}/${EMPLOYEE}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const getAllEvent = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${EVENT}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const registerEmployee = async (data: {
+  account: Account;
+  employee: Employee;
+}) => {
+  const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data);
+  return response.data;
+};
+
+export const getWagesByRole = async (token: string | null, role: string) => {
+  const response = await axios.get(`${API_URL}/${WAGE}/role/${role}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const getAllService= async (
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${SERVICE}`, {
+    params: { page, limit },
+  });
   return response.data;
 };

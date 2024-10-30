@@ -3,14 +3,32 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import './Slide.scss';
+import "./Slide.scss";
 
+interface EventItem {
+  id: number;
+  image: string;
+  startDate: string;
+  expiryDate: string;
+}
 
-import slide1 from '../../../../../public/images/slide/slide1.png';
-import slide2 from '../../../../../public/images/slide/slide2.png';
-import slide3 from '../../../../../public/images/slide/slide3.png';
+interface SlideProps {
+  event: EventItem[];
+}
 
-const Slide: React.FC = () => {
+const Slide: React.FC<SlideProps> = ({ event }) => {
+  console.log(event);
+  const now = new Date();
+
+  // Lọc ra các mục đang hoạt động theo thời gian hiện tại
+  const activeData = event?.filter(item => {
+    const startDate = new Date(item.startDate);
+    const expiryDate = new Date(item.expiryDate);
+    return now >= startDate && now <= expiryDate;
+  });
+
+  console.log(activeData);
+
   return (
     <div className="slides">
       <Swiper
@@ -27,15 +45,11 @@ const Slide: React.FC = () => {
         modules={[Autoplay, Pagination, Navigation]}
         className="mySwiper"
       >
-        <SwiperSlide>
-          <img className="slide" alt="Slide 1" src={slide1} />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img className="slide" alt="Slide 2" src={slide2} />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img className="slide" alt="Slide 3" src={slide3} />
-        </SwiperSlide>
+        {activeData?.map((item) => (
+          <SwiperSlide key={item.id}>
+            <img className="slide" alt={item.name} src={item.image} />
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

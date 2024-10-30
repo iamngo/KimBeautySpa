@@ -3,13 +3,12 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllCustomer } from "../../../services/api";
+import { getAllCustomer, getAllService } from "../../../services/api";
 import { Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
-import EmployeeModal from "../components/modal/EmployeeModal";
 import ServiceModal from "../components/modal/ServiceModal";
 
 const  ServicePage: React.FC = () => {
@@ -39,7 +38,7 @@ const  ServicePage: React.FC = () => {
 
   const fetchServices = async () => {
     setLoading(true);
-    const response = await getAllCustomer(token, 1, 100);
+    const response = await getAllService(1, 200);
     setServices(response.data);
     console.log(response.data);
 
