@@ -274,3 +274,13 @@ export const getWagesByRole = async (token: string | null, role: string) => {
   });
   return response.data;
 };
+
+export const getAllService= async (
+  page: number,
+  limit: number
+) => {
+  const response = await axios.get(`${API_URL}/${SERVICE}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
