@@ -267,6 +267,15 @@ export const registerEmployee = async (data: FormData) => {
   return response.data;
 };
 
+export const registerCustomer = async (data: FormData) => {
+  const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data", 
+    },
+  });
+  return response.data;
+};
+
 export const getWagesByRole = async (token: string | null, role: string) => {
   const response = await axios.get(`${API_URL}/${WAGE}/role/${role}`, {
     headers: {

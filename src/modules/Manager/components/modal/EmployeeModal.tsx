@@ -139,35 +139,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
       } catch (error) {
         console.log("Validation failed:", error);
       }
-      // const formData = new FormData();
-      // if (fileList[0]?.originFileObj) {
-      //   formData.append("file", fileList[0].originFileObj);
-      // }
-      // formData.append(
-      //   "data",
-      //   JSON.stringify({
-      //     ...values,
-      //     accountId: Number(values.accountId),
-      //     gender: values.gender,
-      //     dob: values.dob.format("YYYY-MM-DD"),
-      //     wageId: Number(values.wageId)
-      //   })
-      // );
-
-      // try {
-      //   const response = await createEmployee(token, formData);
-      //   console.log(response);
-      //   if(response.data){
-      //     message.success('Thêm nhân viên thành công!');
-      //     form.resetFields();
-      //     setVisible(false);
-      //   }
-      //   else
-      //     message.error('Thêm thất bại!');
-      // } catch (error) {
-      //   console.error(error);
-
-      // }
+      
     }
     if (mode === MODE.EDIT) {
       console.log(values);
