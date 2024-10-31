@@ -78,13 +78,13 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
         };
         formData.append(
           "file",
-          fileList[0].originFileObj ? fileList[0].originFileObj : null
+          fileList[0]?.originFileObj ? fileList[0].originFileObj : null
         );
         formData.append("data", JSON.stringify(dataToSend));
 
         const response = await registerCustomer(formData);
         console.log(response);
-        
+
         if (response.data !== null) {
           message.success("Đăng ký thành công!");
           setVisible(!visible);
