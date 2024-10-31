@@ -126,7 +126,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         };
         formData.append(
           "file",
-          fileList[0].originFileObj ? fileList[0].originFileObj : null
+          fileList[0]?.originFileObj ? fileList[0].originFileObj : null
         );
         formData.append("data", JSON.stringify(dataToSend));
         const response = await registerEmployee(formData);
@@ -139,7 +139,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
       } catch (error) {
         console.log("Validation failed:", error);
       }
-      
     }
     if (mode === MODE.EDIT) {
       console.log(values);

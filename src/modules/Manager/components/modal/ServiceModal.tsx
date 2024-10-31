@@ -1,10 +1,25 @@
-import { Button, Form, Input, Modal, Select, DatePicker, Radio, Upload, Row, Col } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Select,
+  DatePicker,
+  Radio,
+  Upload,
+  Row,
+  Col,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { Service } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
-import moment from "moment";
-import { getAllServiceCategory } from "../../../../services/api";
+import moment, { duration } from "moment";
+import {
+  createService,
+  getAllServiceCategory,
+  updateService,
+} from "../../../../services/api";
 
 interface ServiceModalProps {
   visible: boolean;
@@ -23,18 +38,16 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   const [fileList, setFileList] = useState<any[]>([]);
   const [categories, setCategories] = useState<[]>([]);
 
-
-
   useEffect(() => {
     if (visible) {
       fetchCategory();
       if (mode === MODE.ADD) {
-        form.resetFields(); 
+        form.resetFields();
       } else if (mode === MODE.EDIT && service) {
         const formattedService = {
-            ...service,
-          };
-          form.setFieldsValue(formattedService);
+          ...service,
+        };
+        form.setFieldsValue(formattedService);
       }
     }
   }, [visible, mode, service, form]);
@@ -49,12 +62,52 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     setVisible(false);
   };
 
-  const onFinish = async (values:Service) => {
+  const onFinish = async (values: Service) => {
     if (mode === MODE.ADD) {
-      console.log(values);
+      try {
+        const formData = new FormData();
+        formData.append(
+          "file",
+          fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+        );
+        formData.append(
+          "data",
+          JSON.stringify({
+            name: values.name,
+            duration: Number(values.duration),
+            status: values.status,
+            image: values.image,
+            serviceCategoryId: Number(values.serviceCategoryId),
+          })
+        );
+        const response = await createService(formData);
+        console.log(response);
+      } catch (error) {
+        console.log("Validation failed:", error);
+      }
     }
     if (mode === MODE.EDIT) {
-      console.log(values);
+      try {
+        const formData = new FormData();
+        formData.append(
+          "file",
+          fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+        );
+        formData.append(
+          "data",
+          JSON.stringify({
+            name: values.name,
+            duration: Number(values.duration),
+            status: values.status,
+            image: values.image,
+            serviceCategoryId: Number(values.serviceCategoryId),
+          })
+        );
+        const response = await updateService(values.id, formData);
+        console.log(response);
+      } catch (error) {
+        console.log("Validation failed:", error);
+      }
     }
   };
 
@@ -65,11 +118,10 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       footer={null}
       title={mode === MODE.ADD ? "Thêm dịch vụ" : "Cập nhật thông tin dịch vụ"}
     >
-     <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
-      
-     <Row gutter={16}>
+      <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
+        <Row gutter={16}>
           <Col span={12}>
-          <Form.Item label="Ảnh" name="image">
+            <Form.Item label="Ảnh" name="image">
               <Upload
                 listType="picture-card"
                 fileList={fileList}
@@ -82,10 +134,9 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             </Form.Item>
           </Col>
           <Col span={12}>
-          <Form.Item label="ID" name="id">
+            <Form.Item label="ID" name="id">
               <Input type="number" placeholder="ID" disabled />
             </Form.Item>
-            
           </Col>
         </Row>
         <Row gutter={16}>
@@ -99,10 +150,12 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             </Form.Item>
           </Col>
           <Col span={12}>
-          <Form.Item
+            <Form.Item
               label="Chọn phân loại dịch vụ"
-              name="category"
-              rules={[{ required: true, message: "Vui lòng chọn phân loại dịch vụ" }]}
+              name="serviceCategoryId"
+              rules={[
+                { required: true, message: "Vui lòng chọn phân loại dịch vụ" },
+              ]}
             >
               <Select placeholder="Chọn phân loại dịch vụ">
                 {categories.map((category: any) => (
@@ -116,18 +169,21 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         </Row>
         <Row gutter={16}>
           <Col span={12}>
-          <Form.Item
+            <Form.Item
               label="Thời gian thực hiện"
               name="duration"
               rules={[
-                { required: true, message: "Vui lòng nhập thời gian thực hiện" },
+                {
+                  required: true,
+                  message: "Vui lòng nhập thời gian thực hiện",
+                },
               ]}
             >
               <Input placeholder="Nhập thời gian thực hiện" />
             </Form.Item>
           </Col>
           <Col span={12}>
-          <Form.Item
+            <Form.Item
               label="Chọn trạng thái:"
               name="status"
               rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}

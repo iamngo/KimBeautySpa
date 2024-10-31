@@ -261,7 +261,7 @@ export const getAllEvent = async (page: number, limit: number) => {
 export const registerEmployee = async (data: FormData) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data, {
     headers: {
-      "Content-Type": "multipart/form-data", // Đặt header để chỉ định kiểu dữ liệu
+      "Content-Type": "multipart/form-data",
     },
   });
   return response.data;
@@ -270,7 +270,25 @@ export const registerEmployee = async (data: FormData) => {
 export const registerCustomer = async (data: FormData) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data, {
     headers: {
-      "Content-Type": "multipart/form-data", 
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const createService = async (data: FormData) => {
+  const response = await axios.post(`${API_URL}/${SERVICE}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const updateService = async (id: number, data: FormData) => {
+  const response = await axios.put(`${API_URL}/${SERVICE}/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
     },
   });
   return response.data;
