@@ -203,6 +203,7 @@ const CustomerPage: React.FC = () => {
           size="large"
         />
         <Button
+          className="btn-add"
           type="primary"
           icon={<TiPlusOutline />}
           size="large"

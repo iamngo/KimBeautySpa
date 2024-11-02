@@ -9,7 +9,6 @@ import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
-import EmployeeModal from "../components/modal/EmployeeModal";
 import AppointmentModal from "../components/modal/AppointmentModal";
 
 const AppointmentPage: React.FC = () => {
@@ -273,6 +272,7 @@ const AppointmentPage: React.FC = () => {
         />
         <Button
           type="primary"
+          className="btn-add"
           icon={<TiPlusOutline />}
           size="large"
           onClick={handleAddAppointment}
