@@ -100,7 +100,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     // Fetch services for each category
     const services = {};
     for (const category of response.data) {
-      const servicesResponse = await getServiceByCategory( category.id);
+      const servicesResponse = await getServiceByCategory( category.id, 1, 100);
       services[category.id] = servicesResponse.data;
     }
     setServicesByCategory(services); // Save all services categorized
