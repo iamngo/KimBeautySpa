@@ -96,6 +96,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           date: appointment.dateTime ? moment(appointment.dateTime) : null,
           time: appointment.dateTime.split("T")[1].split(":").slice(0, 2).join(":"),
           bed: appointment.bedName,
+          staff: appointment.employeeId
         };
 
         form.setFieldsValue(formattedAppointment);
