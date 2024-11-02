@@ -23,6 +23,7 @@ import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
 import CustomHeader from "../components/header/CustomHeader";
 import { ACCOUNT, CUSTOMER, EMPLOYEE, SERVICE } from "../../../utils/constants";
+import { MdAccountBox } from "react-icons/md";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -180,7 +181,11 @@ const ManagerLayout: React.FC = () => {
               <span>Chi phí nội bộ</span>
             </Menu.Item>
           </SubMenu>
-          
+
+          <Menu.Item className='account' key="9" onClick={() => handleMenuClick("9", ACCOUNT)}>
+            <MdAccountBox />
+            <span>QL Tài khoản</span>
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout className="site-layout">
