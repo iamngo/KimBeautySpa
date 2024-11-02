@@ -23,10 +23,8 @@ import {
   getCategoryServiceById,
   getIdBonus,
   getServiceByCategory,
-  getWagesByRole,
   getWorkingTimeByServiceIdAndDate,
   registerAppointment,
-  registerEmployee,
 } from "../../../../services/api";
 
 interface AppointmentModalProps {

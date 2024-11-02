@@ -1,17 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, message, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllService, getAllServiceCategory } from "../../../services/api";
+import { deleteServiceCategory, getAllRoom, getAllServiceCategory } from "../../../services/api";
 import { Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
 import ServiceModal from "../components/modal/ServiceModal";
+import ServiceCategoryModal from "../components/modal/ServiceCategory";
 
-const ServicePage: React.FC = () => {
+const ServiceCategoryPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
@@ -19,43 +20,37 @@ const ServicePage: React.FC = () => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [services, setServices] = useState<Service[]>([]);
-  const [categories, setCategories] = useState<[]>([]);
-  const [selectedColumns, setSelectedColumns] = useState([
-    "id",
-    "name",
-    "image",
-    "serviceCategoryId",
-    "duration",
-    "status",
-    "actions",
-  ]);
+  const [categories, setCategories] = useState<Service[]>([]);
+  const [rooms, setRooms] = useState<[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState(["id", "name", "roomId", "actions"]);
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
-    fetchServices();
     fetchCategory();
-  }, []);
-
-  const fetchServices = async () => {
-    setLoading(true);
-    const response = await getAllService(1, 200);
-    setServices(response.data);
-    console.log(response.data);
-
-    setLoading(false);
-  };
+  }, [visibleModal]);
 
   const fetchCategory = async () => {
+    setLoading(true);
+    const responseRoom = await getAllRoom(token, 1, 100);
+    setRooms(responseRoom.data);
+
     const response = await getAllServiceCategory(1, 100);
-    setCategories(response.data);
+    const serviceCategoryDetail = response.data.map((serviceCategory) => {
+      const room = responseRoom.data.find((room) => room.id === serviceCategory.roomId);
+      return {
+        ...serviceCategory,
+        roomName: room ? room.name : "N/A",
+      };
+    });
+
+    setCategories(serviceCategoryDetail);
+    setLoading(false);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchText(value);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
+    if (timeoutId) clearTimeout(timeoutId);
+
     const newTimeoutId = setTimeout(() => {
       setDebouncedKeyword(value);
     }, 1000);
@@ -64,94 +59,48 @@ const ServicePage: React.FC = () => {
   };
 
   const filteredServices = useMemo(() => {
-    return services.filter((service: Service) =>
-      service.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
+    return categories.filter((category) =>
+      category.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
-  }, [debouncedKeyword, services]);
+  }, [debouncedKeyword, categories]);
 
   const handleColumnChange = (value: string[]) => {
-    setSelectedColumns(
-      value.includes("all")
-        ? [
-            "id",
-            "name",
-            "image",
-            "serviceCategoryId",
-            "duration",
-            "status",
-            "actions",
-          ]
-        : value
-    );
+    setSelectedColumns(value.includes("all") ? ["id", "name", "roomId", "actions"] : value);
   };
 
-  const handleDeleteServiceFromLocalStorage = (name: string) => {
-    const storedServices = localStorage.getItem("importedDataService");
-    if (storedServices) {
-      const servicesArray = JSON.parse(storedServices);
-      const updatedServices = servicesArray.filter(
-        (service: Service) => service.name !== name
-      );
-      localStorage.setItem(
-        "importedDataService",
-        JSON.stringify(updatedServices)
-      );
-      setServices(updatedServices);
+  const handleDeleteServiceCategory = async (id: number) => {
+    const response = await deleteServiceCategory(token, id);
+    if(response.data !== null){
+        message.success('Xóa thành công!');
+        fetchCategory();
+    }else {
+        message.error("Xóa thất bại");
     }
-  };
+  }
 
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      sorter: (a: Service, b: Service) => a.id - b.id,
+      sorter: (a, b) => a.id - b.id,
     },
     {
-      title: "Tên dịch vụ",
+      title: "Tên phân loại dịch vụ",
       dataIndex: "name",
       key: "name",
-      sorter: (a: Service, b: Service) => a.name.localeCompare(b.name),
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      render: (image: string) => (
-        <img
-          src={image}
-          alt="Dịch vụ"
-          style={{ width: "50px", height: "50px", objectFit: "cover" }}
-        />
-      ),
-    },
-    {
-      title: "Phân loại",
-      dataIndex: "serviceCategoryId",
-      key: "serviceCategoryId",
-      render: (serviceCategoryId: number) => {
-        const category = categories.find(cat => cat.id === serviceCategoryId);
-        return category ? category.name : "Không xác định"; 
-    },
-      sorter: (a: Service, b: Service) =>
-        a.serviceCategoryId - b.serviceCategoryId,
-    },
-    {
-      title: "Thời gian",
-      dataIndex: "duration",
-      key: "duration",
-      sorter: (a: Service, b: Service) => a.duration - b.duration,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      sorter: (a: Service, b: Service) => a.status.localeCompare(b.status),
+      title: "Phòng",
+      dataIndex: "roomName", // Hiển thị roomName thay vì roomId
+      key: "roomId",
+      sorter: (a, b) => (a.roomName || "").localeCompare(b.roomName || ""),
     },
     {
       title: "Hành động",
       key: "actions",
-      render: (text: string, record: Service) => (
+      render: (_: string, record: Service) => (
         <div>
           {record.isNew ? (
             <div>
@@ -159,11 +108,7 @@ const ServicePage: React.FC = () => {
                 <TiPlusOutline />
               </Button>
               <Button type="link" danger>
-                <MdDeleteForever
-                  onClick={() =>
-                    handleDeleteServiceFromLocalStorage(record.name)
-                  }
-                />
+                <MdDeleteForever />
               </Button>
             </div>
           ) : (
@@ -171,7 +116,7 @@ const ServicePage: React.FC = () => {
               <Button type="link" onClick={() => handleEditService(record)}>
                 <BiEdit />
               </Button>
-              <Button type="link" danger>
+              <Button type="link" danger onClick={() => handleDeleteServiceCategory(record.id)}>
                 <MdDeleteForever />
               </Button>
             </div>
@@ -185,6 +130,7 @@ const ServicePage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
+
   const handleEditService = (service: Service) => {
     setVisibleModal(true);
     setMode(MODE.EDIT);
@@ -193,7 +139,7 @@ const ServicePage: React.FC = () => {
 
   return (
     <div className="manage-account">
-      <ServiceModal
+      <ServiceCategoryModal
         visible={visibleModal}
         setVisible={setVisibleModal}
         mode={mode}
@@ -201,7 +147,7 @@ const ServicePage: React.FC = () => {
       />
       <div className="header-container">
         <Search
-          placeholder="Tìm kiếm dịch vụ bằng tên"
+          placeholder="Tìm kiếm phân loại dịch vụ theo tên"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
@@ -213,7 +159,7 @@ const ServicePage: React.FC = () => {
           size="large"
           onClick={handleAddService}
         >
-          Thêm dịch vụ
+          Thêm phân loại
         </Button>
       </div>
       {loading ? (
@@ -232,4 +178,4 @@ const ServicePage: React.FC = () => {
   );
 };
 
-export default ServicePage;
+export default ServiceCategoryPage;

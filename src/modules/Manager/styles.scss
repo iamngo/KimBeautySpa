@@ -1,4 +1,5 @@
 @import "../../assets/css/variables";
+@import "../../assets/css/mixin";
 
 * {
   margin: 0;
@@ -25,6 +26,9 @@ body {
   backdrop-filter: blur(10px);
   border-radius: 15px;
   overflow: hidden;
+  .btn-add{
+    @include btn-custom;
+  }
 
   .background {
     position: absolute;

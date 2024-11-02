@@ -155,6 +155,7 @@ const AccountPage: React.FC = () => {
         />
         <Button
           type="primary"
+          className="btn-add"
           icon={<TiPlusOutline />}
           size="large"
           onClick={handleAddAccount}
