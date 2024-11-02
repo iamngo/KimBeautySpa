@@ -16,6 +16,8 @@ const Homepage = () => {
     if (accessToken !== "") {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
+      console.log(decodedPayload);
+      
       setUserId(decodedPayload.id);
       console.log(decodedPayload);
       if (decodedPayload.type !== "customer") {

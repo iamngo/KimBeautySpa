@@ -41,9 +41,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [selectedBed, setSelectedBed] = useState<number | null>(null);
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
   const [servicesByCategory, setServicesByCategory] = useState<any>({});
-  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
-    null
-  );
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [listTime, setListTime] = useState(null);
   const [time, setTime] = useState(null);
@@ -124,7 +122,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const getNewIdBonus = async () => {
     const response = await getIdBonus();
     setIdBonus(response.data.id);
-
   }
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
