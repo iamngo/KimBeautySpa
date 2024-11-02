@@ -88,6 +88,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         form.resetFields();
         form.setFieldsValue({ status: "confirmed" });
       } else if (mode === MODE.EDIT && appointment) {
+        getTimeByServiceIdAndDate();
         console.log(appointment.dateTime);
         const formattedAppointment = {
           ...appointment,
@@ -106,8 +107,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   useEffect(() => {
     getBedByServiceAndDate();
-    console.log(`${selectedDate} ${time}:00`);
-  }, [selectedBranch, selectedDate, selectedServiceId, time]);
+  }, [selectedBranch, selectedDate, selectedServiceId, time, listTime]);
 
   useEffect(() => {
     fetchCategoryById();
