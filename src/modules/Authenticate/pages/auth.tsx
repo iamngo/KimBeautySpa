@@ -120,6 +120,8 @@ const Authenticate: React.FC = () => {
         } else {
           const payload = response.data.data.access_token.split(".")[1];
           const decodedPayload = JSON.parse(atob(payload));
+          console.log(decodedPayload);
+          
           message.success("Đăng nhập thành công!");
           localStorage.setItem("accessToken", response.data.data.access_token);
           if (decodedPayload.type === "customer") {

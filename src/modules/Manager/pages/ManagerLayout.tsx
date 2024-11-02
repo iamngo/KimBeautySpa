@@ -22,7 +22,8 @@ import {
 import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
 import CustomHeader from "../components/header/CustomHeader";
-import { ACCOUNT, CUSTOMER, EMPLOYEE, SERVICE } from "../../../utils/constants";
+import { ACCOUNT, APPOINTMENT, CUSTOMER, EMPLOYEE, SERVICE } from "../../../utils/constants";
+import { MdAccountBox } from "react-icons/md";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -123,7 +124,7 @@ const ManagerLayout: React.FC = () => {
 
           {/* Quản lý Lịch Hẹn */}
           <SubMenu key="5" icon={<FaCalendarAlt />} title="QL Lịch Hẹn">
-            <Menu.Item key="5-1" onClick={() => handleMenuClick("5-1", "appointment")}>
+            <Menu.Item key="5-1" onClick={() => handleMenuClick("5-1", APPOINTMENT)}>
               <FaCalendarAlt />
               <span>Lịch hẹn</span>
             </Menu.Item>
@@ -180,7 +181,11 @@ const ManagerLayout: React.FC = () => {
               <span>Chi phí nội bộ</span>
             </Menu.Item>
           </SubMenu>
-          
+
+          <Menu.Item className='account' key="9" onClick={() => handleMenuClick("9", ACCOUNT)}>
+            <MdAccountBox />
+            <span>QL Tài khoản</span>
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout className="site-layout">

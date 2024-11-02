@@ -42,4 +42,21 @@ export interface Account {
     status: string,
     duration: number
   }
+
+  export interface Appointment {
+    id: number;
+    dateTime: string;
+    status: string,
+    category: string;
+    serviceOrTreatmentId: number,
+    employeeId: number,
+    customerId: number,
+    branch: string,
+    bedId: string,
+    bonusId: string,
+    serviceName?: string,
+    employeeName?: string,
+    customerName?: string
+    bedName?: string
+  }
   

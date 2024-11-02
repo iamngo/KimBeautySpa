@@ -77,10 +77,10 @@ export const getAllServiceCategory = async (page: number, limit: number) => {
   return response.data;
 };
 
-export const getServiceByCategory = async (serviceCategory: number) => {
+export const getServiceByCategory = async (serviceCategoryId: number, page: number, limit: number) => {
   const response = await axios.get(
-    `${API_URL}/${SERVICE}/${CATEGORY}/${serviceCategory}`,
-    {}
+    `${API_URL}/${SERVICE}/${CATEGORY}/${serviceCategoryId}`,
+    {params: { page, limit },}
   );
   return response.data;
 };
@@ -305,6 +305,26 @@ export const getWagesByRole = async (token: string | null, role: string) => {
 
 export const getAllService = async (page: number, limit: number) => {
   const response = await axios.get(`${API_URL}/${SERVICE}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllAppointment = async (token: string | null, page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${APPOINTMENT}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllBed = async (token: string | null, page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${BED}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     params: { page, limit },
   });
   return response.data;
