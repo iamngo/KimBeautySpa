@@ -12,6 +12,7 @@ import {
   EMPLOYEE,
   EVENT,
   PRICES,
+  ROOM,
   SERVICE,
   SERVICE_CATEGORY,
   TIME,
@@ -326,6 +327,39 @@ export const getAllBed = async (token: string | null, page: number, limit: numbe
       Authorization: `Bearer ${token}`,
     },
     params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllRoom= async (token: string | null, page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${ROOM}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const createServiceCategory = async (serviceCategory: any) => {
+  const response = await axios.post(`${API_URL}/${SERVICE_CATEGORY}`, serviceCategory,);
+  return response.data;
+};
+
+export const updateServiceCategory = async (token: string | null, serviceCategory: any, id: number) => {
+  const response = await axios.put(`${API_URL}/${SERVICE_CATEGORY}/${id}`, serviceCategory, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const deleteServiceCategory = async (token: string | null, id: number) => {
+  const response = await axios.delete(`${API_URL}/${SERVICE_CATEGORY}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.data;
 };
