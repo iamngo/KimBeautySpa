@@ -17,7 +17,6 @@ interface SlideProps {
 }
 
 const Slide: React.FC<SlideProps> = ({ event }) => {
-  console.log(event);
   const now = new Date();
 
   // Lọc ra các mục đang hoạt động theo thời gian hiện tại
@@ -27,7 +26,6 @@ const Slide: React.FC<SlideProps> = ({ event }) => {
     return now >= startDate && now <= expiryDate;
   });
 
-  console.log(activeData);
 
   return (
     <div className="slides">

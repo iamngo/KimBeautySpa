@@ -211,6 +211,11 @@ export const getDetailServiceByServiceId = async (serviceId: number) => {
   return response.data;
 };
 
+export const getOutStandingServices = async () => {
+  const response = await axios.get(`${API_URL}/${SERVICE}/out-standings`);
+  return response.data;
+};
+
 //manage
 export const getAllAccount = async (
   token: string | null,

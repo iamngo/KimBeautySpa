@@ -2,24 +2,24 @@ import React, { useEffect, useState } from "react";
 import Slide from "../components/slides/Slide";
 import "../styles.scss";
 import ModalRegister from "../components/modal/ModalRegister";
-import { useNavigate } from "react-router-dom";
-import { DASHBOARD, MANAGER } from "../../../routes";
-import { getAllEvent } from "../../../services/api";
+import { useLocation, useNavigate } from "react-router-dom";
+import { DASHBOARD, HOME, MANAGER, SERVICE } from "../../../routes";
+import { getAllEvent, getCategoryServiceById, getOutStandingServices } from "../../../services/api";
 
 const Homepage = () => {
   const [visible, setVisible] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [outStandingServices, setOutStandingServices] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
     if (accessToken !== "") {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
-      console.log(decodedPayload);
       
       setUserId(decodedPayload.id);
-      console.log(decodedPayload);
       if (decodedPayload.type !== "customer") {
         navigate(`${MANAGER}/${DASHBOARD}`);
       }
@@ -37,12 +37,29 @@ const Homepage = () => {
   const [event, setEvent] = useState();
   useEffect(() => {
     fetchEvent();
+    fetchOutStandingServices();
   },[]);
 
   const fetchEvent = async () => {
     const response = await getAllEvent(1, 100);
     setEvent(response.data)
+  }
+
+  const fetchOutStandingServices = async () => {
+    const response = await getOutStandingServices();
+    setOutStandingServices(response.data);
+  }
+
+
+  const handleClickService = async (categoryId, serviceId) => {
+    console.log(serviceId);
     
+    const response = await getCategoryServiceById(categoryId);
+    if(response.data){
+      navigate(`${HOME}${SERVICE}/${serviceId}`, {
+        state: { category: response.data },
+      })
+    }
   }
 
   return (
@@ -91,63 +108,20 @@ const Homepage = () => {
       <section className="services-section">
         <h2 className="section-title">Dịch vụ nổi bật</h2>
         <div className="services-grid">
-          <div className="service-item">
+          {outStandingServices.map((item, index) => (
+            <div className={`service-item ${index >= 2 ? 'row-reverse' : ''}`} key={index} onClick={() => handleClickService(item.serviceCategoryId, item.serviceOrTreatmentId)}>
             <img
-              src="/public/images/service/image1.png"
-              alt="Gội đầu dưỡng sinh"
+              src={item.image}
+              alt={item.name}
             />
-            <div>
-              <h3>Gội đầu dưỡng sinh</h3>
+            <div className="content">
+              <h3>{item.name}</h3>
               <p>
-                Là một liệu pháp thư giãn và chăm sóc sức khỏe khá phổ biến, kết
-                hợp giữa việc gội đầu, massage, và bấm huyệt nhằm thúc đẩy tuần
-                hoàn máu và giảm căng thẳng. Liệu pháp này thường bao gồm các
-                bước làm sạch da đầu, chăm sóc tóc, và các kỹ thuật massage nhẹ
-                nhàng kết hợp với tinh dầu thảo mộc hoặc các sản phẩm tự nhiên.
+              {item.content}
               </p>
             </div>
           </div>
-          <div className="service-item">
-            <img src="/public/images/service/image2.png" alt="Massage body" />
-            <div>
-              <h3>Massage body</h3>
-              <p>
-                Là một phương pháp trị liệu toàn thân phổ biến, giúp thư giãn cơ
-                thể, giảm căng thẳng và cải thiện sức khỏe tổng quát. Phương
-                pháp này bao gồm việc sử dụng các kỹ thuật xoa bóp, ấn huyệt,
-                kéo giãn cơ và mô mềm trên cơ thể, giúp cải thiện tuần hoàn máu
-                và giải tỏa căng thẳng tinh thần.
-              </p>
-            </div>
-          </div>
-          <div className="service-item">
-            <div>
-              <h3>Trị liệu cổ vai gáy</h3>
-              <p>
-                Là một phương pháp điều trị chuyên sâu giúp giảm đau và căng
-                thẳng tại khu vực cổ, vai và gáy – nơi thường xuyên bị ảnh hưởng
-                bởi các yếu tố như công việc ngồi lâu, tư thế sai hoặc căng
-                thẳng kéo dài.
-              </p>
-            </div>
-            <img
-              src="/public/images/service/image3.png"
-              alt="Trị liệu cổ vai gáy"
-            />
-          </div>
-
-          <div className="service-item">
-            <div>
-              <h3>Chăm sóc da</h3>
-              <p>
-                Là một quá trình quan trọng để duy trì và cải thiện sức khỏe và
-                vẻ đẹp của làn da. Một chế độ chăm sóc da đúng cách không chỉ
-                giúp bạn giữ gìn làn da tươi trẻ mà còn bảo vệ da khỏi các tác
-                động tiêu cực từ môi trường, ô nhiễm và lão hóa.
-              </p>
-            </div>
-            <img src="/public/images/service/image4.png" alt="Chăm sóc da" />
-          </div>
+          ))}
         </div>
       </section>
 
