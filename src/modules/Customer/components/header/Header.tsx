@@ -51,7 +51,7 @@ const HeaderHomepage: React.FC = () => {
   };
 
   const getServiceByServiceCategory = async (serviceCategory: any) => {
-    const response = await getServiceByCategory(serviceCategory.id);
+    const response = await getServiceByCategory(serviceCategory.id, 1, 200);
     setServicesByCategory((prevServicesByCategory) => ({
       ...prevServicesByCategory,
       [serviceCategory.id]: response.data,

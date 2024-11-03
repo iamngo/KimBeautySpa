@@ -27,7 +27,7 @@ const ServicesPage: React.FC = () => {
   }, [location]);
 
   const getServiceByServiceCategory = async (serviceCategory: any) => {
-    const response = await getServiceByCategory(serviceCategory.id);
+    const response = await getServiceByCategory(serviceCategory.id, 1, 200);
     setServices(response.data);
     console.log(response.data);
     

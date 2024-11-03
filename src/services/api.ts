@@ -8,6 +8,7 @@ import {
   BRANCH,
   CATEGORY,
   CUSTOMER,
+  DETAIL_SERVICE,
   DISCOUNT,
   EMPLOYEE,
   EVENT,
@@ -202,6 +203,11 @@ export const updateInfoCustomer = async (token: string | null, formData) => {
       Authorization: `Bearer ${token}`,
     },
   });
+  return response.data;
+};
+
+export const getDetailServiceByServiceId = async (serviceId: number) => {
+  const response = await axios.get(`${API_URL}/${DETAIL_SERVICE}/${SERVICE}/${serviceId}`);
   return response.data;
 };
 

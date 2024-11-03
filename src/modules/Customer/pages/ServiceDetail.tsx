@@ -4,7 +4,11 @@ import { useParams, useNavigate, useLocation } from "react-router-dom"; // Để
 import "../styles.scss";
 import { RxHeartFilled } from "react-icons/rx";
 import { IoHeartOutline } from "react-icons/io5";
-import { getPricesByForeignKeyId, getServiceById } from "../../../services/api";
+import {
+  getDetailServiceByServiceId,
+  getPricesByForeignKeyId,
+  getServiceById,
+} from "../../../services/api";
 import { HOME } from "../../../routes";
 import ModalRegister from "../components/modal/ModalRegister";
 
@@ -19,11 +23,17 @@ const ServiceDetail: React.FC = () => {
   const [price, setPrice] = useState();
   const [visible, setVisible] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [details, setDetails] = useState([]);
+  const [selectedImage, setSelectedImage] = useState("");
 
   // Toggle yêu thích
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -35,25 +45,25 @@ const ServiceDetail: React.FC = () => {
   }, [userId]);
 
   useEffect(() => {
-    const fetchServiceDetail = async () => {
-      const response = await getServiceById(id); // Gọi API để lấy thông tin chi tiết dịch vụ
-      if (response.data !== null) {
-        const price = await getPricesByForeignKeyId(id);
-        setService(response.data);
-        setPrice(price.data[0]);
-      }
-    };
-
     fetchServiceDetail();
   }, [id]);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  const fetchServiceDetail = async () => {
+    const response = await getServiceById(id); // Gọi API để lấy thông tin chi tiết dịch vụ
+    if (response.data !== null) {
+      const price = await getPricesByForeignKeyId(id);
+      const detailsResponse = await getDetailServiceByServiceId(id);
+      const mergedDetails = [
+      { image: response.data.image },
+      ...detailsResponse.data,
+    ];
+      setService(response.data);
+      setPrice(price.data[0]);
+      setDetails(mergedDetails);
+      setSelectedImage(response.data.image);
+    }
+  };
 
-  // Tìm kiếm dịch vụ theo ID
-  // const service = services.find((s) => s.id === parseInt(id!));
-  const [selectedImage, setSelectedImage] = useState(service?.image || "");
 
   if (!service) {
     return <div>Dịch vụ không tồn tại!</div>;
@@ -69,8 +79,8 @@ const ServiceDetail: React.FC = () => {
         visible={visible}
         setVisible={setVisible}
         userId={userId}
-        serviceId = {service.id}
-        categoryId = {category?.id}
+        serviceId={service.id}
+        categoryId={category?.id}
       />
       <Breadcrumb className="breadcrumb">
         <Breadcrumb.Item
@@ -90,27 +100,32 @@ const ServiceDetail: React.FC = () => {
         <div className="service-image">
           <img
             style={{ border: "1px solid black" }}
-            src={service.image}
+            src={selectedImage}
             alt={service.name}
           />
-          {/* <div className="image-carousel">
+          <div className="image-carousel">
             <Carousel
               slidesToShow={3}
               arrows
               dotPosition="left"
               infinite={false}
             >
-              {service.additionalImages.map((img, index) => (
-                <div key={index} onClick={() => setSelectedImage(img)}>
-                  <img
-                    className="carousel-image"
-                    src={img}
-                    alt={`Thumbnail ${index + 1}`}
-                  />
-                </div>
-              ))}
+              {details
+                .filter((detail) => detail.image !== 'null')
+                .map((detail, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setSelectedImage(detail.image)}
+                  >
+                    <img
+                      className="carousel-image"
+                      src={detail.image}
+                      alt={`Thumbnail ${index + 1}`}
+                    />
+                  </div>
+                ))}
             </Carousel>
-          </div> */}
+          </div>
         </div>
 
         {/* Thông tin dịch vụ */}
@@ -177,14 +192,13 @@ const ServiceDetail: React.FC = () => {
           </div>
         </div>
       </div>
-      <div>
-        <p className="disc">
-          <strong>
-            <i>Mô tả</i>
-          </strong>{" "}
-          <br />
-          {service.description}
-        </p>
+      <div className="disc">
+        {details.map((detail, index) => (
+          <div key={index} className="service-step">
+            <h3>{detail.title}</h3>
+            <p>{detail.content}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ export const BED = 'bed';
 export const ROOM = 'room';
 export const BONUS = 'bonus';
 export const PRICES = 'prices';
+export const DETAIL_SERVICE = 'detail-service';
 export const DISCOUNT = 'discount';
 export const EVENT = 'event';
 export const WAGE = 'wage';
