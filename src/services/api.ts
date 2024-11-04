@@ -216,6 +216,11 @@ export const getOutStandingServices = async () => {
   return response.data;
 };
 
+export const getBonusPointByCustomerId = async (id: number) => {
+  const response = await axios.get(`${API_URL}/${BONUS}/${CUSTOMER}/${id}`);
+  return response.data;
+};
+
 //manage
 export const getAllAccount = async (
   token: string | null,
