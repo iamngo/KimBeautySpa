@@ -196,8 +196,12 @@ export const getIdBonus = async () => {
   return response.data;
 };
 
-export const updateInfoCustomer = async (token: string | null, formData) => {
-  const response = await axios.put(`${API_URL}/${CUSTOMER}`, {
+export const updateInfoCustomer = async (
+  token: string | null,
+  formData: FormData,
+  id: number
+) => {
+  const response = await axios.put(`${API_URL}/${CUSTOMER}/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
@@ -206,6 +210,7 @@ export const updateInfoCustomer = async (token: string | null, formData) => {
   return response.data;
 };
 
+
 export const getDetailServiceByServiceId = async (serviceId: number) => {
   const response = await axios.get(`${API_URL}/${DETAIL_SERVICE}/${SERVICE}/${serviceId}`);
   return response.data;
@@ -213,6 +218,11 @@ export const getDetailServiceByServiceId = async (serviceId: number) => {
 
 export const getOutStandingServices = async () => {
   const response = await axios.get(`${API_URL}/${SERVICE}/out-standings`);
+  return response.data;
+};
+
+export const getBonusPointByCustomerId = async (id: number) => {
+  const response = await axios.get(`${API_URL}/${BONUS}/${CUSTOMER}/${id}`);
   return response.data;
 };
 

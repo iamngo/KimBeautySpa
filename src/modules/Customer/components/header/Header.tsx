@@ -16,6 +16,7 @@ import {
 } from "../../../../routes";
 import {
   getAllServiceCategory,
+  getInfoByAccountId,
   getServiceByCategory,
 } from "../../../../services/api";
 import ModalUpdateProfile from "../modal/ModalUpdateProfile";
@@ -34,6 +35,7 @@ const HeaderHomepage: React.FC = () => {
   const [category, setCategory] = useState<string>("");
   const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string>("home");
+  const [customer, setCustomer] = useState();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -41,9 +43,16 @@ const HeaderHomepage: React.FC = () => {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
       setUserId(decodedPayload.id);
+      if (decodedPayload.id) {
+        const getCustomer = async () => {
+          const response = await getInfoByAccountId(token, decodedPayload.id);
+          setCustomer(response.data);
+        };
+        getCustomer();
+      }
     }
     getServiceCategory();
-  }, [userId]);
+  }, [userId, visible, updateProfileVisible]);
 
   const getServiceCategory = async () => {
     const response = await getAllServiceCategory(1, 100);
@@ -61,10 +70,10 @@ const HeaderHomepage: React.FC = () => {
 
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "gifts") {
-      navigate(`${REWARD_POINTS}`);
+      navigate(`${REWARD_POINTS}`, { state: { userId: userId } });
     }
     if (key === "services") {
-      navigate(`${MY_SERVICES}`, {state: {userId: userId}});
+      navigate(`${MY_SERVICES}`, { state: { userId: userId } });
     }
     if (key === "profile") {
       setUpdateProfileVisible(true);
@@ -177,7 +186,8 @@ const HeaderHomepage: React.FC = () => {
           >
             <Avatar
               size="large"
-              icon={<UserOutlined />}
+              src={customer?.image}
+              icon={!customer?.image ? <UserOutlined /> : undefined}
               style={{ cursor: "pointer" }}
             />
           </Dropdown>
@@ -206,7 +216,7 @@ const HeaderHomepage: React.FC = () => {
         setVisible={setVisible}
         userId={userId}
         serviceId={null}
-        categoryId = {null}
+        categoryId={null}
       />
       <ModalUpdateProfile
         visible={updateProfileVisible}

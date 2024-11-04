@@ -1,14 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button, SliderSingleProps, Slider } from "antd";
 import "../styles.scss";
 import { FaCalendar, FaGift } from "react-icons/fa";
+import { getBonusPointByCustomerId, getInfoByAccountId } from "../../../services/api";
+import { useLocation } from "react-router-dom";
 
 const RewardPage: React.FC = () => {
   const marks: SliderSingleProps["marks"] = {
     0: "Thành viên",
-    20000000: "KH thân thiết",
-    100000000: "KH VIP",
+    5000000: "KH thân thiết",
+    10000000: "KH VIP",
   };
+
+  const location = useLocation();
+  const [expense, setExpense] = useState<number | undefined>(undefined);
+  const [points, setPoints] = useState<number | undefined>(undefined);
+  const [customer, setCustomer] = useState<any>(null);
+  const token = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    fetchBonusPoint();
+  }, []);
+
+  const fetchBonusPoint = async () => {
+    const customer = await getInfoByAccountId(token, location.state.userId);
+    setCustomer(customer.data);
+    if (customer.data) {
+      const response = await getBonusPointByCustomerId(customer.data.id);
+      setExpense(Number(response.data.expense));
+      setPoints(Number(response.data.points));
+      console.log(response.data);
+    }
+  };
+
+  const remainingAmount = expense
+  ? expense < 5000000
+    ? 5000000 - expense
+    : expense < 10000000
+    ? 10000000 - expense
+    : 0 
+  : 0;
 
   return (
     <div className="reward-page">
@@ -25,24 +56,24 @@ const RewardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
       <div className="points-section">
         <div className="user-info">
           <img
             className="profile-image"
-            src="https://via.placeholder.com/200"
+            src={customer?.image}
             alt="User Avatar"
           />
           <div className="points-info">
-            <Slider marks={marks} defaultValue={11000000} max={100000000} />
+            <Slider marks={marks} value={expense ?? 0} max={10000000} />
             <p>
               <i>
-                Bạn cần tích lũy thêm <span>9.000.000đ</span> để nâng hạng KH
-                thân thiết
+              Bạn cần tích lũy thêm <span>{remainingAmount > 0 ? `${remainingAmount.toLocaleString()}đ` : "0đ"}</span> để nâng hạng KH {expense! >= 5000000 && expense! < 10000000 ? "VIP" : "thân thiết"}
               </i>
             </p>
           </div>
           <div className="current-points">
-            Tích lũy: <strong>10 điểm</strong>
+            Tích lũy: <strong>{points} điểm</strong>
           </div>
         </div>
       </div>
