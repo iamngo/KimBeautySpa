@@ -106,39 +106,55 @@ body {
     width: 100%;
     max-width: 1200px;
     margin: 40px auto;
-
+  
     .section-title {
       text-align: start;
       font-size: 24px;
       margin-bottom: 30px;
     }
-
+  
     .services-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-
       .service-item {
+        cursor: pointer;
         background-color: #fdf6ed;
         text-align: center;
         display: flex;
+        height: 380px;
+  
         img {
-          flex: 1;
+          max-width: 300px;
+          height: 100%; 
+          object-fit: cover; 
         }
+  
+        .content {
+          flex: 1; 
+          display: flex;
+          flex-direction: column; 
+          max-width: 300px;
+  
+          h3 {
+            font-size: 20px;
+            margin: 15px;
+          }
+  
+          p {
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: justify;
+            padding: 0 20px;
+          }
+        }
+      }
 
-        h3 {
-          font-size: 20px;
-          margin: 15px;
-        }
-
-        p {
-          font-size: 16px;
-          line-height: 1.6;
-          text-align: justify;
-          padding: 0 20px;
-        }
+      .service-item.row-reverse {
+        flex-direction: row-reverse; 
       }
     }
   }
+  
 
   .commitment-section {
     padding: 20px;
