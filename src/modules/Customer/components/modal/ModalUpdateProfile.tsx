@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, DatePicker, Radio, Upload, Button, FormInstance } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  DatePicker,
+  Radio,
+  Upload,
+  Button,
+  FormInstance,
+  message,
+} from "antd";
 import { UserOutlined, UploadOutlined } from "@ant-design/icons";
-import { getInfoByAccountId, updateInfoCustomer } from "../../../../services/api";
+import {
+  getInfoByAccountId,
+  updateInfoCustomer,
+} from "../../../../services/api";
 import moment from "moment";
 
 interface ModalUpdateProfileProps {
@@ -13,70 +26,69 @@ interface ModalUpdateProfileProps {
 const ModalUpdateProfile: React.FC<ModalUpdateProfileProps> = ({
   visible,
   setVisible,
-  userId
+  userId,
 }) => {
   const [form] = Form.useForm<FormInstance>();
   const token = localStorage.getItem("accessToken");
   const [customer, setCustomer] = useState(null);
   const [fileList, setFileList] = useState<any[]>([]);
-  
+
   useEffect(() => {
     getInfoCustomer();
-  }, [userId])
+  }, [userId]);
 
   useEffect(() => {
     if (customer) {
       form.setFieldsValue({
         fullName: customer.fullName,
         phone: customer.phone,
-        gender: customer.gender ? 'male' : 'female',
+        gender: customer.gender ? "male" : "female",
         dob: moment(customer.dob),
         address: customer.address,
-        email: customer.email
+        email: customer.email,
       });
       if (customer.image) {
         setFileList([
           {
-            uid: '-1', // ID duy nhất cho ảnh
-            name: 'avatar.png',
-            status: 'done',
+            uid: "-1", // ID duy nhất cho ảnh
+            name: "avatar.png",
+            status: "done",
             url: customer.image, // URL ảnh từ dữ liệu customer
-          }
+          },
         ]);
       }
     }
   }, [customer, form]);
 
-  const handleOk = async () => {
+  const onFinish = async (values) => {
     try {
-      const values = await form.validateFields();
-      await handleUploadImage(values);
-      setVisible(false);
+      const formData = new FormData();
+      formData.append(
+        "file",
+        fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+      );
+      formData.append(
+        "data",
+        JSON.stringify({
+          fullName: values.fullName,
+          gender: values.gender === "male" ? true : false,
+          dob: values.dob.format("YYYY-MM-DD"),
+          email: values.email ? values.email : null,
+          address: values.address,
+          phone: customer?.phone,
+          accountId: userId
+        })
+      );
+      const response = await updateInfoCustomer(token, formData, customer?.id);
+      console.log(response);
+      if(response.data){
+        message.success('Cập nhật thông tin thành công!');
+        setVisible(!visible);
+      } else {
+        message.error("Cập nhật thất bại!");
+      }
     } catch (error) {
-      console.error("Lỗi khi cập nhật thông tin:", error);
-    }
-  };
-
-  const handleUploadImage = async (values) => {
-    const formData = new FormData();
-    if (fileList[0]?.originFileObj) {
-      formData.append("file", fileList[0].originFileObj);
-    }
-    formData.append(
-      "data",
-      JSON.stringify({
-        ...values,
-        gender: values.gender === 'male', 
-        dob: values.dob.format("YYYY-MM-DD"),
-        accountId: userId,
-      })
-    );
-
-    try {
-      const response = await updateInfoCustomer(token, formData);
-      console.log("Kết quả cập nhật:", response.data);
-    } catch (error) {
-      console.error("Lỗi khi gửi dữ liệu:", error);
+      console.log("Validation failed:", error);
     }
   };
 
@@ -87,24 +99,22 @@ const ModalUpdateProfile: React.FC<ModalUpdateProfileProps> = ({
   const getInfoCustomer = async () => {
     const response = await getInfoByAccountId(token, userId);
     setCustomer(response.data);
-    console.log(response.data);
-    
   };
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       title="Cập nhật thông tin tài khoản"
       onCancel={handleCancel}
-      onOk={handleOk}
+      footer={null}
     >
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item name="avatar" label="Ảnh đại diện">
-        <Upload
+          <Upload
             name="avatar"
             listType="picture"
-            fileList={fileList} 
-            onChange={({ fileList }) => setFileList(fileList)} 
+            fileList={fileList}
+            onChange={({ fileList }) => setFileList(fileList)}
             beforeUpload={() => false}
             maxCount={1}
           >
@@ -144,6 +154,11 @@ const ModalUpdateProfile: React.FC<ModalUpdateProfileProps> = ({
         </Form.Item>
         <Form.Item name="email" label="Email" rules={[{ type: "email" }]}>
           <Input placeholder="Nhập email" />
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType="submit" block className="btn-custom">
+            Xác nhận
+          </Button>
         </Form.Item>
       </Form>
     </Modal>

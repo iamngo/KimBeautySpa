@@ -52,7 +52,7 @@ const HeaderHomepage: React.FC = () => {
       }
     }
     getServiceCategory();
-  }, [userId]);
+  }, [userId, visible, updateProfileVisible]);
 
   const getServiceCategory = async () => {
     const response = await getAllServiceCategory(1, 100);
