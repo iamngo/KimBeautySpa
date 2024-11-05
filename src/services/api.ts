@@ -49,6 +49,15 @@ export const getInfoByAccountId = async (token: string | null, id: string) => {
   return response.data;
 };
 
+export const getInfoEmpByAccountId = async (token: string | null, id: string) => {
+  const response = await axios.get(`${API_URL}/${EMPLOYEE}/${ACCOUNT}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
 export const getAllBranch = async (
   token: string | null,
   page: number,

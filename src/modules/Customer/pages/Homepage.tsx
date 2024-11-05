@@ -20,9 +20,10 @@ const Homepage = () => {
       const decodedPayload = JSON.parse(atob(payload));
       
       setUserId(decodedPayload.id);
-      if (decodedPayload.type !== "customer") {
-        navigate(`${MANAGER}/${DASHBOARD}`);
-      }
+      
+      // if (decodedPayload.type !== "customer") {
+      //   navigate(`${MANAGER}/${DASHBOARD}`);
+      // }
     }
   }, [userId]);
 

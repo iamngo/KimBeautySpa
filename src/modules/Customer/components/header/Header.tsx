@@ -6,8 +6,10 @@ import { FaGift, FaSpa } from "react-icons/fa";
 import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
 import {
+  DASHBOARD,
   HOME,
   LOGIN,
+  MANAGER,
   MY_SERVICES,
   PROMOTION,
   REWARD_POINTS,
@@ -17,9 +19,12 @@ import {
 import {
   getAllServiceCategory,
   getInfoByAccountId,
+  getInfoEmpByAccountId,
   getServiceByCategory,
 } from "../../../../services/api";
 import ModalUpdateProfile from "../modal/ModalUpdateProfile";
+import { GrFormSchedule, GrSystem } from "react-icons/gr";
+import { AiFillSchedule } from "react-icons/ai";
 
 const { Header } = Layout;
 const { SubMenu } = Menu;
@@ -36,6 +41,7 @@ const HeaderHomepage: React.FC = () => {
   const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string>("home");
   const [customer, setCustomer] = useState();
+  const [employee, setEmployee] = useState();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -43,12 +49,28 @@ const HeaderHomepage: React.FC = () => {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
       setUserId(decodedPayload.id);
-      if (decodedPayload.id) {
+      console.log(decodedPayload);
+
+      if (decodedPayload.role === "customer") {
         const getCustomer = async () => {
           const response = await getInfoByAccountId(token, decodedPayload.id);
           setCustomer(response.data);
         };
         getCustomer();
+      }
+      if (
+        decodedPayload.role === "admin" ||
+        decodedPayload.role === "manager"
+      ) {
+        const getEmployee = async () => {
+          const response = await getInfoEmpByAccountId(
+            token,
+            decodedPayload.id
+          );
+          setEmployee(response.data);
+          console.log(response.data);
+        };
+        getEmployee();
       }
     }
     getServiceCategory();
@@ -83,6 +105,9 @@ const HeaderHomepage: React.FC = () => {
       setUserId(null);
       message.success("Đăng xuất thành công!");
     }
+    if (key === "manage") {
+      navigate(`${MANAGER}/${DASHBOARD}`);
+    }
   };
 
   const avatarMenu = (
@@ -93,6 +118,16 @@ const HeaderHomepage: React.FC = () => {
       <Menu.Item key="gifts" icon={<FaGift />}>
         Tích điểm - Quà tặng
       </Menu.Item>
+      {employee?.role === 'employee' && (
+        <Menu.Item key="schedule" icon={<AiFillSchedule />}>
+          Xem lịch làm
+        </Menu.Item>
+      )}
+      {employee?.role === 'admin' || employee?.role === 'manager' ? (
+        <Menu.Item key="manage" icon={<GrSystem />}>
+          Quản lý hệ thống
+        </Menu.Item>
+      ):""}
       <Menu.Item key="profile" icon={<UserOutlined />}>
         Cập nhật thông tin
       </Menu.Item>
@@ -123,7 +158,8 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${TREATMENTS}`);
     } else if (key === "promotion") {
       navigate(`${PROMOTION}`);
-    }
+    } 
+
   };
 
   const handleSubmenuCategoryServiceClick = (category: any) => {
@@ -186,8 +222,12 @@ const HeaderHomepage: React.FC = () => {
           >
             <Avatar
               size="large"
-              src={customer?.image}
-              icon={!customer?.image ? <UserOutlined /> : undefined}
+              src={customer ? customer.image : employee?.image}
+              icon={
+                customer?.image || employee?.image ? undefined : (
+                  <UserOutlined />
+                )
+              }
               style={{ cursor: "pointer" }}
             />
           </Dropdown>
