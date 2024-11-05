@@ -124,11 +124,12 @@ const Authenticate: React.FC = () => {
           
           message.success("Đăng nhập thành công!");
           localStorage.setItem("accessToken", response.data.data.access_token);
-          if (decodedPayload.type === "customer") {
-            navigate(`${HOME}`);
-          } else {
-            navigate(`${MANAGER}/${DASHBOARD}`);
-          }
+          navigate(`${HOME}`);
+          // if (decodedPayload.type === "customer") {
+          //   navigate(`${HOME}`);
+          // } else {
+          //   navigate(`${MANAGER}/${DASHBOARD}`);
+          // }
         }
       } catch (error) {
         console.error(
