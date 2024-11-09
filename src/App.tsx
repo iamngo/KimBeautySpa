@@ -12,13 +12,14 @@ import ServiceDetail from "./modules/Customer/pages/ServiceDetail";
 import RewardPage from "./modules/Customer/pages/RewardPage";
 import MyServicePlanPage from "./modules/Customer/pages/MyServicePlanPage";
 import PromotionPage from "./modules/Customer/pages/PromotionPage";
-import { ACCOUNT, APPOINTMENT, CUSTOMER, EMPLOYEE, SERVICE, SERVICE_CATEGORY } from "./utils/constants";
+import { ACCOUNT, APPOINTMENT, CUSTOMER, EMPLOYEE, MANAGE_SCHEDULE, SERVICE, SERVICE_CATEGORY } from "./utils/constants";
 import CustomerPage from "./modules/Manager/pages/Customer";
 import AccountPage from "./modules/Manager/pages/Account";
 import EmployeePage from "./modules/Manager/pages/Employee";
 import ServicePage from "./modules/Manager/pages/Service";
 import AppointmentPage from "./modules/Manager/pages/Appointment";
 import ServiceCategoryPage from "./modules/Manager/pages/ServiceCategory";
+import ManageSchedule from "./modules/Manager/pages/ManageSchedule";
 
 const App: React.FC = () => {
   return (
@@ -42,6 +43,7 @@ const App: React.FC = () => {
         <Route path={SERVICE} element={<ServicePage />} />
         <Route path={APPOINTMENT} element={<AppointmentPage />} />
         <Route path={SERVICE_CATEGORY} element={<ServiceCategoryPage />} />
+        <Route path={MANAGE_SCHEDULE} element={<ManageSchedule />} />
       </Route>
     </Routes>
   );
