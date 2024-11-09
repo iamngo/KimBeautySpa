@@ -14,6 +14,7 @@ import {
   EVENT,
   PRICES,
   ROOM,
+  SCHEDULE,
   SERVICE,
   SERVICE_CATEGORY,
   TIME,
@@ -390,6 +391,16 @@ export const deleteServiceCategory = async (token: string | null, id: number) =>
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  });
+  return response.data;
+};
+
+export const getAllSchedule = async (token: string | null, page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${SCHEDULE}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { page, limit },
   });
   return response.data;
 };

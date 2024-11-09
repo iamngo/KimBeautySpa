@@ -26,7 +26,7 @@ body {
   backdrop-filter: blur(10px);
   border-radius: 15px;
   overflow: hidden;
-  .btn-add{
+  .btn-add {
     @include btn-custom;
   }
 
@@ -51,7 +51,8 @@ body {
       width: 150px;
       margin-left: 70px;
     }
-    .dashboard, .account {
+    .dashboard,
+    .account {
       padding-left: 5px !important;
       font-weight: 700;
     }
@@ -65,13 +66,12 @@ body {
       padding-left: 20px !important;
       font-weight: 500;
     }
-    .ant-menu-submenu-title{
+    .ant-menu-submenu-title {
       font-weight: 700;
     }
 
     .ant-menu-item,
     .ant-menu-submenu-title {
-      
       margin-top: 10px;
       color: var(--primaryColor);
 
@@ -123,5 +123,130 @@ body {
     gap: 20px;
     margin-left: 10px;
   }
- 
+}
+
+//manage schedule
+.manage-schedule {
+  .schedule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .days-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 1200px;
+      flex-wrap: wrap;
+
+      .day {
+        margin: 10px 5px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        flex: 1;
+        min-width: 150px;
+        background-color: #ffffff;
+
+        &:nth-child(1) h2 {
+          background-color: #ffcccc; // Thứ Hai
+        }
+        &:nth-child(2) h2 {
+          background-color: #ccffcc; // Thứ Ba
+        }
+        &:nth-child(3) h2 {
+          background-color: #ccccff; // Thứ Tư
+        }
+        &:nth-child(4) h2 {
+          background-color: #ffffcc; // Thứ Năm
+        }
+        &:nth-child(5) h2 {
+          background-color: #ffccff; // Thứ Sáu
+        }
+        &:nth-child(6) h2 {
+          background-color: #ccffff; // Thứ Bảy
+        }
+        &:nth-child(7) h2 {
+          background-color: #ffebcc; // Chủ Nhật
+        }
+
+        h2 {
+          margin-bottom: 10px;
+          color: #333;
+          padding: 5px;
+          text-align: center;
+        }
+
+        .shift {
+          margin: 5px 0;
+          padding: 5px;
+          border: 1px solid #ddd;
+          border-radius: 3px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: #f0f0f0;
+          }
+
+          p {
+            margin: 0;
+            font-weight: bold;
+          }
+
+          .employee-list {
+            margin-top: 10px;
+
+            h3 {
+              margin-bottom: 5px;
+              font-size: 1.1em;
+            }
+
+            div {
+              margin: 5px 0;
+
+              label {
+                margin-left: 5px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .utils-schedule {
+    display: flex;
+    justify-content: space-between;
+    .date-picker {
+      margin: 20px;
+
+      .ant-picker {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+
+    .week-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px;
+      width: 100%;
+      max-width: 300px;
+
+      button {
+        @include btn-custom;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      span {
+        font-weight: bold;
+      }
+    }
+  }
 }
