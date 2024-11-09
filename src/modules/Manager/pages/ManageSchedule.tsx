@@ -94,11 +94,12 @@ const ManageSchedule: React.FC = () => {
 
   const handleShiftClick = (day: Dayjs, shift: string) => {
     if (day.isAfter(dayjs().subtract(1, "day"))) {
-      const schedule = filteredSchedules.find(
+      const schedulesForShift = filteredSchedules.filter(
         (schedule) =>
           dayjs(schedule.date).isSame(day, "day") && schedule.shift === shift
       );
-      setSelectedEmployees(schedule ? [schedule.employeeId] : []);
+      const employeeIds = schedulesForShift.flatMap((schedule) => schedule.employeeId);
+      setSelectedEmployees(Array.from(new Set(employeeIds)));
       setIsModalVisible(true);
     } else {
       message.warning(
