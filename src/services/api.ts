@@ -404,3 +404,17 @@ export const getAllSchedule = async (token: string | null, page: number, limit: 
   });
   return response.data;
 };
+
+export const createSchedule = async (schedule) => {
+  const response = await axios.post(`${API_URL}/${SCHEDULE}`, schedule);
+  return response.data;
+};
+
+export const deleteSchedule = async (token: string | null, id: number) => {
+  const response = await axios.delete(`${API_URL}/${SCHEDULE}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

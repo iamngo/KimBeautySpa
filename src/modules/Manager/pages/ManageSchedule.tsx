@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { DatePicker, Checkbox, Modal, Button, message } from "antd";
 import "../styles.scss";
-import { getAllEmployee, getAllSchedule } from "../../../services/api";
+import {
+  createSchedule,
+  deleteSchedule,
+  getAllEmployee,
+  getAllSchedule,
+} from "../../../services/api";
 import dayjs, { Dayjs } from "dayjs";
 
 interface Schedule {
@@ -18,6 +23,9 @@ interface Employee {
 
 const ManageSchedule: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+  const [selectedDateSchedule, setSelectedDateSchedule] =
+    useState<Dayjs | null>(dayjs());
+  const [selectedShift, setSelectedShift] = useState();
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const token = localStorage.getItem("accessToken");
@@ -42,7 +50,7 @@ const ManageSchedule: React.FC = () => {
   useEffect(() => {
     fetchSchedule();
     fetchEmployee();
-  }, []);
+  }, [isModalVisible]);
 
   const fetchSchedule = async () => {
     let allData: Schedule[] = [];
@@ -98,8 +106,12 @@ const ManageSchedule: React.FC = () => {
         (schedule) =>
           dayjs(schedule.date).isSame(day, "day") && schedule.shift === shift
       );
-      const employeeIds = schedulesForShift.flatMap((schedule) => schedule.employeeId);
+      const employeeIds = schedulesForShift.flatMap(
+        (schedule) => schedule.employeeId
+      );
       setSelectedEmployees(Array.from(new Set(employeeIds)));
+      setSelectedDateSchedule(day);
+      setSelectedShift(shift);
       setIsModalVisible(true);
     } else {
       message.warning(
@@ -108,9 +120,61 @@ const ManageSchedule: React.FC = () => {
     }
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
+  const handleOk = async () => {
     console.log("Selected Employees:", selectedEmployees);
+
+    const checkInTime = selectedShift === "morning" ? "07:00:00" : "15:00:00";
+    const checkOutTime = selectedShift === "morning" ? "15:00:00" : "23:00:00";
+    const selectedDateStr = selectedDateSchedule?.format('YYYY-MM-DD');
+
+    for (const employeeId of selectedEmployees) {
+      const existingSchedule = filteredSchedules.find((schedule) => 
+        schedule.date === selectedDateStr &&
+        schedule.shift === selectedShift &&
+        schedule.employeeId === employeeId
+      )
+      if (!existingSchedule) {
+        // Tạo lịch mới nếu không tồn tại
+        const schedule = {
+          date: selectedDateStr,
+          day: selectedDateStr,
+          shift: selectedShift,
+          checkInTime,
+          checkOutTime,
+          employeeId: employeeId,
+        };
+        
+        try {
+          const response = await createSchedule(schedule);
+          console.log(`Created schedule for employee ${employeeId}:`, response);
+        } catch (error) {
+          console.error(`Error creating schedule for employee ${employeeId}:`, error);
+          message.error(`Có lỗi khi tạo lịch làm cho nhân viên có ID ${employeeId}`);
+        }
+      } else {
+        console.log(`Employee ${employeeId} already has a schedule for this shift and day.`);
+      }
+    }
+
+    // Xóa lịch làm của những nhân viên không có trong selectedEmployees
+  const schedulesToDelete = schedules.filter(
+    (schedule) =>
+      schedule.date === selectedDateStr &&
+      schedule.shift === selectedShift &&
+      !selectedEmployees.includes(schedule.employeeId)
+  );
+
+  for (const schedule of schedulesToDelete) {
+    try {
+      await deleteSchedule(token, schedule.id); // Thực hiện xóa lịch làm
+      console.log(`Deleted schedule for employee ${schedule.employeeId}`);
+    } catch (error) {
+      console.error(`Error deleting schedule for employee ${schedule.employeeId}:`, error);
+      message.error(`Có lỗi khi xóa lịch làm của nhân viên có ID ${schedule.employeeId}`);
+    }
+  }
+  setIsModalVisible(false);
+  message.success("Đã cập nhật lịch làm cho các nhân viên.");
   };
 
   return (
