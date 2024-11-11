@@ -12,12 +12,14 @@ import {
   DISCOUNT,
   EMPLOYEE,
   EVENT,
+  GIFT,
   PRICES,
   ROOM,
   SCHEDULE,
   SERVICE,
   SERVICE_CATEGORY,
   TIME,
+  VOUCHER,
   WAGE,
   WORKING_TIME,
 } from "../utils/constants";
@@ -236,6 +238,20 @@ export const getBonusPointByCustomerId = async (id: number) => {
   return response.data;
 };
 
+export const getAllGift = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${GIFT}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllVoucher = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${VOUCHER}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
 //manage
 export const getAllAccount = async (
   token: string | null,
@@ -401,6 +417,20 @@ export const getAllSchedule = async (token: string | null, page: number, limit: 
       Authorization: `Bearer ${token}`,
     },
     params: { page, limit },
+  });
+  return response.data;
+};
+
+export const createSchedule = async (schedule) => {
+  const response = await axios.post(`${API_URL}/${SCHEDULE}`, schedule);
+  return response.data;
+};
+
+export const deleteSchedule = async (token: string | null, id: number) => {
+  const response = await axios.delete(`${API_URL}/${SCHEDULE}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.data;
 };
