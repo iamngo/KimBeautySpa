@@ -12,12 +12,14 @@ import {
   DISCOUNT,
   EMPLOYEE,
   EVENT,
+  GIFT,
   PRICES,
   ROOM,
   SCHEDULE,
   SERVICE,
   SERVICE_CATEGORY,
   TIME,
+  VOUCHER,
   WAGE,
   WORKING_TIME,
 } from "../utils/constants";
@@ -233,6 +235,20 @@ export const getOutStandingServices = async () => {
 
 export const getBonusPointByCustomerId = async (id: number) => {
   const response = await axios.get(`${API_URL}/${BONUS}/${CUSTOMER}/${id}`);
+  return response.data;
+};
+
+export const getAllGift = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${GIFT}`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const getAllVoucher = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${VOUCHER}`, {
+    params: { page, limit },
+  });
   return response.data;
 };
 

@@ -23,5 +23,7 @@ export const MODE = {
     EDIT: 'edit'
 };
 export const SCHEDULE = 'schedule';
+export const GIFT = 'gift';
+export const VOUCHER = 'voucher';
 
 
