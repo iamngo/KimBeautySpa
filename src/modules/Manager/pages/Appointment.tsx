@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, Skeleton, Tabs } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
@@ -36,6 +36,7 @@ const AppointmentPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [beds, setBeds] = useState<[]>([]);
+  const [selectedTab, setSelectedTab] = useState("all");
 
   useEffect(() => {
     fetchServicesAndAppointments();
@@ -191,13 +192,6 @@ const AppointmentPage: React.FC = () => {
       sorter: (a: Appointment, b: Appointment) =>
         a.customerName?.localeCompare(b.customerName),
     },
-    // {
-    //   title: "Chi nhánh",
-    //   dataIndex: "branchId",
-    //   key: "branchId",
-    //   sorter: (a: Appointment, b: Appointment) =>
-    //     a.branch.localeCompare(b.branch),
-    // },
     {
       title: "Giường",
       dataIndex: "bedName",
@@ -255,6 +249,10 @@ const AppointmentPage: React.FC = () => {
     setDataEdit(employee);
   };
 
+  const handleTabChange = (key: string) => {
+    setSelectedTab(key);
+  };
+
   return (
     <div className="manage-account">
       <AppointmentModal
@@ -280,6 +278,12 @@ const AppointmentPage: React.FC = () => {
           Thêm lịch hẹn
         </Button>
       </div>
+      <Tabs defaultActiveKey="all" onChange={handleTabChange}>
+        <Tabs.TabPane tab="Tất cả" key="all" />
+        <Tabs.TabPane tab="Đã đặt hẹn" key="booked" />
+        <Tabs.TabPane tab="Đang thực hiện" key="in-progress" />
+        <Tabs.TabPane tab="Đã hoàn thành" key="completed" />
+      </Tabs>
       {loading ? (
         <Skeleton active />
       ) : (
@@ -289,7 +293,8 @@ const AppointmentPage: React.FC = () => {
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
-          tableName="Employee"
+          tableName="Appointment"
+          haveImport={false}
         />
       )}
     </div>

@@ -15,6 +15,7 @@ interface DataTableProps<T> extends TableProps<T> {
   selectedColumns: string[];
   onColumnChange: (value: string[]) => void;
   tableName: string
+  haveImport?: boolean
 }
 
 const DataTable = <T extends object>({
@@ -24,6 +25,7 @@ const DataTable = <T extends object>({
   selectedColumns,
   onColumnChange,
   tableName,
+  haveImport,
   ...tableProps
 }: DataTableProps<T>) => {
   const [importedData, setImportedData] = useState<T[]>([]);
@@ -163,7 +165,7 @@ const DataTable = <T extends object>({
             ))}
           </Select>
         </div>
-        <div className="btn">
+        {haveImport === false ? <></>:( <div className="btn">
           <Button
             icon={<MdLabelImportantOutline />}
             onClick={() => fileInputRef.current?.click()}
@@ -180,7 +182,7 @@ const DataTable = <T extends object>({
             accept=".csv"
             onChange={handleImport}
           />
-        </div>
+        </div>)}
       </div>
       <Table
         columns={displayedColumns}

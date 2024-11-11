@@ -85,13 +85,6 @@ const ManagerLayout: React.FC = () => {
               <FaMoneyBill />
               <span>Lương</span>
             </Menu.Item>
-            <Menu.Item
-              key="2-4"
-              onClick={() => handleMenuClick("2-4", "bonus")}
-            >
-              <FaGift />
-              <span>Thưởng</span>
-            </Menu.Item>
           </SubMenu>
 
           {/* Quản lý Khách hàng */}
@@ -103,33 +96,13 @@ const ManagerLayout: React.FC = () => {
               <FaUsers />
               <span>Khách hàng</span>
             </Menu.Item>
-            <Menu.Item
-              key="3-2"
-              onClick={() => handleMenuClick("3-2", "prepaid-card")}
-            >
-              <FaClipboard />
-              <span>Thẻ trả trước</span>
-            </Menu.Item>
-            <Menu.Item
-              key="3-3"
-              onClick={() => handleMenuClick("3-3", "card-history")}
-            >
-              <FaClipboardList />
-              <span>Lịch sử thẻ</span>
-            </Menu.Item>
+            
             <Menu.Item
               key="3-4"
               onClick={() => handleMenuClick("3-4", "voucher")}
             >
               <FaGift />
               <span>Voucher</span>
-            </Menu.Item>
-            <Menu.Item
-              key="3-5"
-              onClick={() => handleMenuClick("3-5", "voucher-category")}
-            >
-              <FaClipboardList />
-              <span>Loại voucher</span>
             </Menu.Item>
           </SubMenu>
 
@@ -160,7 +133,7 @@ const ManagerLayout: React.FC = () => {
               <FaClipboardList />
               <span>Loại dịch vụ</span>
             </Menu.Item>
-            <Menu.Item
+            {/* <Menu.Item
               key="4-4"
               onClick={() => handleMenuClick("4-4", "treatment-package")}
             >
@@ -173,36 +146,22 @@ const ManagerLayout: React.FC = () => {
             >
               <FaClipboard />
               <span>Dịch vụ điều trị</span>
-            </Menu.Item>
+            </Menu.Item> */}
           </SubMenu>
 
           {/* Quản lý Lịch Hẹn */}
-          <SubMenu key="5" icon={<FaCalendarAlt />} title="QL Lịch Hẹn">
             <Menu.Item
-              key="5-1"
-              onClick={() => handleMenuClick("5-1", APPOINTMENT)}
+            className="appointment"
+              key="5"
+              onClick={() => handleMenuClick("5", APPOINTMENT)}
             >
               <FaCalendarAlt />
-              <span>Lịch hẹn</span>
+              <span>Quản lý Lịch hẹn</span>
             </Menu.Item>
-            <Menu.Item
-              key="5-2"
-              onClick={() => handleMenuClick("5-2", "details-appointment")}
-            >
-              <FaClipboardList />
-              <span>Chi tiết lịch hẹn</span>
-            </Menu.Item>
-          </SubMenu>
 
           {/* Quản lý Cơ sở & Phòng */}
           <SubMenu key="6" icon={<FaBuilding />} title="QL Cơ sở & Phòng">
-            <Menu.Item
-              key="6-1"
-              onClick={() => handleMenuClick("6-1", "branch")}
-            >
-              <FaBuilding />
-              <span>Chi nhánh</span>
-            </Menu.Item>
+           
             <Menu.Item key="6-2" onClick={() => handleMenuClick("6-2", "room")}>
               <FaDoorOpen />
               <span>Phòng</span>
