@@ -8,6 +8,7 @@ import {
   getAllSchedule,
 } from "../../../services/api";
 import dayjs, { Dayjs } from "dayjs";
+import { useBranch } from "../../../hooks/branchContext";
 
 interface Schedule {
   id: number;
@@ -31,6 +32,7 @@ const ManageSchedule: React.FC = () => {
   const token = localStorage.getItem("accessToken");
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
+  const { branchId, setBranchId } = useBranch();
 
   const shifts = [
     { shifts: "morning", time: "7h - 15h", label: "Ca sáng" },
@@ -75,7 +77,7 @@ const ManageSchedule: React.FC = () => {
   };
 
   const fetchEmployee = async () => {
-    const response = await getAllEmployee(token, 1, 1000);
+    const response = await getAllEmployee(token, branchId, 1, 1000);
     setEmployees(response.data);
     console.log(response.data);
   };
@@ -125,14 +127,15 @@ const ManageSchedule: React.FC = () => {
 
     const checkInTime = selectedShift === "morning" ? "07:00:00" : "15:00:00";
     const checkOutTime = selectedShift === "morning" ? "15:00:00" : "23:00:00";
-    const selectedDateStr = selectedDateSchedule?.format('YYYY-MM-DD');
+    const selectedDateStr = selectedDateSchedule?.format("YYYY-MM-DD");
 
     for (const employeeId of selectedEmployees) {
-      const existingSchedule = filteredSchedules.find((schedule) => 
-        schedule.date === selectedDateStr &&
-        schedule.shift === selectedShift &&
-        schedule.employeeId === employeeId
-      )
+      const existingSchedule = filteredSchedules.find(
+        (schedule) =>
+          schedule.date === selectedDateStr &&
+          schedule.shift === selectedShift &&
+          schedule.employeeId === employeeId
+      );
       if (!existingSchedule) {
         // Tạo lịch mới nếu không tồn tại
         const schedule = {
@@ -143,38 +146,50 @@ const ManageSchedule: React.FC = () => {
           checkOutTime,
           employeeId: employeeId,
         };
-        
+
         try {
           const response = await createSchedule(schedule);
           console.log(`Created schedule for employee ${employeeId}:`, response);
         } catch (error) {
-          console.error(`Error creating schedule for employee ${employeeId}:`, error);
-          message.error(`Có lỗi khi tạo lịch làm cho nhân viên có ID ${employeeId}`);
+          console.error(
+            `Error creating schedule for employee ${employeeId}:`,
+            error
+          );
+          message.error(
+            `Có lỗi khi tạo lịch làm cho nhân viên có ID ${employeeId}`
+          );
         }
       } else {
-        console.log(`Employee ${employeeId} already has a schedule for this shift and day.`);
+        console.log(
+          `Employee ${employeeId} already has a schedule for this shift and day.`
+        );
       }
     }
 
     // Xóa lịch làm của những nhân viên không có trong selectedEmployees
-  const schedulesToDelete = schedules.filter(
-    (schedule) =>
-      schedule.date === selectedDateStr &&
-      schedule.shift === selectedShift &&
-      !selectedEmployees.includes(schedule.employeeId)
-  );
+    const schedulesToDelete = schedules.filter(
+      (schedule) =>
+        schedule.date === selectedDateStr &&
+        schedule.shift === selectedShift &&
+        !selectedEmployees.includes(schedule.employeeId)
+    );
 
-  for (const schedule of schedulesToDelete) {
-    try {
-      await deleteSchedule(token, schedule.id); // Thực hiện xóa lịch làm
-      console.log(`Deleted schedule for employee ${schedule.employeeId}`);
-    } catch (error) {
-      console.error(`Error deleting schedule for employee ${schedule.employeeId}:`, error);
-      message.error(`Có lỗi khi xóa lịch làm của nhân viên có ID ${schedule.employeeId}`);
+    for (const schedule of schedulesToDelete) {
+      try {
+        await deleteSchedule(token, schedule.id); // Thực hiện xóa lịch làm
+        console.log(`Deleted schedule for employee ${schedule.employeeId}`);
+      } catch (error) {
+        console.error(
+          `Error deleting schedule for employee ${schedule.employeeId}:`,
+          error
+        );
+        message.error(
+          `Có lỗi khi xóa lịch làm của nhân viên có ID ${schedule.employeeId}`
+        );
+      }
     }
-  }
-  setIsModalVisible(false);
-  message.success("Đã cập nhật lịch làm cho các nhân viên.");
+    setIsModalVisible(false);
+    message.success("Đã cập nhật lịch làm cho các nhân viên.");
   };
 
   return (

@@ -10,6 +10,7 @@ import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
 import EmployeeModal from "../components/modal/EmployeeModal";
+import { useBranch } from "../../../hooks/branchContext";
 
 const EmployeePage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -33,15 +34,16 @@ const EmployeePage: React.FC = () => {
   ]);
   const token = localStorage.getItem("accessToken") || "";
   const storedEmployees = localStorage.getItem("importedDataEmployee");
+  const { branchId, setBranchId } = useBranch();
 
   useEffect(() => {
     fetchEmployees();
   }, [storedEmployees, visibleModal]);
 
-
   const fetchEmployees = async () => {
     setLoading(true);
-    const response = await getAllEmployee(token, 1, 100);
+    const response = await getAllEmployee(token, branchId, 1, 100);
+
     setEmployees(response.data);
     console.log(response.data);
 
@@ -91,12 +93,15 @@ const EmployeePage: React.FC = () => {
   const handleDeleteEmployeeFromLocalStorage = (phone: string) => {
     if (storedEmployees) {
       console.log(storedEmployees);
-      
+
       const employeesArray = JSON.parse(storedEmployees);
       const updatedEmployees = employeesArray.filter(
         (employee: Employee) => employee.phone !== phone
       );
-      localStorage.setItem("importedDataEmployee", JSON.stringify(updatedEmployees));
+      localStorage.setItem(
+        "importedDataEmployee",
+        JSON.stringify(updatedEmployees)
+      );
       setEmployees(updatedEmployees);
     }
   };

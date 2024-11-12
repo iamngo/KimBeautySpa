@@ -10,6 +10,7 @@ import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import AccountModal from "../components/modal/AccountModal";
 import { MODE } from "../../../utils/constants";
+import { useBranch } from "../../../hooks/branchContext";
 
 const AccountPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -28,14 +29,19 @@ const AccountPage: React.FC = () => {
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
   const [dataEdit, setDataEdit] = useState<Account>();
+  const { branchId, setBranchId } = useBranch();
 
   useEffect(() => {
+    console.log(branchId);
+
     fetchAccounts();
   }, []);
 
   const fetchAccounts = async () => {
+    console.log(token);
+
     setLoading(true);
-    const response = await getAllAccount(token, 1, 100);
+    const response = await getAllAccount(token, 1, 1, 100);
     setAccounts(response.data);
     setLoading(false);
   };
@@ -53,7 +59,7 @@ const AccountPage: React.FC = () => {
   };
 
   const filteredAccounts = useMemo(() => {
-    return accounts.filter((account: Account) =>
+    return accounts?.filter((account: Account) =>
       account.phone.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
   }, [debouncedKeyword, accounts]);
@@ -73,7 +79,10 @@ const AccountPage: React.FC = () => {
       const updatedAccounts = accountsArray.filter(
         (account: Account) => account.phone !== phone
       );
-      localStorage.setItem("importedDataAccount", JSON.stringify(updatedAccounts));
+      localStorage.setItem(
+        "importedDataAccount",
+        JSON.stringify(updatedAccounts)
+      );
       setAccounts(updatedAccounts);
     }
   };
@@ -108,21 +117,24 @@ const AccountPage: React.FC = () => {
               <Button type="link" onClick={() => handleEditAccount(record)}>
                 <TiPlusOutline />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever onClick={() => handleDeleteAccountFromLocalStorage(record.phone)}/>
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever
+                  onClick={() =>
+                    handleDeleteAccountFromLocalStorage(record.phone)
+                  }
+                />
+              </Button>
             </div>
           ) : (
             <div>
               <Button type="link" onClick={() => handleEditAccount(record)}>
                 <BiEdit />
               </Button>
-               <Button type="link" danger>
-               <MdDeleteForever />
-             </Button>
+              <Button type="link" danger>
+                <MdDeleteForever />
+              </Button>
             </div>
           )}
-         
         </div>
       ),
     },

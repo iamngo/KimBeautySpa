@@ -48,13 +48,11 @@ const AppointmentPage: React.FC = () => {
   const { branchId, setBranchId } = useBranch();
   const [searchDate, setSearchDate] = useState<string>("");
 
-
   useEffect(() => {
     if (branchId) {
       fetchServicesAndAppointments();
     }
   }, [branchId, visibleModal]);
-
 
   const fetchServicesAndAppointments = async () => {
     setLoading(true);
@@ -66,7 +64,7 @@ const AppointmentPage: React.FC = () => {
     const customerResponse = await getAllCustomer(token, 1, 100);
     setCustomers(customerResponse.data);
 
-    const employeeResponse = await getAllEmployee(token, 1, 100);
+    const employeeResponse = await getAllEmployee(token, branchId, 1, 100);
     setEmployees(employeeResponse.data);
 
     const bedResponse = await getAllBed(token, 1, 200);
@@ -139,23 +137,31 @@ const AppointmentPage: React.FC = () => {
 
     if (searchDate) {
       filtered = filtered.filter((appointment) => {
-        const appointmentDate = new Date(appointment.dateTime).toLocaleDateString();
+        const appointmentDate = new Date(
+          appointment.dateTime
+        ).toLocaleDateString();
         const selectedDate = new Date(searchDate).toLocaleDateString();
-        return appointmentDate === selectedDate; 
+        return appointmentDate === selectedDate;
       });
     }
-  
+
     // Nếu tab là "booked", lọc các cuộc hẹn có status là "confirmed"
     if (selectedTab === "booked") {
-      filtered = filtered.filter((appointment) => appointment.status === "confirmed");
+      filtered = filtered.filter(
+        (appointment) => appointment.status === "confirmed"
+      );
     }
     if (selectedTab === "in-progress") {
-      filtered = filtered.filter((appointment) => appointment.status === "performing");
+      filtered = filtered.filter(
+        (appointment) => appointment.status === "performing"
+      );
     }
     if (selectedTab === "completed") {
-      filtered = filtered.filter((appointment) => appointment.status === "finished");
+      filtered = filtered.filter(
+        (appointment) => appointment.status === "finished"
+      );
     }
-  
+
     return filtered;
   }, [debouncedKeyword, appointments, selectedTab, searchDate]);
 
