@@ -128,6 +128,7 @@ export const getWorkingTimeByServiceIdAndDate = async (
 
 export const getAllEmployee = async (
   token: string | null,
+  branchId: number,
   page: number,
   limit: number
 ) => {
@@ -135,7 +136,7 @@ export const getAllEmployee = async (
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: { page, limit },
+    params: { branchId, page, limit },
   });
   return response.data;
 };
@@ -316,14 +317,15 @@ export const getGiftById = async (id: number) => {
   return response.data;
 };
 
-export const getVoucherById = async ( id: number) => {
-  const response = await axios.get(`${API_URL}/${VOUCHER}/${id}`, );
+export const getVoucherById = async (id: number) => {
+  const response = await axios.get(`${API_URL}/${VOUCHER}/${id}`);
   return response.data;
 };
 
 //manage
 export const getAllAccount = async (
   token: string | null,
+  branchId: number,
   page: number,
   limit: number
 ) => {
@@ -331,7 +333,7 @@ export const getAllAccount = async (
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: { page, limit },
+    params: { branchId, page, limit },
   });
   return response.data;
 };
