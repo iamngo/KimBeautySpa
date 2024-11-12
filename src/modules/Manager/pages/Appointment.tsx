@@ -1,15 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton, Tabs } from "antd";
+import { Button, DatePicker, Skeleton, Tabs } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllAppointment, getAllBed, getAllCustomer, getAllEmployee, getAllService, getEmployeeById } from "../../../services/api";
+import {
+  getAllAppointment,
+  getAllBed,
+  getAllCustomer,
+  getAllEmployee,
+  getAllService,
+  getEmployeeById,
+} from "../../../services/api";
 import { Appointment, Customer, Employee, Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
 import AppointmentModal from "../components/modal/AppointmentModal";
+import { useBranch } from "../../../hooks/branchContext";
 
 const AppointmentPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -37,16 +45,22 @@ const AppointmentPage: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [beds, setBeds] = useState<[]>([]);
   const [selectedTab, setSelectedTab] = useState("all");
+  const { branchId, setBranchId } = useBranch();
+  const [searchDate, setSearchDate] = useState<string>("");
+
 
   useEffect(() => {
-    fetchServicesAndAppointments();
-  }, [visibleModal]);
+    if (branchId) {
+      fetchServicesAndAppointments();
+    }
+  }, [branchId, visibleModal]);
+
 
   const fetchServicesAndAppointments = async () => {
     setLoading(true);
 
     // Fetch all services
-    const servicesResponse = await getAllService(1,100);
+    const servicesResponse = await getAllService(1, 100);
     setServices(servicesResponse.data);
 
     const customerResponse = await getAllCustomer(token, 1, 100);
@@ -59,7 +73,12 @@ const AppointmentPage: React.FC = () => {
     setBeds(bedResponse.data);
 
     // Fetch appointments and map service and employee names
-    const appointmentsResponse = await getAllAppointment(token, 1, 100);
+    const appointmentsResponse = await getAllAppointment(
+      token,
+      1,
+      100,
+      branchId
+    );
     const appointmentsWithDetails = await Promise.all(
       appointmentsResponse.data.map(async (appointment: Appointment) => {
         const updatedAppointment = { ...appointment };
@@ -69,27 +88,33 @@ const AppointmentPage: React.FC = () => {
           (service: Service) => service.id === appointment.serviceOrTreatmentId
         );
         const customer = customerResponse.data.find(
-            (customer: Customer) => customer.id === appointment.customerId
+          (customer: Customer) => customer.id === appointment.customerId
         );
         const employee = employeeResponse.data.find(
-            (employee: Employee) => employee.id === appointment.employeeId
+          (employee: Employee) => employee.id === appointment.employeeId
         );
         const bed = bedResponse.data.find(
-            (bed) => bed.id === appointment.bedId
-        )
-        updatedAppointment.serviceName = service ? service.name : "Unknown Service";
-        updatedAppointment.customerName = customer ? customer.fullName : "Unknown Customer";
-        updatedAppointment.employeeName = employee ? employee.fullName : "Unknown Employee";
+          (bed) => bed.id === appointment.bedId
+        );
+        updatedAppointment.serviceName = service
+          ? service.name
+          : "Unknown Service";
+        updatedAppointment.customerName = customer
+          ? customer.fullName
+          : "Unknown Customer";
+        updatedAppointment.employeeName = employee
+          ? employee.fullName
+          : "Unknown Employee";
         updatedAppointment.bedName = bed ? bed.name : "Unknown Bed";
         console.log(bed);
-        
+
         return updatedAppointment;
       })
     );
 
     setAppointments(appointmentsWithDetails);
     console.log(appointmentsWithDetails);
-    
+
     setLoading(false);
   };
 
@@ -106,11 +131,33 @@ const AppointmentPage: React.FC = () => {
   };
 
   const filteredAppointments = useMemo(() => {
-    return appointments.filter((appointment: Appointment) =>
-      appointment.customerName?.toLowerCase()
+    let filtered = appointments.filter((appointment: Appointment) =>
+      appointment.customerName
+        ?.toLowerCase()
         .includes(debouncedKeyword.toLowerCase())
     );
-  }, [debouncedKeyword, appointments]);
+
+    if (searchDate) {
+      filtered = filtered.filter((appointment) => {
+        const appointmentDate = new Date(appointment.dateTime).toLocaleDateString();
+        const selectedDate = new Date(searchDate).toLocaleDateString();
+        return appointmentDate === selectedDate; 
+      });
+    }
+  
+    // Nếu tab là "booked", lọc các cuộc hẹn có status là "confirmed"
+    if (selectedTab === "booked") {
+      filtered = filtered.filter((appointment) => appointment.status === "confirmed");
+    }
+    if (selectedTab === "in-progress") {
+      filtered = filtered.filter((appointment) => appointment.status === "performing");
+    }
+    if (selectedTab === "completed") {
+      filtered = filtered.filter((appointment) => appointment.status === "finished");
+    }
+  
+    return filtered;
+  }, [debouncedKeyword, appointments, selectedTab, searchDate]);
 
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
@@ -139,12 +186,13 @@ const AppointmentPage: React.FC = () => {
       sorter: (a: Appointment, b: Appointment) => a.id - b.id,
     },
     {
-        title: "Thời gian",
-        dataIndex: "dateTime",
-        key: "dateTime",
-        render: (dateTime: string) => {
-          const date = new Date(dateTime);
-          return date.toLocaleString("en-GB", {
+      title: "Thời gian",
+      dataIndex: "dateTime",
+      key: "dateTime",
+      render: (dateTime: string) => {
+        const date = new Date(dateTime);
+        return date
+          .toLocaleString("en-GB", {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
@@ -152,11 +200,12 @@ const AppointmentPage: React.FC = () => {
             minute: "2-digit",
             second: "2-digit",
             hour12: false,
-          }).replace(',', ''); // Remove the comma between date and time
-        },
-        sorter: (a: Appointment, b: Appointment) =>
-          new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+          })
+          .replace(",", ""); // Remove the comma between date and time
       },
+      sorter: (a: Appointment, b: Appointment) =>
+        new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+    },
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -176,7 +225,7 @@ const AppointmentPage: React.FC = () => {
       dataIndex: "serviceName",
       key: "serviceName",
       sorter: (a: Appointment, b: Appointment) =>
-        a.serviceName?.localeCompare(b.serviceName)
+        a.serviceName?.localeCompare(b.serviceName),
     },
     {
       title: "Nhân viên",
@@ -211,29 +260,14 @@ const AppointmentPage: React.FC = () => {
       key: "actions",
       render: (text: string, record: Employee) => (
         <div>
-          {record.isNew ? (
-            <div>
-              <Button type="link">
-                <TiPlusOutline />
-              </Button>
-              <Button type="link" danger>
-                <MdDeleteForever
-                //   onClick={() =>
-                //     handleDeleteEmployeeFromLocalStorage(record.phone)
-                //   }
-                />
-              </Button>
-            </div>
-          ) : (
-            <div>
-              <Button type="link" onClick={() => handleEditEmployee(record)}>
-                <BiEdit />
-              </Button>
-              <Button type="link" danger>
-                <MdDeleteForever />
-              </Button>
-            </div>
-          )}
+          <div>
+            <Button type="link" onClick={() => handleEditEmployee(record)}>
+              <BiEdit />
+            </Button>
+            <Button type="link" danger>
+              <MdDeleteForever />
+            </Button>
+          </div>
         </div>
       ),
     },
@@ -253,6 +287,10 @@ const AppointmentPage: React.FC = () => {
     setSelectedTab(key);
   };
 
+  const handleDateChange = (date: any, dateString: string) => {
+    setSearchDate(dateString); // Lưu ngày đã chọn dưới dạng chuỗi
+  };
+
   return (
     <div className="manage-account">
       <AppointmentModal
@@ -267,6 +305,11 @@ const AppointmentPage: React.FC = () => {
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+        />
+        <DatePicker
+          placeholder="Tìm kiếm theo ngày"
+          onChange={handleDateChange}
+          style={{ width: 200 }}
         />
         <Button
           type="primary"

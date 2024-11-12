@@ -430,13 +430,14 @@ export const getAllService = async (page: number, limit: number) => {
 export const getAllAppointment = async (
   token: string | null,
   page: number,
-  limit: number
+  limit: number,
+  branchId: number
 ) => {
   const response = await axios.get(`${API_URL}/${APPOINTMENT}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: { page, limit },
+    params: { branchId, page, limit },
   });
   return response.data;
 };
