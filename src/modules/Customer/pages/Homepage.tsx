@@ -21,6 +21,7 @@ const Homepage = () => {
       
       setUserId(decodedPayload.id);
       
+      
       // if (decodedPayload.type !== "customer") {
       //   navigate(`${MANAGER}/${DASHBOARD}`);
       // }

@@ -25,6 +25,7 @@ import {
 import ModalUpdateProfile from "../modal/ModalUpdateProfile";
 import { GrFormSchedule, GrSystem } from "react-icons/gr";
 import { AiFillSchedule } from "react-icons/ai";
+import { useBranch } from "../../../../hooks/branchContext";
 
 const { Header } = Layout;
 const { SubMenu } = Menu;
@@ -42,6 +43,8 @@ const HeaderHomepage: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState<string>("home");
   const [customer, setCustomer] = useState();
   const [employee, setEmployee] = useState();
+  const { branchId, setBranchId } = useBranch();
+
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
@@ -67,8 +70,8 @@ const HeaderHomepage: React.FC = () => {
             token,
             decodedPayload.id
           );
-          setEmployee(response.data);
-          console.log(response.data);
+          setEmployee(response.data);          
+          setBranchId(response.data.branchId);
         };
         getEmployee();
       }
@@ -106,7 +109,7 @@ const HeaderHomepage: React.FC = () => {
       message.success("Đăng xuất thành công!");
     }
     if (key === "manage") {
-      navigate(`${MANAGER}/${DASHBOARD}`);
+      navigate(`${MANAGER}/${DASHBOARD}`, {state: {branchId: branchId}});
     }
   };
 

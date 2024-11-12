@@ -230,14 +230,12 @@ const ManagerLayout: React.FC = () => {
           </Menu.Item>
         </Menu>
       </Sider>
-     <BranchProvider>
         <Layout className="site-layout">
           <Content>
             <CustomHeader />
             <Outlet />
           </Content>
         </Layout>
-     </BranchProvider>
     </Layout>
   );
 };

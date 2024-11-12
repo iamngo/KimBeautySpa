@@ -4,7 +4,7 @@ import "./Header.scss";
 import { FaBell, FaCodeBranch, FaFacebookMessenger } from "react-icons/fa";
 import { TiUserOutline } from "react-icons/ti";
 import { IoLogOutOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LOGIN } from "../../../../routes";
 import { getAllBranch } from "../../../../services/api";
 import { useBranch } from "../../../../hooks/branchContext";
@@ -18,6 +18,7 @@ const CustomHeader: React.FC = () => {
   const token = localStorage.getItem("accessToken");
   const [branches, setBranches] = useState();
   const { branchId, setBranchId } = useBranch();
+  const location = useLocation();
 
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "profile") {
@@ -58,7 +59,8 @@ const CustomHeader: React.FC = () => {
     <Header className="custom-header-admin">
       <div className="branch-info">
       <Select
-          value={branchId || "Chọn chi nhánh"}  
+      defaultValue={location.state?.branchId}
+          value={branchId }  
           onChange={handleBranchChange}  
           style={{ width: '250px' }}
           suffixIcon={<FaCodeBranch />}
