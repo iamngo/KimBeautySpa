@@ -32,6 +32,7 @@ import {
   SERVICE_CATEGORY,
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
+import { BranchProvider } from "../../../hooks/branchContext";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -229,12 +230,14 @@ const ManagerLayout: React.FC = () => {
           </Menu.Item>
         </Menu>
       </Sider>
-      <Layout className="site-layout">
-        <Content>
-          <CustomHeader />
-          <Outlet />
-        </Content>
-      </Layout>
+     <BranchProvider>
+        <Layout className="site-layout">
+          <Content>
+            <CustomHeader />
+            <Outlet />
+          </Content>
+        </Layout>
+     </BranchProvider>
     </Layout>
   );
 };
