@@ -492,6 +492,9 @@ body {
     }
 
     .current-points {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
       font-size: 1.2rem;
       font-weight: 700;
       margin-top: 15px;
