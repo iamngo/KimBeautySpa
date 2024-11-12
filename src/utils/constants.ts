@@ -25,5 +25,7 @@ export const MODE = {
 export const SCHEDULE = 'schedule';
 export const GIFT = 'gift';
 export const VOUCHER = 'voucher';
+export const CUSTOMER_GIFT = 'customer-gift';
+export const CUSTOMER_POINT = 'customer-point';
 
 

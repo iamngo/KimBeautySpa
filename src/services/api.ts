@@ -8,6 +8,8 @@ import {
   BRANCH,
   CATEGORY,
   CUSTOMER,
+  CUSTOMER_GIFT,
+  CUSTOMER_POINT,
   DETAIL_SERVICE,
   DISCOUNT,
   EMPLOYEE,
@@ -52,7 +54,10 @@ export const getInfoByAccountId = async (token: string | null, id: string) => {
   return response.data;
 };
 
-export const getInfoEmpByAccountId = async (token: string | null, id: string) => {
+export const getInfoEmpByAccountId = async (
+  token: string | null,
+  id: string
+) => {
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/${ACCOUNT}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -91,10 +96,14 @@ export const getAllServiceCategory = async (page: number, limit: number) => {
   return response.data;
 };
 
-export const getServiceByCategory = async (serviceCategoryId: number, page: number, limit: number) => {
+export const getServiceByCategory = async (
+  serviceCategoryId: number,
+  page: number,
+  limit: number
+) => {
   const response = await axios.get(
     `${API_URL}/${SERVICE}/${CATEGORY}/${serviceCategoryId}`,
-    {params: { page, limit },}
+    { params: { page, limit } }
   );
   return response.data;
 };
@@ -222,9 +231,10 @@ export const updateInfoCustomer = async (
   return response.data;
 };
 
-
 export const getDetailServiceByServiceId = async (serviceId: number) => {
-  const response = await axios.get(`${API_URL}/${DETAIL_SERVICE}/${SERVICE}/${serviceId}`);
+  const response = await axios.get(
+    `${API_URL}/${DETAIL_SERVICE}/${SERVICE}/${serviceId}`
+  );
   return response.data;
 };
 
@@ -249,6 +259,65 @@ export const getAllVoucher = async (page: number, limit: number) => {
   const response = await axios.get(`${API_URL}/${VOUCHER}`, {
     params: { page, limit },
   });
+  return response.data;
+};
+
+export const giftExchange = async (token: string | null, data: any) => {
+  const response = await axios.post(`${API_URL}/${CUSTOMER_GIFT}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const getPointByCustomerId = async (
+  token: string | null,
+  id: number
+) => {
+  const response = await axios.get(
+    `${API_URL}/${CUSTOMER_POINT}/${CUSTOMER}/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const updatePointOfCustomer = async (
+  token: string | null,
+  id: number,
+  data: any
+) => {
+  const response = await axios.put(`${API_URL}/${CUSTOMER_POINT}/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const getGiftByCustomerId = async (token: string | null, id: number) => {
+  const response = await axios.get(
+    `${API_URL}/${CUSTOMER_GIFT}/${CUSTOMER}/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const getGiftById = async (id: number) => {
+  const response = await axios.get(`${API_URL}/${GIFT}/${id}`);
+  return response.data;
+};
+
+export const getVoucherById = async ( id: number) => {
+  const response = await axios.get(`${API_URL}/${VOUCHER}/${id}`, );
   return response.data;
 };
 
@@ -358,7 +427,11 @@ export const getAllService = async (page: number, limit: number) => {
   return response.data;
 };
 
-export const getAllAppointment = async (token: string | null, page: number, limit: number) => {
+export const getAllAppointment = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
   const response = await axios.get(`${API_URL}/${APPOINTMENT}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -368,7 +441,11 @@ export const getAllAppointment = async (token: string | null, page: number, limi
   return response.data;
 };
 
-export const getAllBed = async (token: string | null, page: number, limit: number) => {
+export const getAllBed = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
   const response = await axios.get(`${API_URL}/${BED}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -378,7 +455,11 @@ export const getAllBed = async (token: string | null, page: number, limit: numbe
   return response.data;
 };
 
-export const getAllRoom= async (token: string | null, page: number, limit: number) => {
+export const getAllRoom = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
   const response = await axios.get(`${API_URL}/${ROOM}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -389,20 +470,34 @@ export const getAllRoom= async (token: string | null, page: number, limit: numbe
 };
 
 export const createServiceCategory = async (serviceCategory: any) => {
-  const response = await axios.post(`${API_URL}/${SERVICE_CATEGORY}`, serviceCategory,);
+  const response = await axios.post(
+    `${API_URL}/${SERVICE_CATEGORY}`,
+    serviceCategory
+  );
   return response.data;
 };
 
-export const updateServiceCategory = async (token: string | null, serviceCategory: any, id: number) => {
-  const response = await axios.put(`${API_URL}/${SERVICE_CATEGORY}/${id}`, serviceCategory, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const updateServiceCategory = async (
+  token: string | null,
+  serviceCategory: any,
+  id: number
+) => {
+  const response = await axios.put(
+    `${API_URL}/${SERVICE_CATEGORY}/${id}`,
+    serviceCategory,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-export const deleteServiceCategory = async (token: string | null, id: number) => {
+export const deleteServiceCategory = async (
+  token: string | null,
+  id: number
+) => {
   const response = await axios.delete(`${API_URL}/${SERVICE_CATEGORY}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -411,7 +506,11 @@ export const deleteServiceCategory = async (token: string | null, id: number) =>
   return response.data;
 };
 
-export const getAllSchedule = async (token: string | null, page: number, limit: number) => {
+export const getAllSchedule = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
   const response = await axios.get(`${API_URL}/${SCHEDULE}`, {
     headers: {
       Authorization: `Bearer ${token}`,
