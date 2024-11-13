@@ -15,6 +15,7 @@ import {
   EMPLOYEE,
   EVENT,
   GIFT,
+  INTERNAL_EXPENSE,
   PRICES,
   ROOM,
   SCHEDULE,
@@ -138,6 +139,60 @@ export const getAllEmployee = async (
     },
     params: { branchId, page, limit },
   });
+  return response.data;
+};
+
+export const getRevenueOfServiceByDate = async (
+  // token: string | null,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  const response = await axios.get(
+    `${API_URL}/${SERVICE}/revenues/${branchId}`,
+    {
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
+      params: { month, year },
+    }
+  );
+  return response.data;
+};
+
+export const getSalaryOfEmployeeByMonthYear = async (
+  // token: string | null,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  const response = await axios.get(
+    `${API_URL}/${EMPLOYEE}/salary/${branchId}`,
+    {
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
+      params: { month, year },
+    }
+  );
+  return response.data;
+};
+
+export const getExpenseByMonthYear = async (
+  // token: string | null,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  const response = await axios.get(
+    `${API_URL}/${INTERNAL_EXPENSE}/expense/${branchId}`,
+    {
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
+      params: { month, year },
+    }
+  );
   return response.data;
 };
 
