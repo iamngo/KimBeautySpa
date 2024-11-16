@@ -134,7 +134,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   };
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
-      selectedServiceId,
       `${selectedDate} ${time}:00`,
       selectedBranch,
       room?.roomId
@@ -178,7 +177,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
-      selectedServiceId,
+      room.roomId,
       selectedDate,
       selectedBranch
     );
@@ -209,7 +208,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
           status: values.status,
           category: "services",
-          serviceOrTreatmentId: values.service,
+          foreignKeyId: values.service,
           employeeId: values.staff,
           fullName: values.fullName,
           phone: values.phone,
@@ -217,6 +216,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           branchId: values.branch,
           bedId: values.bed,
           bonusId: idBonus,
+          expense: 0,
         };
         const response = await registerAppointment(appointment);
 

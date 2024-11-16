@@ -132,7 +132,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
-      selectedServiceId,
+      room.roomId,
       selectedDate,
       selectedBranch
     );
@@ -154,7 +154,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
-      selectedServiceId,
       `${selectedDate} ${time}:00`,
       selectedBranch,
       room?.roomId
@@ -174,6 +173,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const fetchCategoryById = async () => {
     const response = await getCategoryServiceById(selectedCategoryId);
+    console.log(response.data);
+
     setRoom(response.data);
   };
 
@@ -204,12 +205,13 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
         status: "confirmed",
         category: "services",
-        serviceOrTreatmentId: values.service,
+        foreignKeyId: values.service,
         employeeId: values.staff,
         customerId: customer?.id,
         branchId: values.branch,
         bedId: values.bed,
         bonusId: idBonus,
+        expense: 0,
       };
 
       console.log(
