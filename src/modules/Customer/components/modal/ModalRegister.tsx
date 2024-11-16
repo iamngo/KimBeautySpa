@@ -16,7 +16,6 @@ import {
 } from "../../../../services/api";
 import moment from "moment";
 
-
 interface ModalRegisterProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
@@ -30,7 +29,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   setVisible,
   userId,
   serviceId,
-  categoryId
+  categoryId,
 }) => {
   const [form] = Form.useForm<FormInstance>();
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
@@ -41,14 +40,18 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [selectedBed, setSelectedBed] = useState<number | null>(null);
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
   const [servicesByCategory, setServicesByCategory] = useState<any>({});
-  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
+    null
+  );
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [listTime, setListTime] = useState(null);
   const [time, setTime] = useState(null);
   const [bed, setBed] = useState<any[]>([]);
   const [room, setRoom] = useState(null);
   const [employees, setEmployees] = useState<any[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null
+  );
   const [idBonus, setIdBonus] = useState(0);
 
   useEffect(() => {
@@ -65,18 +68,21 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   }, [selectedBranch, selectedDate, selectedServiceId]);
 
   useEffect(() => {
+    getEmployees();
+  }, [selectedBranch, selectedDate, selectedServiceId, time]);
+
+  useEffect(() => {
     fetchCategoryById();
   }, [selectedServiceId]);
 
   useEffect(() => {
     getBedByServiceAndDate();
-    console.log(`${selectedDate} ${time}:00`);
   }, [selectedBranch, selectedDate, selectedServiceId, time]);
 
   useEffect(() => {
     if (serviceId && categoryId) {
       form.setFieldsValue({
-        service: serviceId, 
+        service: serviceId,
       });
       setSelectedCategoryId(categoryId);
       setSelectedServiceId(serviceId);
@@ -94,13 +100,13 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const getServiceCategory = async () => {
-    const response = await getAllServiceCategory( 1, 10);
+    const response = await getAllServiceCategory(1, 10);
     setServiceCategory(response.data);
 
     // Fetch services for each category
     const services = {};
     for (const category of response.data) {
-      const servicesResponse = await getServiceByCategory( category.id, 1, 100);
+      const servicesResponse = await getServiceByCategory(category.id, 1, 100);
       services[category.id] = servicesResponse.data;
     }
     setServicesByCategory(services); // Save all services categorized
@@ -110,7 +116,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     if (date) {
       const formattedDate = date.format("YYYY-MM-DD");
       setSelectedDate(formattedDate);
-      
+
       if (moment().isSame(date, "day")) {
         getTimeByServiceIdAndDate();
       }
@@ -122,7 +128,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const getNewIdBonus = async () => {
     const response = await getIdBonus();
     setIdBonus(response.data.id);
-  }
+  };
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
@@ -130,13 +136,13 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       selectedDate,
       selectedBranch
     );
-    
+
     const currentDate = moment();
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
-  
+
     // Nếu ngày được chọn là ngày hiện tại, chỉ hiển thị các giờ sau thời gian hiện tại cộng thêm 1 giờ
     if (selectedDateMoment.isSame(currentDate, "day")) {
-      const oneHourLater = currentDate.add(1, "hours").format("HH:mm");
+      const oneHourLater = currentDate.format("HH:mm");
       const filteredTimes = response.data.filter(
         (timeSlot: { time: string }) => timeSlot.time > oneHourLater
       );
@@ -154,21 +160,22 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       room?.roomId
     );
     setBed(response.data);
-    console.log(response.data);
-    
   };
 
   const getEmployees = async () => {
-    const response = await getAllEmployee(token, 1, 10);
+    const response = await getAllEmployee(
+      token,
+      1,
+      `${selectedDate} ${time}:00`
+    );
+
     setEmployees(response.data);
   };
 
   const fetchCategoryById = async () => {
-    const response = await getCategoryServiceById( selectedCategoryId);
+    const response = await getCategoryServiceById(selectedCategoryId);
     setRoom(response.data);
-    // console.log(response.data.roomId);
-    
-  }
+  };
 
   const disabledDate = (current) => {
     return current && current < moment().startOf("day");
@@ -194,24 +201,27 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const onFinish = async (values: any) => {
     try {
       const appointment = {
-        dateTime: `${values.date.format('YYYY-MM-DD')} ${values.time}:00`,
-        status: 'confirmed',
-        category: 'services', 
+        dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
+        status: "confirmed",
+        category: "services",
         serviceOrTreatmentId: values.service,
         employeeId: values.staff,
         customerId: customer?.id,
         branchId: values.branch,
         bedId: values.bed,
-        bonusId: idBonus
-      }
-      console.log("Appointment payload being sent:", JSON.stringify(appointment));
+        bonusId: idBonus,
+      };
+
+      console.log(
+        "Appointment payload being sent:",
+        JSON.stringify(appointment)
+      );
       const response = await registerAppointment(appointment);
       if (response.data !== null) {
         message.success("Đăng ký thành công!");
-    setVisibleModal(false);
-      }else{
+        setVisibleModal(false);
+      } else {
         console.log(response.error);
-        
       }
     } catch (error) {
       console.log("Validation failed:", error);
@@ -246,13 +256,20 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         >
           <Input placeholder="Nhập số điện thoại" />
         </Form.Item>
-        <Form.Item label="Chọn dịch vụ:" name="service" rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}>
+        <Form.Item
+          label="Chọn dịch vụ:"
+          name="service"
+          rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
+        >
           <Select
             placeholder="Chọn dịch vụ"
             onChange={(value) => {
-              setSelectedServiceId(value); 
-              const categoryId = Object.keys(servicesByCategory).find(categoryId => 
-                servicesByCategory[categoryId].some((service) => service.id === value)
+              setSelectedServiceId(value);
+              const categoryId = Object.keys(servicesByCategory).find(
+                (categoryId) =>
+                  servicesByCategory[categoryId].some(
+                    (service) => service.id === value
+                  )
               );
               setSelectedCategoryId(Number(categoryId)); // Lưu ID của category
             }}
@@ -324,23 +341,23 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
           </Form.Item>
         )}
         {selectedBranch && selectedServiceId && selectedDate && time && (
-  <Form.Item
-    label="Chọn giường:"
-    name="bed"
-    rules={[{ required: true, message: "Vui lòng chọn giường" }]}
-  >
-    <Select
-      placeholder="Chọn giường"
-      onChange={(value) => setSelectedBed(value)}
-    >
-      {bed.map((item) => (
-              <Select.Option key={item.id} value={item.id}>
-                {item.name}
-              </Select.Option>
-            ))}
-    </Select>
-  </Form.Item>
-)}
+          <Form.Item
+            label="Chọn giường:"
+            name="bed"
+            rules={[{ required: true, message: "Vui lòng chọn giường" }]}
+          >
+            <Select
+              placeholder="Chọn giường"
+              onChange={(value) => setSelectedBed(value)}
+            >
+              {bed.map((item) => (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
         <Form.Item label="Chọn nhân viên:" name="staff">
           <Select placeholder="Chọn nhân viên">
             {employees.map((item) => (
