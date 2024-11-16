@@ -130,14 +130,13 @@ export const getWorkingTimeByServiceIdAndDate = async (
 export const getAllEmployee = async (
   token: string | null,
   branchId: number,
-  page: number,
-  limit: number
+  dateTime: string
 ) => {
-  const response = await axios.get(`${API_URL}/${EMPLOYEE}`, {
+  const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: { branchId, page, limit },
+    params: { branchId, dateTime },
   });
   return response.data;
 };

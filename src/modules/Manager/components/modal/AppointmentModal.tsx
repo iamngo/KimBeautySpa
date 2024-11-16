@@ -93,9 +93,13 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           fullName: appointment.customerName,
           service: appointment.serviceOrTreatmentId,
           date: appointment.dateTime ? moment(appointment.dateTime) : null,
-          time: appointment.dateTime.split("T")[1].split(":").slice(0, 2).join(":"),
+          time: appointment.dateTime
+            .split("T")[1]
+            .split(":")
+            .slice(0, 2)
+            .join(":"),
           bed: appointment.bedName,
-          staff: appointment.employeeId
+          staff: appointment.employeeId,
         };
 
         form.setFieldsValue(formattedAppointment);
@@ -121,7 +125,11 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setRoom(response.data);
   };
   const getEmployees = async () => {
-    const response = await getAllEmployee(token, 1, 10);
+    const response = await getAllEmployee(
+      token,
+      1,
+      `${selectedDate} ${time}:00`
+    );
     setEmployees(response.data);
   };
   const getBedByServiceAndDate = async () => {
@@ -203,7 +211,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           category: "services",
           serviceOrTreatmentId: values.service,
           employeeId: values.staff,
-            customerId: 7,
+          fullName: values.fullName,
+          phone: values.phone,
+          customerId: 7,
           branchId: values.branch,
           bedId: values.bed,
           bonusId: idBonus,

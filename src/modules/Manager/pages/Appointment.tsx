@@ -54,6 +54,15 @@ const AppointmentPage: React.FC = () => {
     }
   }, [branchId, visibleModal]);
 
+  const getCurrentDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const MM = String(today.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const dd = String(today.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${MM}-${dd}`;
+  };
+
   const fetchServicesAndAppointments = async () => {
     setLoading(true);
 
@@ -64,7 +73,12 @@ const AppointmentPage: React.FC = () => {
     const customerResponse = await getAllCustomer(token, 1, 100);
     setCustomers(customerResponse.data);
 
-    const employeeResponse = await getAllEmployee(token, branchId, 1, 100);
+    const employeeResponse = await getAllEmployee(
+      token,
+      branchId,
+      getCurrentDate()
+    );
+
     setEmployees(employeeResponse.data);
 
     const bedResponse = await getAllBed(token, 1, 200);
