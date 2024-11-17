@@ -10,6 +10,7 @@ import {
   getAllEmployee,
   getAllService,
   getEmployeeById,
+  updateStatusAppointment,
 } from "../../../services/api";
 import { Appointment, Customer, Employee, Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
@@ -36,7 +37,7 @@ const AppointmentPage: React.FC = () => {
     "employeeName",
     "customerName",
     "bedName",
-    // "bonusId",
+    // "performing",
     "actions",
   ]);
   const token = localStorage.getItem("accessToken") || "";
@@ -184,6 +185,12 @@ const AppointmentPage: React.FC = () => {
     );
   };
 
+  const handleClickPerforming = async (id) => {
+    const response = await updateStatusAppointment(id);
+    console.log(response);
+    
+  }
+
   const columns = [
     {
       title: "ID",
@@ -255,11 +262,9 @@ const AppointmentPage: React.FC = () => {
         a.bedName?.localeCompare(b.bedName),
     },
     // {
-    //   title: "Điểm thưởng",
-    //   dataIndex: "bonusId",
-    //   key: "bonusId",
-    //   sorter: (a: Appointment, b: Appointment) =>
-    //     a.bonusId.localeCompare(b.bonusId),
+    //   title: "Thực hiện",
+    //   key: "performing",
+    //   render: (record: Appointment) => (<button onClick={() => handleClickPerforming(record.id)}>Thực hiện</button>)      
     // },
     {
       title: "Hành động",

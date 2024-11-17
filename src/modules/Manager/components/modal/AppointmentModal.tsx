@@ -87,7 +87,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         form.setFieldsValue({ status: "confirmed" });
       } else if (mode === MODE.EDIT && appointment) {
         getTimeByServiceIdAndDate();
-        console.log(appointment.dateTime);
+        console.log(appointment);
         const formattedAppointment = {
           ...appointment,
           fullName: appointment.customerName,
@@ -95,7 +95,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           date: appointment.dateTime ? moment(appointment.dateTime) : null,
           time: appointment.dateTime.split("T")[1].split(":").slice(0, 2).join(":"),
           bed: appointment.bedName,
-          staff: appointment.employeeId
+          staff: appointment.employeeId,
+          branch: appointment.branchId,
+
         };
 
         form.setFieldsValue(formattedAppointment);
@@ -211,6 +213,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         const response = await registerAppointment(appointment);
 
         if (response.data !== null) {
+          console.log(response.data);
+          
           message.success("Đăng ký thành công!");
           setVisible(!visible);
         } else {
