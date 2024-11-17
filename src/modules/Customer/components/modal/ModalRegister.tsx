@@ -68,12 +68,15 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   }, [selectedBranch, selectedDate, selectedServiceId]);
 
   useEffect(() => {
+    getEmployees();
+  }, [selectedBranch, selectedDate, selectedServiceId, time]);
+
+  useEffect(() => {
     fetchCategoryById();
   }, [selectedServiceId]);
 
   useEffect(() => {
     getBedByServiceAndDate();
-    console.log(`${selectedDate} ${time}:00`);
   }, [selectedBranch, selectedDate, selectedServiceId, time]);
 
   useEffect(() => {
@@ -129,7 +132,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
-      selectedServiceId,
+      room.roomId,
       selectedDate,
       selectedBranch
     );
@@ -139,7 +142,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
     // Nếu ngày được chọn là ngày hiện tại, chỉ hiển thị các giờ sau thời gian hiện tại cộng thêm 1 giờ
     if (selectedDateMoment.isSame(currentDate, "day")) {
-      const oneHourLater = currentDate.add(1, "hours").format("HH:mm");
+      const oneHourLater = currentDate.format("HH:mm");
       const filteredTimes = response.data.filter(
         (timeSlot: { time: string }) => timeSlot.time > oneHourLater
       );
@@ -151,24 +154,28 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
-      selectedServiceId,
       `${selectedDate} ${time}:00`,
       selectedBranch,
       room?.roomId
     );
     setBed(response.data);
-    console.log(response.data);
   };
 
   const getEmployees = async () => {
-    const response = await getAllEmployee(token, selectedBranch, 1, 10);
+    const response = await getAllEmployee(
+      token,
+      1,
+      `${selectedDate} ${time}:00`
+    );
+
     setEmployees(response.data);
   };
 
   const fetchCategoryById = async () => {
     const response = await getCategoryServiceById(selectedCategoryId);
+    console.log(response.data);
+
     setRoom(response.data);
-    // console.log(response.data.roomId);
   };
 
   const disabledDate = (current) => {
@@ -198,7 +205,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
         status: "confirmed",
         category: "services",
-        serviceOrTreatmentId: values.service,
+        foreignKeyId: values.service,
         employeeId: values.staff,
         customerId: customer?.id,
         branchId: values.branch,

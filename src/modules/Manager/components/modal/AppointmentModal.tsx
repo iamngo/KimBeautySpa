@@ -93,11 +93,13 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           fullName: appointment.customerName,
           service: appointment.serviceOrTreatmentId,
           date: appointment.dateTime ? moment(appointment.dateTime) : null,
-          time: appointment.dateTime.split("T")[1].split(":").slice(0, 2).join(":"),
+          time: appointment.dateTime
+            .split("T")[1]
+            .split(":")
+            .slice(0, 2)
+            .join(":"),
           bed: appointment.bedName,
           staff: appointment.employeeId,
-          branch: appointment.branchId,
-
         };
 
         form.setFieldsValue(formattedAppointment);
@@ -123,12 +125,15 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setRoom(response.data);
   };
   const getEmployees = async () => {
-    const response = await getAllEmployee(token, 1, 10);
+    const response = await getAllEmployee(
+      token,
+      1,
+      `${selectedDate} ${time}:00`
+    );
     setEmployees(response.data);
   };
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
-      selectedServiceId,
       `${selectedDate} ${time}:00`,
       selectedBranch,
       room?.roomId
@@ -172,7 +177,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
-      selectedServiceId,
+      room.roomId,
       selectedDate,
       selectedBranch
     );
@@ -203,12 +208,15 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
           status: values.status,
           category: "services",
-          serviceOrTreatmentId: values.service,
+          foreignKeyId: values.service,
           employeeId: values.staff,
-            customerId: 7,
+          fullName: values.fullName,
+          phone: values.phone,
+          customerId: 7,
           branchId: values.branch,
           bedId: values.bed,
           bonusId: idBonus,
+          expense: 0,
         };
         const response = await registerAppointment(appointment);
 
