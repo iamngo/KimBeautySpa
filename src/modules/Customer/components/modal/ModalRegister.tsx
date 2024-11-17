@@ -109,7 +109,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       const servicesResponse = await getServiceByCategory(category.id, 1, 100);
       services[category.id] = servicesResponse.data;
     }
-    setServicesByCategory(services); // Save all services categorized
+    setServicesByCategory(services);
+    console.log(services);
   };
 
   const handleDateChange = (date: any) => {
@@ -280,7 +281,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
               <Select.OptGroup key={category.id} label={category.name}>
                 {servicesByCategory[category.id]?.map((service) => (
                   <Select.Option key={service.id} value={service.id}>
-                    {service.name}
+                    {service.name} -{" "}
+                    {service.specialPrice.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
                   </Select.Option>
                 ))}
               </Select.OptGroup>
