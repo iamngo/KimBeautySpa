@@ -74,16 +74,9 @@ export const getInfoEmpByAccountId = async (
   return response.data;
 };
 
-export const getAllBranch = async (
-  token: string | null,
-  page: number,
-  limit: number
-) => {
-  if (!token || !page || !limit) return;
+export const getAllBranch = async (page: number, limit: number) => {
+  if (!page || !limit) return;
   const response = await axios.get(`${API_URL}/${BRANCH}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     params: { page, limit },
   });
   return response.data;
@@ -121,34 +114,23 @@ export const getServiceByCategory = async (
 };
 
 export const getWorkingTimeByServiceIdAndDate = async (
-  token: string | null,
   roomId: number | null,
   date: string | null,
   branchId: number | null
 ) => {
-  if (!token || !roomId || !date || !branchId) return;
+  if (!roomId || !date || !branchId) return;
   const response = await axios.get(
     `${API_URL}/${WORKING_TIME}/${SERVICE}/${TIME}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       params: { roomId, date, branchId },
     }
   );
   return response.data;
 };
 
-export const getAllEmployee = async (
-  token: string | null,
-  branchId: number,
-  dateTime: string
-) => {
-  if (!token || !branchId || dateTime.includes("null")) return;
+export const getAllEmployee = async (branchId: number, dateTime: string) => {
+  if (!branchId || dateTime.includes("null")) return;
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     params: { branchId, dateTime },
   });
   return response.data;
@@ -630,6 +612,15 @@ export const deleteSchedule = async (token: string | null, id: number) => {
   const response = await axios.delete(`${API_URL}/${SCHEDULE}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const updateStatusAppointment = async (id: number) => {
+  const response = await axios.put(`${API_URL}/${APPOINTMENT}/status/${id}`, {
+    params: {
+      status: "performing",
     },
   });
   return response.data;

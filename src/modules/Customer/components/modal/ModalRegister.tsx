@@ -32,7 +32,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   categoryId,
 }) => {
   const [form] = Form.useForm<FormInstance>();
-  const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const token = localStorage.getItem("accessToken");
   const [customer, setCustomer] = useState(null);
   const [branch, setBranch] = useState<any[]>([]);
@@ -55,16 +54,15 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [idBonus, setIdBonus] = useState(0);
 
   useEffect(() => {
-    setVisibleModal(visible);
     getInfoCustomer();
     getBranch();
     getServiceCategory();
-    getEmployees();
     getNewIdBonus();
-  }, [visible, userId]);
+  }, []);
 
   useEffect(() => {
     getTimeByServiceIdAndDate();
+    getEmployees();
   }, [selectedBranch, selectedDate, selectedServiceId]);
 
   useEffect(() => {
@@ -95,7 +93,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const getBranch = async () => {
-    const response = await getAllBranch(token, 1, 5);
+    const response = await getAllBranch(1, 5);
     setBranch(response.data);
   };
 
@@ -109,7 +107,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       const servicesResponse = await getServiceByCategory(category.id, 1, 100);
       services[category.id] = servicesResponse.data;
     }
-    setServicesByCategory(services); // Save all services categorized
+    setServicesByCategory(services);
+    console.log(services);
   };
 
   const handleDateChange = (date: any) => {
@@ -131,7 +130,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
-      token,
       room?.roomId,
       selectedDate,
       selectedBranch
@@ -163,7 +161,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getEmployees = async () => {
     const response = await getAllEmployee(
-      token,
       selectedBranch,
       `${selectedDate} ${time}:00`
     );
@@ -194,7 +191,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const handleCancel = () => {
     form.resetFields();
-    setVisibleModal(false);
+    setVisible(false);
     if (typeof setVisible === "function") {
       setVisible(false);
     }
@@ -212,7 +209,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         branchId: values.branch,
         bedId: values.bed,
         bonusId: idBonus,
-        expense: 0,
+        fullName: values.fullName,
+        phone: values.phone
       };
 
       console.log(
@@ -220,9 +218,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         JSON.stringify(appointment)
       );
       const response = await registerAppointment(appointment);
+      console.log(response);
+
       if (response.data !== null) {
         message.success("Đăng ký thành công!");
-        setVisibleModal(false);
+        setVisible(false);
       } else {
         console.log(response.error);
       }
@@ -233,7 +233,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   return (
-    <Modal open={visibleModal} onCancel={handleCancel} footer={null}>
+    <Modal open={visible} onCancel={handleCancel} footer={null}>
       {/* Thêm logo vào form */}
       <div className="logo-container">
         <img
@@ -282,7 +282,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
               <Select.OptGroup key={category.id} label={category.name}>
                 {servicesByCategory[category.id]?.map((service) => (
                   <Select.Option key={service.id} value={service.id}>
-                    {service.name}
+                    {service.name} -{" "}
+                    {service.specialPrice.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
                   </Select.Option>
                 ))}
               </Select.OptGroup>
@@ -361,7 +365,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             </Select>
           </Form.Item>
         )}
-        <Form.Item label="Chọn nhân viên:" name="staff">
+        <Form.Item
+          label="Chọn nhân viên:"
+          name="staff"
+          rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
+        >
           <Select placeholder="Chọn nhân viên">
             {employees.map((item) => (
               <Select.Option key={item.id} value={item.id}>
