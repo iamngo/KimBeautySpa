@@ -74,16 +74,9 @@ export const getInfoEmpByAccountId = async (
   return response.data;
 };
 
-export const getAllBranch = async (
-  token: string | null,
-  page: number,
-  limit: number
-) => {
-  if (!token || !page || !limit) return;
+export const getAllBranch = async (page: number, limit: number) => {
+  if (!page || !limit) return;
   const response = await axios.get(`${API_URL}/${BRANCH}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     params: { page, limit },
   });
   return response.data;
@@ -635,11 +628,11 @@ export const deleteSchedule = async (token: string | null, id: number) => {
   return response.data;
 };
 
-export const updateStatusAppointment = async ( id: number) => {
+export const updateStatusAppointment = async (id: number) => {
   const response = await axios.put(`${API_URL}/${APPOINTMENT}/status/${id}`, {
     params: {
-      status: 'performing'
-    }
+      status: "performing",
+    },
   });
   return response.data;
 };
