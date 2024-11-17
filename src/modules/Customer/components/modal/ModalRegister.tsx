@@ -32,7 +32,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   categoryId,
 }) => {
   const [form] = Form.useForm<FormInstance>();
-  const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const token = localStorage.getItem("accessToken");
   const [customer, setCustomer] = useState(null);
   const [branch, setBranch] = useState<any[]>([]);
@@ -55,12 +54,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const [idBonus, setIdBonus] = useState(0);
 
   useEffect(() => {
-    setVisibleModal(visible);
     getInfoCustomer();
     getBranch();
     getServiceCategory();
     getNewIdBonus();
-  }, [visible, userId]);
+  }, []);
 
   useEffect(() => {
     getTimeByServiceIdAndDate();
@@ -132,7 +130,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
-      token,
       room?.roomId,
       selectedDate,
       selectedBranch
@@ -164,7 +161,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getEmployees = async () => {
     const response = await getAllEmployee(
-      token,
       selectedBranch,
       `${selectedDate} ${time}:00`
     );
@@ -195,7 +191,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const handleCancel = () => {
     form.resetFields();
-    setVisibleModal(false);
+    setVisible(false);
     if (typeof setVisible === "function") {
       setVisible(false);
     }
@@ -213,15 +209,20 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         branchId: values.branch,
         bedId: values.bed,
         bonusId: idBonus,
+        fullName: values.fullName,
+        phone: values.phone
       };
+
       console.log(
         "Appointment payload being sent:",
         JSON.stringify(appointment)
       );
       const response = await registerAppointment(appointment);
+      console.log(response);
+
       if (response.data !== null) {
         message.success("Đăng ký thành công!");
-        setVisibleModal(false);
+        setVisible(false);
       } else {
         console.log(response.error);
       }
@@ -232,7 +233,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   return (
-    <Modal open={visibleModal} onCancel={handleCancel} footer={null}>
+    <Modal open={visible} onCancel={handleCancel} footer={null}>
       {/* Thêm logo vào form */}
       <div className="logo-container">
         <img

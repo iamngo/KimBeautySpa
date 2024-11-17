@@ -114,34 +114,23 @@ export const getServiceByCategory = async (
 };
 
 export const getWorkingTimeByServiceIdAndDate = async (
-  token: string | null,
   roomId: number | null,
   date: string | null,
   branchId: number | null
 ) => {
-  if (!token || !roomId || !date || !branchId) return;
+  if (!roomId || !date || !branchId) return;
   const response = await axios.get(
     `${API_URL}/${WORKING_TIME}/${SERVICE}/${TIME}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       params: { roomId, date, branchId },
     }
   );
   return response.data;
 };
 
-export const getAllEmployee = async (
-  token: string | null,
-  branchId: number,
-  dateTime: string
-) => {
-  if (!token || !branchId || dateTime == "null+null:00") return;
+export const getAllEmployee = async (branchId: number, dateTime: string) => {
+  if (!branchId || dateTime == "null+null:00") return;
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     params: { branchId, dateTime },
   });
   return response.data;
