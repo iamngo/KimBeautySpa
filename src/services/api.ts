@@ -144,7 +144,7 @@ export const getAllEmployee = async (
   branchId: number,
   dateTime: string
 ) => {
-  if (!token || !branchId || dateTime == "null+null:00") return;
+  if (!token || !branchId || dateTime.includes("null")) return;
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
     headers: {
       Authorization: `Bearer ${token}`,
