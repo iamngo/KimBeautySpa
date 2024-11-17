@@ -132,7 +132,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
       token,
-      room.roomId,
+      room?.roomId,
       selectedDate,
       selectedBranch
     );
@@ -164,9 +164,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   const getEmployees = async () => {
     const response = await getAllEmployee(
       token,
-      1,
+      selectedBranch,
       `${selectedDate} ${time}:00`
     );
+    console.log(response);
 
     setEmployees(response.data);
   };
