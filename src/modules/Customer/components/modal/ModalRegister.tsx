@@ -58,7 +58,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     getBranch();
     getServiceCategory();
     getNewIdBonus();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     getTimeByServiceIdAndDate();
