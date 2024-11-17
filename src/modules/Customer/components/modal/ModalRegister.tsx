@@ -95,7 +95,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const getBranch = async () => {
-    const response = await getAllBranch(token, 1, 5);
+    const response = await getAllBranch(1, 5);
     setBranch(response.data);
   };
 
