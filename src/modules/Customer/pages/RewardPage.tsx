@@ -179,24 +179,12 @@ const RewardPage: React.FC = () => {
                   Thời hạn sử dụng:{" "}
                   {new Date(gift.expiryDate).toLocaleDateString()}
                 </p>
-                <p>
-                  {gift.status === "used" ? (
-                    "Đã sử dụng"
-                  ) : (
-                    <Button type="primary">Dùng ngay</Button>
-                  )}
-                </p>
+                
               </div>
             ) : (
               <div>
                 <p><strong>Quà: {gift.name}</strong></p>
-                <p>
-                  {gift.status === "used" ? (
-                    "Đã sử dụng"
-                  ) : (
-                    <Button type="primary">Dùng ngay</Button>
-                  )}
-                </p>
+                
               </div>
             )}
           </Menu.Item>

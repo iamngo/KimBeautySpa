@@ -634,3 +634,12 @@ export const deleteSchedule = async (token: string | null, id: number) => {
   });
   return response.data;
 };
+
+export const updateStatusAppointment = async ( id: number) => {
+  const response = await axios.put(`${API_URL}/${APPOINTMENT}/status/${id}`, {
+    params: {
+      status: 'performing'
+    }
+  });
+  return response.data;
+};

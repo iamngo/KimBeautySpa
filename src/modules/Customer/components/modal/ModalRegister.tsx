@@ -59,12 +59,12 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     getInfoCustomer();
     getBranch();
     getServiceCategory();
-    getEmployees();
     getNewIdBonus();
   }, [visible, userId]);
 
   useEffect(() => {
     getTimeByServiceIdAndDate();
+    getEmployees();
   }, [selectedBranch, selectedDate, selectedServiceId]);
 
   useEffect(() => {
@@ -109,7 +109,8 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       const servicesResponse = await getServiceByCategory(category.id, 1, 100);
       services[category.id] = servicesResponse.data;
     }
-    setServicesByCategory(services); // Save all services categorized
+    setServicesByCategory(services);
+    console.log(services);
   };
 
   const handleDateChange = (date: any) => {
@@ -212,9 +213,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         branchId: values.branch,
         bedId: values.bed,
         bonusId: idBonus,
-        expense: 0,
       };
-
       console.log(
         "Appointment payload being sent:",
         JSON.stringify(appointment)
@@ -282,7 +281,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
               <Select.OptGroup key={category.id} label={category.name}>
                 {servicesByCategory[category.id]?.map((service) => (
                   <Select.Option key={service.id} value={service.id}>
-                    {service.name}
+                    {service.name} -{" "}
+                    {service.specialPrice.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
                   </Select.Option>
                 ))}
               </Select.OptGroup>
@@ -361,7 +364,11 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             </Select>
           </Form.Item>
         )}
-        <Form.Item label="Chọn nhân viên:" name="staff">
+        <Form.Item
+          label="Chọn nhân viên:"
+          name="staff"
+          rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
+        >
           <Select placeholder="Chọn nhân viên">
             {employees.map((item) => (
               <Select.Option key={item.id} value={item.id}>
