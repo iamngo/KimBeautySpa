@@ -340,7 +340,7 @@ const AppointmentPage: React.FC = () => {
     const bedResponse = await getAllBed(token, 1, 200);
     setBeds(bedResponse.data);
     try {
-      const response = await getAppointmentDetailById(record.id);
+      const response = await getAppointmentDetailById(token, record.id);
       const appointmentDetails = await Promise.all(
         response.data.map(async (appointment) => {
           const updatedAppointment = { ...appointment };

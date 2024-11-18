@@ -46,7 +46,7 @@ const ServiceCategoryModal: React.FC<ServiceModalProps> = ({
   }, [visible, mode, service, form]);
 
   const fetchRoom = async () => {
-    const responseRoom = await getAllRoom(token, 1, 100);
+    const responseRoom = await getAllRoom( 1, 200);
     setRooms(responseRoom.data);
   };
 
@@ -62,7 +62,7 @@ const ServiceCategoryModal: React.FC<ServiceModalProps> = ({
             name: values.name,
             roomId: values.roomId
         }
-        const response = await createServiceCategory(serviceCategory);
+        const response = await createServiceCategory(token, serviceCategory);
         if(response.data !== null) {
             message.success("Thêm phân loại dịch vụ thành công!");
             setVisible(!visible);

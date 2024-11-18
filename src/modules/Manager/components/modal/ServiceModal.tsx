@@ -37,7 +37,9 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   const [form] = Form.useForm<FormInstance>();
   const [fileList, setFileList] = useState<any[]>([]);
   const [categories, setCategories] = useState<[]>([]);
+  const token = localStorage.getItem("accessToken");
 
+  
   useEffect(() => {
     if (visible) {
       fetchCategory();
@@ -80,7 +82,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             serviceCategoryId: Number(values.serviceCategoryId),
           })
         );
-        const response = await createService(formData);
+        const response = await createService(token, formData);
         console.log(response);
       } catch (error) {
         console.log("Validation failed:", error);
@@ -103,7 +105,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             serviceCategoryId: Number(values.serviceCategoryId),
           })
         );
-        const response = await updateService(values.id, formData);
+        const response = await updateService(token, values.id, formData);
         console.log(response);
       } catch (error) {
         console.log("Validation failed:", error);
