@@ -187,7 +187,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     console.log(branchId);
     console.log(room?.roomId);
     console.log(selectedDate);
-    
 
     const currentDate = moment();
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
@@ -219,12 +218,11 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     const response = await getInfoByAccountId(token, value);
     if (response.data) {
       form.setFieldsValue({
-        fullName: response.data.fullName,  
-        phone: response.data.phone       
+        fullName: response.data.fullName,
+        phone: response.data.phone,
       });
     }
   };
-  
 
   const handleCancel = () => {
     form.resetFields();
@@ -250,8 +248,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         const response = await registerAppointment(appointment);
 
         if (response.data !== null) {
-          console.log(response.data);
-
           message.success("Đăng ký thành công!");
           setVisible(!visible);
         } else {
