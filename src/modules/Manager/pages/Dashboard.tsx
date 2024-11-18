@@ -16,10 +16,16 @@ const Dashboard: React.FC = () => {
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [expenses, setExpenses] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
+  const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
     const getApiRevenueOfServiceByDate = async () => {
-      const response = await getRevenueOfServiceByDate(branchId, 11, 2024);
+      const response = await getRevenueOfServiceByDate(
+        token,
+        branchId,
+        11,
+        2024
+      );
       setTotalServices(
         response.data?.reduce((total, o) => total + Number(o.revenue), 0)
       );
@@ -29,7 +35,12 @@ const Dashboard: React.FC = () => {
     };
 
     const getApiSalaryOfEmployeeByMonthYear = async () => {
-      const response = await getSalaryOfEmployeeByMonthYear(branchId, 11, 2024);
+      const response = await getSalaryOfEmployeeByMonthYear(
+        token,
+        branchId,
+        11,
+        2024
+      );
       console.log(response.data);
       setTotalEmployees(
         response.data?.reduce(

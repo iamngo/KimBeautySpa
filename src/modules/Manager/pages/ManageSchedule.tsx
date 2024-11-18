@@ -148,7 +148,7 @@ const ManageSchedule: React.FC = () => {
         };
 
         try {
-          const response = await createSchedule(schedule);
+          const response = await createSchedule(token, schedule);
           console.log(`Created schedule for employee ${employeeId}:`, response);
         } catch (error) {
           console.error(

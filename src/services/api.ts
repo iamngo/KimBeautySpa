@@ -27,7 +27,7 @@ import {
   WAGE,
   WORKING_TIME,
 } from "../utils/constants";
-import { Account, Employee } from "../modules/Manager/types";
+import { Account } from "../modules/Manager/types";
 
 export const login = async (phone: string, password: string) => {
   if (!phone || !password) return;
@@ -156,16 +156,22 @@ export const getAllEmployee = async (
   return response.data;
 };
 
-export const getAppointmentDetailById = async (appointmentId: number) => {
-  if (!appointmentId) return;
+export const getAppointmentDetailById = async (
+  token: string | null,
+  appointmentId: number
+) => {
+  if (!token || !appointmentId) return;
   const response = await axios.get(`${API_URL}/${APPOINTMENT_DETAIL}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     params: { appointmentId },
   });
   return response.data;
 };
 
 export const getRevenueOfServiceByDate = async (
-  // token: string | null,
+  token: string | null,
   branchId: number,
   month: number,
   year: number
@@ -174,9 +180,9 @@ export const getRevenueOfServiceByDate = async (
   const response = await axios.get(
     `${API_URL}/${SERVICE}/revenues/${branchId}`,
     {
-      // headers: {
-      //   Authorization: `Bearer ${token}`,
-      // },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       params: { month, year },
     }
   );
@@ -184,7 +190,7 @@ export const getRevenueOfServiceByDate = async (
 };
 
 export const getSalaryOfEmployeeByMonthYear = async (
-  // token: string | null,
+  token: string | null,
   branchId: number,
   month: number,
   year: number
@@ -193,9 +199,9 @@ export const getSalaryOfEmployeeByMonthYear = async (
   const response = await axios.get(
     `${API_URL}/${EMPLOYEE}/salary/${branchId}`,
     {
-      // headers: {
-      //   Authorization: `Bearer ${token}`,
-      // },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       params: { month, year },
     }
   );
@@ -497,18 +503,24 @@ export const registerCustomer = async (data: FormData) => {
   return response.data;
 };
 
-export const createService = async (data: FormData) => {
+export const createService = async (token: string | null, data: FormData) => {
   const response = await axios.post(`${API_URL}/${SERVICE}`, data, {
     headers: {
+      Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
     },
   });
   return response.data;
 };
 
-export const updateService = async (id: number, data: FormData) => {
+export const updateService = async (
+  token: string | null,
+  id: number,
+  data: FormData
+) => {
   const response = await axios.put(`${API_URL}/${SERVICE}/${id}`, data, {
     headers: {
+      Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -564,25 +576,26 @@ export const getAllBed = async (
   return response.data;
 };
 
-export const getAllRoom = async (
-  token: string | null,
-  page: number,
-  limit: number
-) => {
-  if (!token || !page || !limit) return;
+export const getAllRoom = async (page: number, limit: number) => {
+  if (!page || !limit) return;
   const response = await axios.get(`${API_URL}/${ROOM}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     params: { page, limit },
   });
   return response.data;
 };
 
-export const createServiceCategory = async (serviceCategory: any) => {
+export const createServiceCategory = async (
+  token: string | null,
+  serviceCategory: any
+) => {
   const response = await axios.post(
     `${API_URL}/${SERVICE_CATEGORY}`,
-    serviceCategory
+    serviceCategory,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   return response.data;
 };
@@ -631,8 +644,13 @@ export const getAllSchedule = async (
   return response.data;
 };
 
-export const createSchedule = async (schedule) => {
-  const response = await axios.post(`${API_URL}/${SCHEDULE}`, schedule);
+export const createSchedule = async (token: string | null, schedule) => {
+  if (!token) return;
+  const response = await axios.post(`${API_URL}/${SCHEDULE}`, schedule, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };
 
