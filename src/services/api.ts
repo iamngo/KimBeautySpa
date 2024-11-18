@@ -133,7 +133,7 @@ export const getEmployeeByDateTime = async (
   branchId: number,
   dateTime: string
 ) => {
-  if (!branchId || dateTime == "null+null:00") return;
+  if (!branchId || dateTime.includes("null")) return;
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
     params: { branchId, dateTime },
   });
