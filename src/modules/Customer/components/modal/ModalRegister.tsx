@@ -210,7 +210,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         bedId: values.bed,
         bonusId: idBonus,
         fullName: values.fullName,
-        phone: values.phone
+        phone: values.phone,
       };
 
       console.log(

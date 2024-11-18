@@ -221,8 +221,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         const response = await registerAppointment(appointment);
 
         if (response.data !== null) {
-          console.log(response.data);
-          
           message.success("Đăng ký thành công!");
           setVisible(!visible);
         } else {
