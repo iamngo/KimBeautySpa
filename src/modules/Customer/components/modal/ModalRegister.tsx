@@ -135,7 +135,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       selectedDate,
       selectedBranch
     );
-
     const currentDate = moment();
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
 
@@ -165,8 +164,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       selectedBranch,
       `${selectedDate} ${time}:00`
     );
-    console.log(response);
-
     setEmployees(response.data);
   };
 
