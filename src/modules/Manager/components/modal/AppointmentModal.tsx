@@ -16,22 +16,27 @@ import { Appointment, Employee } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import moment from "moment";
 import {
+  getAllAccount,
   getAllBranch,
   getAllEmployee,
   getAllServiceCategory,
   getBedByServiceIdAndDate,
   getCategoryServiceById,
+  getEmployeeByDateTime,
   getIdBonus,
+  getInfoByAccountId,
   getServiceByCategory,
   getWorkingTimeByServiceIdAndDate,
   registerAppointment,
 } from "../../../../services/api";
+import { useBranch } from "../../../../hooks/branchContext";
 
 interface AppointmentModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   mode: string;
   appointment?: Appointment;
+  branchId: number;
 }
 
 interface EmployeeFormValues {
@@ -53,9 +58,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   setVisible,
   mode,
   appointment,
+  branchId,
 }) => {
   const [form] = Form.useForm<EmployeeFormValues>();
-  const [fileList, setFileList] = useState<any[]>([]);
   const token = localStorage.getItem("accessToken");
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
     null
@@ -75,19 +80,18 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [room, setRoom] = useState(null);
   const [employees, setEmployees] = useState<any[]>([]);
   const [idBonus, setIdBonus] = useState(0);
+  const [accounts, setAccounts] = useState<any[]>([]);
 
   useEffect(() => {
     if (visible) {
-      getBranch();
       getServiceCategory();
-      getEmployees();
       getNewIdBonus();
+      getAccountCustomer();
       if (mode === MODE.ADD) {
         form.resetFields();
         form.setFieldsValue({ status: "confirmed" });
       } else if (mode === MODE.EDIT && appointment) {
         getTimeByServiceIdAndDate();
-        console.log(appointment);
         const formattedAppointment = {
           ...appointment,
           fullName: appointment.customerName,
@@ -108,34 +112,38 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   }, [visible, mode, appointment, form]);
 
   useEffect(() => {
+    getTimeByServiceIdAndDate();
+    getEmployees();
+  }, [selectedBranch, selectedDate, selectedServiceId]);
+
+  useEffect(() => {
     getBedByServiceAndDate();
   }, [selectedBranch, selectedDate, selectedServiceId, time, listTime]);
 
   useEffect(() => {
+    getEmployees();
+  }, [selectedBranch, selectedDate, selectedServiceId, time]);
+
+  useEffect(() => {
     fetchCategoryById();
   }, [selectedServiceId]);
-
-  const getNewIdBonus = async () => {
-    const response = await getIdBonus();
-    setIdBonus(response.data.id);
-  };
 
   const fetchCategoryById = async () => {
     const response = await getCategoryServiceById(selectedCategoryId);
     setRoom(response.data);
   };
   const getEmployees = async () => {
-    const response = await getAllEmployee(
-      token,
-      1,
+    const response = await getEmployeeByDateTime(
+      branchId,
       `${selectedDate} ${time}:00`
     );
+
     setEmployees(response.data);
   };
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
       `${selectedDate} ${time}:00`,
-      selectedBranch,
+      branchId,
       room?.roomId
     );
     setBed(response.data);
@@ -153,10 +161,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setServicesByCategory(services);
   };
 
-  const getBranch = async () => {
-    const response = await getAllBranch(token, 1, 5);
-    setBranch(response.data);
-  };
   const disabledDate = (current) => {
     return current && current < moment().startOf("day");
   };
@@ -176,19 +180,22 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
-      token,
-      room.roomId,
+      room?.roomId,
       selectedDate,
-      selectedBranch
+      branchId
     );
+    console.log(branchId);
+    console.log(room?.roomId);
+    console.log(selectedDate);
+    
 
     const currentDate = moment();
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
 
     // Nếu ngày được chọn là ngày hiện tại, chỉ hiển thị các giờ sau thời gian hiện tại cộng thêm 1 giờ
     if (selectedDateMoment.isSame(currentDate, "day")) {
-      const oneHourLater = currentDate.add(1, "hours").format("HH:mm");
-      const filteredTimes = response.data.filter(
+      const oneHourLater = currentDate.format("HH:mm");
+      const filteredTimes = response?.data.filter(
         (timeSlot: { time: string }) => timeSlot.time > oneHourLater
       );
       setListTime(filteredTimes);
@@ -196,6 +203,29 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       setListTime(response.data);
     }
   };
+
+  const getNewIdBonus = async () => {
+    const response = await getIdBonus();
+    setIdBonus(response.data.id);
+  };
+
+  const getAccountCustomer = async () => {
+    const response = await getAllAccount(token, branchId, 1, 200);
+    setAccounts(response.data);
+  };
+
+  const handleSelectAccount = async (value) => {
+    form.setFieldsValue({ accountId: value });
+    const response = await getInfoByAccountId(token, value);
+    if (response.data) {
+      form.setFieldsValue({
+        fullName: response.data.fullName,  
+        phone: response.data.phone       
+      });
+    }
+  };
+  
+
   const handleCancel = () => {
     form.resetFields();
     setVisible(false);
@@ -206,23 +236,22 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       try {
         const appointment = {
           dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
-          status: values.status,
+          status: "confirmed",
           category: "services",
           foreignKeyId: values.service,
           employeeId: values.staff,
           fullName: values.fullName,
           phone: values.phone,
           customerId: 7,
-          branchId: values.branch,
+          branchId: branchId,
           bedId: values.bed,
           bonusId: idBonus,
-          expense: 0,
         };
         const response = await registerAppointment(appointment);
 
         if (response.data !== null) {
           console.log(response.data);
-          
+
           message.success("Đăng ký thành công!");
           setVisible(!visible);
         } else {
@@ -246,25 +275,28 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={4}>
             <Form.Item label="ID" name="id">
               <Input type="number" placeholder="ID" disabled />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={10}>
             <Form.Item label="Trạng thái" name="status">
-              <Select placeholder="Chọn trạng thái">
+              <Select
+                placeholder="Chọn trạng thái"
+                disabled={mode === MODE.ADD ? true : false}
+              >
                 <Select.Option key={1} value={"confirmed"}>
                   Đã xác nhận
                 </Select.Option>
-                <Select.Option key={2} value={"no-confirmed"}>
-                  Chưa xác nhận
-                </Select.Option>
-                <Select.Option key={3} value={"performing"}>
+                <Select.Option key={2} value={"implement"}>
                   Đang thực hiện
                 </Select.Option>
-                <Select.Option key={4} value={"finished"}>
+                <Select.Option key={3} value={"finished"}>
                   Hoàn thành
+                </Select.Option>
+                <Select.Option key={4} value={"paid"}>
+                  Đã thanh toán
                 </Select.Option>
                 <Select.Option key={5} value={"cancelled"}>
                   Đã hủy
@@ -272,8 +304,34 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
               </Select>
             </Form.Item>
           </Col>
+          <Col span={10}>
+            <Form.Item
+              label="Chọn tài khoản"
+              name="accountId"
+              rules={[{ required: true, message: "Vui lòng chọn tài khoản" }]}
+            >
+              <Select
+                placeholder="Chọn tài khoản"
+                showSearch
+                onChange={(value) => {
+                  handleSelectAccount(value);
+                }}
+                filterOption={(input, option) =>
+                  option && option.children
+                    ? option.children.includes(input)
+                    : false
+                }
+                allowClear
+              >
+                {accounts.map((account) => (
+                  <Select.Option key={account.id} value={account.id}>
+                    ID{account.id} - {account.phone}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
         </Row>
-
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -298,9 +356,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         </Row>
 
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item
-              label="Chọn dịch vụ:"
+              label="B1. Chọn dịch vụ:"
               name="service"
               rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
             >
@@ -322,28 +380,14 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   <Select.OptGroup key={category.id} label={category.name}>
                     {servicesByCategory[category.id]?.map((service) => (
                       <Select.Option key={service.id} value={service.id}>
-                        {service.name}
+                        {service.name} -{" "}
+                        {service.specialPrice.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </Select.Option>
                     ))}
                   </Select.OptGroup>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Chọn chi nhánh:"
-              name="branch"
-              rules={[{ required: true, message: "Vui lòng chọn chi nhánh" }]}
-            >
-              <Select
-                placeholder="Chọn chi nhánh"
-                onChange={(value) => setSelectedBranch(value)}
-              >
-                {branch.map((item) => (
-                  <Select.Option key={item.id} value={item.id}>
-                    {item.name} - {item.address}
-                  </Select.Option>
                 ))}
               </Select>
             </Form.Item>
@@ -353,7 +397,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              label="Chọn ngày:"
+              label="B2. Chọn ngày:"
               name="date"
               rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
             >
@@ -366,7 +410,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           </Col>
           <Col span={12}>
             <Form.Item
-              label="Chọn thời gian:"
+              label="B3. Chọn thời gian:"
               name="time"
               rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
             >
@@ -394,7 +438,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              label="Chọn giường:"
+              label="B4. Chọn giường:"
               name="bed"
               rules={[{ required: true, message: "Vui lòng chọn giường" }]}
             >
@@ -411,7 +455,11 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Chọn nhân viên:" name="staff">
+            <Form.Item
+              label="B5. Chọn nhân viên:"
+              name="staff"
+              rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
+            >
               <Select placeholder="Chọn nhân viên">
                 {employees.map((item) => (
                   <Select.Option key={item.id} value={item.id}>
