@@ -31,7 +31,7 @@ const ServiceCategoryPage: React.FC = () => {
 
   const fetchCategory = async () => {
     setLoading(true);
-    const responseRoom = await getAllRoom(token, 1, 100);
+    const responseRoom = await getAllRoom( 1, 200);
     setRooms(responseRoom.data);
 
     const response = await getAllServiceCategory(1, 100);

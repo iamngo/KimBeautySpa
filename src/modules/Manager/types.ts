@@ -57,6 +57,7 @@ export interface Account {
     serviceName?: string,
     employeeName?: string,
     customerName?: string
-    bedName?: string
+    bedName?: string,
+    expense?: number
   }
   

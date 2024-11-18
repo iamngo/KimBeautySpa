@@ -9,6 +9,7 @@ export const SERVICE = "service";
 export const WORKING_TIME = "working-time";
 export const TIME = "times";
 export const APPOINTMENT = "appointment";
+export const APPOINTMENT_DETAIL = "appointment-detail";
 export const MANAGE_SCHEDULE = "manage_schedule";
 export const BED = "bed";
 export const ROOM = "room";

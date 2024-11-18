@@ -15,7 +15,8 @@ interface DataTableProps<T> extends TableProps<T> {
   selectedColumns: string[];
   onColumnChange: (value: string[]) => void;
   tableName: string
-  haveImport?: boolean
+  haveImport?: boolean,
+  scrolly?: number
 }
 
 const DataTable = <T extends object>({
@@ -26,6 +27,7 @@ const DataTable = <T extends object>({
   onColumnChange,
   tableName,
   haveImport,
+  scrolly,
   ...tableProps
 }: DataTableProps<T>) => {
   const [importedData, setImportedData] = useState<T[]>([]);
@@ -156,7 +158,7 @@ const DataTable = <T extends object>({
             onChange={onColumnChange}
           >
             <Option key="all" value="all">
-              All
+              Tất cả
             </Option>
             {columns.map((column) => (
               <Option key={column.key} value={column.key}>
@@ -189,7 +191,7 @@ const DataTable = <T extends object>({
         dataSource={dataTable}
         // rowKey="id"
         loading={loading}
-        scroll={{ y: 380 }}
+        scroll={{ y: scrolly? scrolly: 380 }}
         {...tableProps}
       />
     </>

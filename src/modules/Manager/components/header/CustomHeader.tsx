@@ -37,7 +37,7 @@ const CustomHeader: React.FC = () => {
   }, []);
 
   const fetchBranch = async () => {
-    const response = await getAllBranch(token, 1, 10);
+    const response = await getAllBranch( 1, 10);
     setBranches(response.data);
   };
 

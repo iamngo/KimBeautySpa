@@ -8,6 +8,7 @@ import {
   getAllServiceCategory,
   getBedByServiceIdAndDate,
   getCategoryServiceById,
+  getEmployeeByDateTime,
   getIdBonus,
   getInfoByAccountId,
   getServiceByCategory,
@@ -160,7 +161,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   const getEmployees = async () => {
-    const response = await getAllEmployee(
+    const response = await getEmployeeByDateTime(
       selectedBranch,
       `${selectedDate} ${time}:00`
     );
@@ -186,8 +187,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         fullName: customer.fullName,
         phone: customer.phone,
       });
+    } else {
+      form.resetFields();
     }
-  }, [customer, form]);
+  }, [visible, customer, form]);
 
   const handleCancel = () => {
     form.resetFields();
