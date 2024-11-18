@@ -3,6 +3,7 @@ import {
   ACCOUNT,
   API_URL,
   APPOINTMENT,
+  APPOINTMENT_DETAIL,
   BED,
   BONUS,
   BRANCH,
@@ -128,10 +129,37 @@ export const getWorkingTimeByServiceIdAndDate = async (
   return response.data;
 };
 
-export const getAllEmployee = async (branchId: number, dateTime: string) => {
-  if (!branchId || dateTime.includes("null")) return;
+export const getEmployeeByDateTime = async (
+  branchId: number,
+  dateTime: string
+) => {
+  if (!branchId || dateTime == "null+null:00") return;
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
     params: { branchId, dateTime },
+  });
+  return response.data;
+};
+
+export const getAllEmployee = async (
+  token: string,
+  branchId: number,
+  page: number,
+  limit: number
+) => {
+  if (!branchId) return;
+  const response = await axios.get(`${API_URL}/${EMPLOYEE}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { branchId, page, limit },
+  });
+  return response.data;
+};
+
+export const getAppointmentDetailById = async (appointmentId: number) => {
+  if (!appointmentId) return;
+  const response = await axios.get(`${API_URL}/${APPOINTMENT_DETAIL}`, {
+    params: { appointmentId },
   });
   return response.data;
 };
