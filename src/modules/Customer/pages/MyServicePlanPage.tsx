@@ -36,57 +36,63 @@ const MyServicePlanPage: React.FC = () => {
         setAppointment([]);
         return;
       }
-      const response = await getAppointmentByCustomerId(token, customer.data.id);
+      const response = await getAppointmentByCustomerId(
+        token,
+        customer.data.id
+      );
       if (!response.data || response.data.length === 0) {
-        setAppointment([]); 
+        setAppointment([]);
         return;
       }
       const appointmentsWithDetails = await Promise.all(
         response.data.map(async (appointment) => {
           try {
-            const appointmentDetails = await getAppointmentDetailById(token, appointment.id);
-            if (!appointmentDetails.data || appointmentDetails.data.length === 0) return null;
+            const appointmentDetails = await getAppointmentDetailById(
+              token,
+              appointment.id
+            );
+            if (
+              !appointmentDetails.data ||
+              appointmentDetails.data.length === 0
+            )
+              return null;
             const detailsWithInfo = await Promise.all(
               appointmentDetails.data.map(async (detail) => {
                 const [branch, employee, prices, service] = await Promise.all([
-                  getBranchById(token, appointment.branchId), 
-                  getEmployeeById(token, detail.employeeId), 
-                  getPricesByForeignKeyId(detail.foreignKeyId), 
-                  getServiceById(detail.foreignKeyId), 
+                  getBranchById(token, appointment.branchId),
+                  getEmployeeById(token, detail.employeeId),
+                  getPricesByForeignKeyId(detail.foreignKeyId),
+                  getServiceById(detail.foreignKeyId),
                 ]);
-  
+
                 return {
                   ...detail,
                   branch: branch.data,
                   employee: employee.data,
-                  prices: prices.data[0], 
+                  prices: prices.data[0],
                   service: service.data,
-                  dateTime: appointment.dateTime, 
+                  dateTime: appointment.dateTime,
                 };
               })
             );
-  
+
             return detailsWithInfo;
           } catch (error) {
             console.error("Lỗi khi xử lý chi tiết lịch hẹn:", error);
-            return null; 
+            return null;
           }
         })
       );
       const flattenedAppointments = appointmentsWithDetails
         .flat()
         .filter((item) => item !== null);
-  
+
       setAppointment(flattenedAppointments);
-      console.log(flattenedAppointments);
-            
     } catch (error) {
       console.error("Lỗi khi lấy lịch hẹn:", error);
       message.error("Không thể tải lịch hẹn, vui lòng thử lại sau!");
     }
   };
-  
-  
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -113,20 +119,20 @@ const MyServicePlanPage: React.FC = () => {
 
   const handleCancelBookingAppointment = async (id: number, date: Date) => {
     const currentDate = new Date();
-    const twoDaysLater = new Date(currentDate.setDate(currentDate.getDate() + 2));
-  
+    const twoDaysLater = new Date(
+      currentDate.setDate(currentDate.getDate() + 2)
+    );
+
     if (new Date(date) > twoDaysLater) {
-      console.log(token);
       const response = await updateStatusAppointmentDetail(token, id);
-      console.log(response);
-      
+
       if (response.data !== null) {
-        message.success('Hủy lịch hẹn thành công!');
-        
+        message.success("Hủy lịch hẹn thành công!");
+
         await fetchAppointment();
       }
     } else {
-      message.warning('Bạn chỉ có thể hủy lịch trước 2 ngày!');
+      message.warning("Bạn chỉ có thể hủy lịch trước 2 ngày!");
     }
   };
 
@@ -167,7 +173,16 @@ const MyServicePlanPage: React.FC = () => {
                     </span>
                     <div className="actions">
                       {item.status === "confirmed" && (
-                        <Button type="default" size="small" onClick={() => handleCancelBookingAppointment(item.id, item.dateTime)}>
+                        <Button
+                          type="default"
+                          size="small"
+                          onClick={() =>
+                            handleCancelBookingAppointment(
+                              item.id,
+                              item.dateTime
+                            )
+                          }
+                        >
                           Hủy lịch
                         </Button>
                       )}
@@ -207,13 +222,14 @@ const MyServicePlanPage: React.FC = () => {
                     <p>
                       <strong>Giá tiền:</strong>&nbsp;
                       <s>
-                       <small>
+                        <small>
                           {item.prices?.price?.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })}
-                       </small>
-                      </s>&nbsp;&nbsp;
+                        </small>
+                      </s>
+                      &nbsp;&nbsp;
                       <span style={{ color: "red" }}>
                         <b>
                           {item.prices?.specialPrice?.toLocaleString("vi-VN", {
