@@ -73,7 +73,7 @@ const AppointmentPage: React.FC = () => {
 
     const customerResponse = await getAllCustomer(token, 1, 100);
     setCustomers(customerResponse.data);
-
+    
     const employeeResponse = await getAllEmployee(token, branchId, 1, 100);
 
     setEmployees(employeeResponse.data);

@@ -111,7 +111,7 @@ const Homepage = () => {
         <h2 className="section-title">Dịch vụ nổi bật</h2>
         <div className="services-grid">
           {outStandingServices.map((item, index) => (
-            <div className={`service-item ${index >= 2 ? 'row-reverse' : ''}`} key={index} onClick={() => handleClickService(item.serviceCategoryId, item.serviceOrTreatmentId)}>
+            <div className={`service-item ${index >= 2 ? 'row-reverse' : ''}`} key={index} onClick={() => handleClickService(item.serviceCategoryId, item.foreignKeyId)}>
             <img
               src={item.image}
               alt={item.name}
