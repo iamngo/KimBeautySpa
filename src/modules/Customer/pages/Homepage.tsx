@@ -4,7 +4,11 @@ import "../styles.scss";
 import ModalRegister from "../components/modal/ModalRegister";
 import { useLocation, useNavigate } from "react-router-dom";
 import { DASHBOARD, HOME, MANAGER, SERVICE } from "../../../routes";
-import { getAllEvent, getCategoryServiceById, getOutStandingServices } from "../../../services/api";
+import {
+  getAllEvent,
+  getCategoryServiceById,
+  getOutStandingServices,
+} from "../../../services/api";
 
 const Homepage = () => {
   const [visible, setVisible] = useState(false);
@@ -18,10 +22,9 @@ const Homepage = () => {
     if (accessToken !== "") {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
-      
+
       setUserId(decodedPayload.id);
-      
-      
+
       // if (decodedPayload.type !== "customer") {
       //   navigate(`${MANAGER}/${DASHBOARD}`);
       // }
@@ -40,29 +43,26 @@ const Homepage = () => {
   useEffect(() => {
     fetchEvent();
     fetchOutStandingServices();
-  },[]);
+  }, []);
 
   const fetchEvent = async () => {
     const response = await getAllEvent(1, 100);
-    setEvent(response.data)
-  }
+    setEvent(response.data);
+  };
 
   const fetchOutStandingServices = async () => {
     const response = await getOutStandingServices();
     setOutStandingServices(response.data);
-  }
-
+  };
 
   const handleClickService = async (categoryId, serviceId) => {
-    console.log(serviceId);
-    
     const response = await getCategoryServiceById(categoryId);
-    if(response.data){
+    if (response.data) {
       navigate(`${HOME}${SERVICE}/${serviceId}`, {
         state: { category: response.data },
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="home-page">
@@ -74,7 +74,7 @@ const Homepage = () => {
         categoryId={null}
       />
       {/* Phần Slide */}
-      <Slide event={event}/>
+      <Slide event={event} />
 
       {/* Phần Giới Thiệu */}
       <section className="intro-section">
@@ -111,18 +111,19 @@ const Homepage = () => {
         <h2 className="section-title">Dịch vụ nổi bật</h2>
         <div className="services-grid">
           {outStandingServices.map((item, index) => (
-            <div className={`service-item ${index >= 2 ? 'row-reverse' : ''}`} key={index} onClick={() => handleClickService(item.serviceCategoryId, item.serviceOrTreatmentId)}>
-            <img
-              src={item.image}
-              alt={item.name}
-            />
-            <div className="content">
-              <h3>{item.name}</h3>
-              <p>
-              {item.content}
-              </p>
+            <div
+              className={`service-item ${index >= 2 ? "row-reverse" : ""}`}
+              key={index}
+              onClick={() =>
+                handleClickService(item.serviceCategoryId, item.foreignKeyId)
+              }
+            >
+              <img src={item.image} alt={item.name} />
+              <div className="content">
+                <h3>{item.name}</h3>
+                <p>{item.content}</p>
+              </div>
             </div>
-          </div>
           ))}
         </div>
       </section>

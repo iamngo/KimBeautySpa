@@ -5,11 +5,13 @@ import TabPane from "antd/es/tabs/TabPane";
 import {
   cancelBookAppointment,
   getAppointmentByCustomerId,
+  getAppointmentDetailById,
   getBranchById,
   getEmployeeById,
   getInfoByAccountId,
   getPricesByForeignKeyId,
   getServiceById,
+  updateStatusAppointmentDetail,
 } from "../../../services/api";
 import { useLocation } from "react-router-dom";
 
@@ -28,40 +30,67 @@ const MyServicePlanPage: React.FC = () => {
   }, [location.state.userId]);
 
   const fetchAppointment = async () => {
-    const customer = await getInfoByAccountId(token, location.state.userId);
-    if (customer.data !== null) {
+    try {
+      const customer = await getInfoByAccountId(token, location.state.userId);
+      if (!customer.data) {
+        setAppointment([]);
+        return;
+      }
       const response = await getAppointmentByCustomerId(
         token,
         customer.data.id
       );
-
-      if (response.data !== null) {
-        const appointmentsWithService = await Promise.all(
-          response.data.map(async (appointment) => {
-            const service = await getServiceById(
-              appointment.serviceOrTreatmentId
-            );
-            const branch = await getBranchById(token, appointment.branchId);
-            const employee = await getEmployeeById(
-              token,
-              appointment.employeeId
-            );
-            const price = await getPricesByForeignKeyId(
-              appointment.serviceOrTreatmentId
-            );
-            return {
-              ...appointment,
-              service: service.data,
-              branch: branch.data,
-              employee: employee.data,
-              price: price.data[0],
-            };
-          })
-        );
-
-        setAppointment(appointmentsWithService);
-        console.log(appointmentsWithService);
+      if (!response.data || response.data.length === 0) {
+        setAppointment([]);
+        return;
       }
+      const appointmentsWithDetails = await Promise.all(
+        response.data.map(async (appointment) => {
+          try {
+            const appointmentDetails = await getAppointmentDetailById(
+              token,
+              appointment.id
+            );
+            if (
+              !appointmentDetails.data ||
+              appointmentDetails.data.length === 0
+            )
+              return null;
+            const detailsWithInfo = await Promise.all(
+              appointmentDetails.data.map(async (detail) => {
+                const [branch, employee, prices, service] = await Promise.all([
+                  getBranchById(token, appointment.branchId),
+                  getEmployeeById(token, detail.employeeId),
+                  getPricesByForeignKeyId(detail.foreignKeyId),
+                  getServiceById(detail.foreignKeyId),
+                ]);
+
+                return {
+                  ...detail,
+                  branch: branch.data,
+                  employee: employee.data,
+                  prices: prices.data[0],
+                  service: service.data,
+                  dateTime: appointment.dateTime,
+                };
+              })
+            );
+
+            return detailsWithInfo;
+          } catch (error) {
+            console.error("Lỗi khi xử lý chi tiết lịch hẹn:", error);
+            return null;
+          }
+        })
+      );
+      const flattenedAppointments = appointmentsWithDetails
+        .flat()
+        .filter((item) => item !== null);
+
+      setAppointment(flattenedAppointments);
+    } catch (error) {
+      console.error("Lỗi khi lấy lịch hẹn:", error);
+      message.error("Không thể tải lịch hẹn, vui lòng thử lại sau!");
     }
   };
 
@@ -90,17 +119,20 @@ const MyServicePlanPage: React.FC = () => {
 
   const handleCancelBookingAppointment = async (id: number, date: Date) => {
     const currentDate = new Date();
-    const twoDaysLater = new Date(currentDate.setDate(currentDate.getDate() + 2));
-  
+    const twoDaysLater = new Date(
+      currentDate.setDate(currentDate.getDate() + 2)
+    );
+
     if (new Date(date) > twoDaysLater) {
-      const response = await cancelBookAppointment(id);
+      const response = await updateStatusAppointmentDetail(token, id);
+
       if (response.data !== null) {
-        message.success('Hủy lịch hẹn thành công!');
-        
+        message.success("Hủy lịch hẹn thành công!");
+
         await fetchAppointment();
       }
     } else {
-      message.warning('Bạn chỉ có thể hủy lịch trước 2 ngày!');
+      message.warning("Bạn chỉ có thể hủy lịch trước 2 ngày!");
     }
   };
 
@@ -119,8 +151,9 @@ const MyServicePlanPage: React.FC = () => {
       <div className="tabs-section">
         <Tabs activeKey={activeTab} onChange={handleTabChange}>
           <TabPane tab="Đã đặt hẹn" key="confirmed" />
-          <TabPane tab="Đang thực hiện" key="performing" />
+          <TabPane tab="Đang thực hiện" key="implement" />
           <TabPane tab="Đã hoàn thành" key="finished" />
+          <TabPane tab="Đã hủy" key="canceled" />
         </Tabs>
 
         <Collapse accordion>
@@ -140,7 +173,16 @@ const MyServicePlanPage: React.FC = () => {
                     </span>
                     <div className="actions">
                       {item.status === "confirmed" && (
-                        <Button type="default" size="small" onClick={() => handleCancelBookingAppointment(item.id, item.dateTime)}>
+                        <Button
+                          type="default"
+                          size="small"
+                          onClick={() =>
+                            handleCancelBookingAppointment(
+                              item.id,
+                              item.dateTime
+                            )
+                          }
+                        >
                           Hủy lịch
                         </Button>
                       )}
@@ -180,16 +222,17 @@ const MyServicePlanPage: React.FC = () => {
                     <p>
                       <strong>Giá tiền:</strong>&nbsp;
                       <s>
-                       <small>
-                          {item.price?.price?.toLocaleString("vi-VN", {
+                        <small>
+                          {item.prices?.price?.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })}
-                       </small>
-                      </s>&nbsp;&nbsp;
+                        </small>
+                      </s>
+                      &nbsp;&nbsp;
                       <span style={{ color: "red" }}>
                         <b>
-                          {item.price?.specialPrice?.toLocaleString("vi-VN", {
+                          {item.prices?.specialPrice?.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })}
