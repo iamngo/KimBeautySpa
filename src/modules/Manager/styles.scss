@@ -258,3 +258,8 @@ body {
   flex-direction: column;
 }
 
+.selected-row {
+  background-color: #fcc8d7; // Màu nền cho dòng được chọn
+  transition: background-color 0.3s ease; // Hiệu ứng chuyển màu
+}
+

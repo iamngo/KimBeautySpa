@@ -59,7 +59,8 @@ const AppointmentPage: React.FC = () => {
     useState<Appointment | null>(null);
   const [appointmentDetails, setAppointmentDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
-
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  
   useEffect(() => {
     if (branchId) {
       fetchServicesAndAppointments();
@@ -73,7 +74,7 @@ const AppointmentPage: React.FC = () => {
 
     const customerResponse = await getAllCustomer(token, 1, 100);
     setCustomers(customerResponse.data);
-    
+
     const employeeResponse = await getAllEmployee(token, branchId, 1, 100);
 
     setEmployees(employeeResponse.data);
@@ -333,6 +334,7 @@ const AppointmentPage: React.FC = () => {
   };
 
   const handleRowClick = async (record: Appointment) => {
+    setSelectedRow(record.id);
     setSelectedAppointment(record);
     setLoadingDetails(true);
     const servicesResponse = await getAllService(1, 100);
@@ -414,6 +416,9 @@ const AppointmentPage: React.FC = () => {
             onColumnChange={handleColumnChange}
             tableName="Appointment"
             haveImport={false}
+            rowClassName={(record) =>
+              record.id === selectedRow ? "selected-row" : ""
+            } 
             onRow={(record) => ({
               onClick: () => handleRowClick(record),
             })}
@@ -422,11 +427,34 @@ const AppointmentPage: React.FC = () => {
       </div>
       <div className="appointment-detail">
         <h3>Chi tiết lịch hẹn</h3>
-        <Tabs defaultActiveKey="all" onChange={handleTabChange}>
-          <Tabs.TabPane tab="Tất cả" key="all" />
-          <Tabs.TabPane tab="Đã đặt hẹn" key="booked" />
-          <Tabs.TabPane tab="Đang thực hiện" key="in-progress" />
-          <Tabs.TabPane tab="Đã hoàn thành" key="completed" />
+        <Tabs
+          defaultActiveKey="all"
+          onChange={handleTabChange}
+          style={{
+            opacity: selectedAppointment ? 1 : 0.5,
+            pointerEvents: selectedAppointment ? "auto" : "none",
+          }}
+        >
+          <Tabs.TabPane
+            tab="Tất cả"
+            key="all"
+            disabled={!selectedAppointment}
+          />
+          <Tabs.TabPane
+            tab="Đã đặt hẹn"
+            key="booked"
+            disabled={!selectedAppointment}
+          />
+          <Tabs.TabPane
+            tab="Đang thực hiện"
+            key="in-progress"
+            disabled={!selectedAppointment}
+          />
+          <Tabs.TabPane
+            tab="Đã hoàn thành"
+            key="completed"
+            disabled={!selectedAppointment}
+          />
         </Tabs>
         {loadingDetails ? (
           <Skeleton active />

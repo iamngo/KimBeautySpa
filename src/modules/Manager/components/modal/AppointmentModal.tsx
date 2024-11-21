@@ -81,6 +81,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [employees, setEmployees] = useState<any[]>([]);
   const [idBonus, setIdBonus] = useState(0);
   const [accounts, setAccounts] = useState<any[]>([]);
+  const [customer, setCustomer] = useState();
 
   useEffect(() => {
     if (visible) {
@@ -184,9 +185,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       selectedDate,
       branchId
     );
-    console.log(branchId);
-    console.log(room?.roomId);
-    console.log(selectedDate);
 
     const currentDate = moment();
     const selectedDateMoment = moment(selectedDate, "YYYY-MM-DD");
@@ -209,14 +207,20 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   };
 
   const getAccountCustomer = async () => {
-    const response = await getAllAccount(token, branchId, 1, 200);
-    setAccounts(response.data);
+    try {
+      const response = await getAllAccount(token, branchId, 1, 200);
+      const filteredAccounts = response.data.filter((acc) => acc.type === 'customer');
+      setAccounts(filteredAccounts); 
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+    }
   };
 
   const handleSelectAccount = async (value) => {
     form.setFieldsValue({ accountId: value });
     const response = await getInfoByAccountId(token, value);
     if (response.data) {
+      setCustomer(response.data)
       form.setFieldsValue({
         fullName: response.data.fullName,
         phone: response.data.phone,
@@ -230,6 +234,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   };
 
   const onFinish = async (values) => {
+      
     if (mode === MODE.ADD) {
       try {
         const appointment = {
@@ -240,13 +245,14 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           employeeId: values.staff,
           fullName: values.fullName,
           phone: values.phone,
-          customerId: 7,
+          customerId: customer?.id,
           branchId: branchId,
           bedId: values.bed,
           bonusId: idBonus,
         };
         const response = await registerAppointment(appointment);
-
+        console.log(response);
+        
         if (response.data !== null) {
           message.success("Đăng ký thành công!");
           setVisible(!visible);
@@ -375,7 +381,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 {serviceCategory.map((category) => (
                   <Select.OptGroup key={category.id} label={category.name}>
                     {servicesByCategory[category.id]?.map((service) => (
-                      <Select.Option key={service.id} value={service.id}>
+                      <Select.Option key={service.id} value={(service.id, service.specialPrice)}>
                         {service.name} -{" "}
                         {service.specialPrice.toLocaleString("vi-VN", {
                           style: "currency",
