@@ -1,0 +1,222 @@
+// Định nghĩa biến màu
+$primary-color: #ff8bac; // Màu hồng-cam chủ đạo
+$primary-hover: #ff7799; // Màu hover đậm hơn
+$light-bg: #FFF0ED; // Màu nền nhạt
+$text-light: #fff;
+$text-dark: #333;
+
+.chatbox-ai {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+
+  .chatbox-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: $primary-color !important; // Thay đổi màu nút chat
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(255, 154, 139, 0.3); // Shadow với màu chủ đạo
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      background: $primary-hover;
+    }
+
+    .chatbox-icon {
+        font-size: 30px;
+    }
+
+    i, img {
+      width: 30px;
+      height: 30px;
+      color: $text-light;
+    }
+  }
+
+  .chatbox-container {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(255, 154, 139, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .chatbox-header {
+      padding: 15px;
+      background: $primary-color; // Thay đổi màu header
+      color: $text-light;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      button {
+        background: none;
+        border: none;
+        color: $text-light;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0 5px;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .chatbox-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: $light-bg;
+      scroll-behavior: smooth;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $primary-color;
+        border-radius: 3px;
+
+        &:hover {
+          background: $primary-hover;
+        }
+      }
+
+      .message {
+        margin: 10px 0;
+        padding: 10px 15px;
+        border-radius: 15px;
+        max-width: 80%;
+        word-wrap: break-word;
+
+        &.user {
+          background: $primary-color; // Tin nhắn người dùng
+          color: $text-light;
+          margin-left: auto;
+          border-bottom-right-radius: 5px;
+        }
+
+        &.ai {
+          background: white;
+          color: $text-dark;
+          margin-right: auto;
+          border-bottom-left-radius: 5px;
+          border: 1px solid rgba(255, 154, 139, 0.2);
+          white-space: pre-wrap;
+          line-height: 1.6;
+          padding: 15px;
+        }
+
+        &.typing {
+          background: #f0f0f0;
+          padding: 15px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+      }
+    }
+
+    .chatbox-input {
+      padding: 15px;
+      background: white;
+      border-top: 1px solid rgba(255, 154, 139, 0.2);
+      display: flex;
+      gap: 10px;
+
+      input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 154, 139, 0.3);
+        border-radius: 20px;
+        outline: none;
+
+        &:focus {
+          border-color: $primary-color;
+        }
+      }
+
+      button {
+        padding: 8px 20px;
+        background: $primary-color;
+        color: $text-light;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background: $primary-hover;
+        }
+      }
+    }
+  }
+
+  // Animation cho dots
+  .typing {
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 4px;
+      background: rgba(255, 154, 139, 0.6);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+
+      &:nth-child(1) { animation-delay: 0s; }
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+  }
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+}
+
+.chatbox-ai {
+  &.open {
+    .chatbox-container {
+      animation: slideIn 0.3s ease forwards;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 

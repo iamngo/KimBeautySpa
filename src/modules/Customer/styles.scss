@@ -194,6 +194,45 @@ body {
       }
     }
   }
+
+  // Thêm style cho chatbox
+  .chatbox-ai {
+    position: fixed !important; // Sử dụng !important để đảm bảo override
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important; // Đảm bảo hiển thị trên cùng
+    width: auto !important; // Override width: 100% từ parent
+    
+    .chatbox-toggle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #007bff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      
+      i, img {
+        width: 30px;
+        height: 30px;
+        color: white;
+      }
+    }
+
+    .chatbox-container {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      width: 350px;
+      height: 500px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+  }
 }
 
 .services-page,

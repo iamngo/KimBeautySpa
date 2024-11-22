@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Button, Input, Pagination } from "antd";
 import "../styles.scss";
 import CustomCard from "../components/card/Card";
 import { useLocation, useNavigate } from "react-router-dom";
 import { HOME, SERVICE } from "../../../routes";
 import { getServiceByCategory } from "../../../services/api";
+import ChatboxAI from "../components/chatbox/ChatboxAI";
+import { ChatboxAIRef } from '../components/chatbox/ChatboxAI';
 
 const { Search } = Input;
 
@@ -17,6 +19,8 @@ const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [services, setServices] = useState<any[]>([]); 
+  const chatboxRef = useRef<ChatboxAIRef>(null);
+  const [selectedService, setSelectedService] = useState<string>('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -33,8 +37,15 @@ const ServicesPage: React.FC = () => {
     
   };
 
-  const handleConsultClick = () => {
-    console.log("Nhận tư vấn");
+  const handleConsultClick = (service: any) => {
+    const consultMessage = `Dịch vụ bạn quan tâm là "${service.name}".
+Thông tin chi tiết:
+- Chi phí dịch vụ: ${new Intl.NumberFormat('vi-VN').format(service.price)} VNĐ
+- Thời gian thực hiện: ${service.duration} phút
+${service.specialPrice ? `- Khuyến mãi còn: ${new Intl.NumberFormat('vi-VN').format(service.specialPrice)} VNĐ` : ''}
+Bạn có thể đặt lịch ngay hoặc tìm hiểu thêm thông tin chi tiết.`;
+
+    chatboxRef.current?.openChatbox(consultMessage);
   };
 
   //lọc dịch vụ dựa trên từ khóa tìm kiếm đã debounce
@@ -68,6 +79,7 @@ const ServicesPage: React.FC = () => {
 
   return (
     <div className="services-page">
+      <ChatboxAI ref={chatboxRef} />
       {/* Service Utils */}
       <div className="services-utils">
         <h1>{location.state.category?.name}</h1>
@@ -93,7 +105,7 @@ const ServicesPage: React.FC = () => {
                     state: { category: location.state.category },
                   })
                 }
-                onConsultClick={handleConsultClick}
+                onConsultClick={() => handleConsultClick(service)}
               />
             ))}
           </div>

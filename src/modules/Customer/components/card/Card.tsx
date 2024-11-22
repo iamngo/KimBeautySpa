@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from 'react';
 import { Card, Button, Tooltip } from "antd";
 import "./Card.scss";
 
@@ -8,7 +8,7 @@ interface ServiceCardProps {
   price?: number;
   specialPrice?: number;
   onDetailClick: () => void;
-  onConsultClick: () => void;
+  onConsultClick: (service: any) => void;
 }
 
 const CustomCard: React.FC<ServiceCardProps> = ({
@@ -50,7 +50,7 @@ const CustomCard: React.FC<ServiceCardProps> = ({
           )}
 
           <div className="card-actions">
-            <Button type="default" onClick={onConsultClick}>
+            <Button type="default" onClick={() => onConsultClick({ name: title })}>
               Nhận tư vấn
             </Button>
             <Button onClick={onDetailClick} className="btn-detail">

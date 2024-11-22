@@ -9,6 +9,7 @@ import {
   getCategoryServiceById,
   getOutStandingServices,
 } from "../../../services/api";
+import ChatboxAI from "../components/chatbox/ChatboxAI";
 
 const Homepage = () => {
   const [visible, setVisible] = useState(false);
@@ -66,6 +67,7 @@ const Homepage = () => {
 
   return (
     <div className="home-page">
+      <ChatboxAI />
       <ModalRegister
         visible={visible}
         setVisible={setVisible}
