@@ -44,8 +44,8 @@ const EmployeePage: React.FC = () => {
     setLoading(true);
     const response = await getAllEmployee(token, branchId, 1, 100);
 
-    setEmployees(response.data);
-    console.log(response.data);
+    setEmployees(response?.data);
+    console.log(response?.data);
 
     setLoading(false);
   };

@@ -1,4 +1,14 @@
-import { Button, Form, Input, Modal, Select, Upload, Row, Col, message } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Upload,
+  Row,
+  Col,
+  message,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { Service } from "../../types";
 import { MODE } from "../../../../utils/constants";
@@ -46,7 +56,7 @@ const ServiceCategoryModal: React.FC<ServiceModalProps> = ({
   }, [visible, mode, service, form]);
 
   const fetchRoom = async () => {
-    const responseRoom = await getAllRoom( 1, 200);
+    const responseRoom = await getAllRoom(1, 200);
     setRooms(responseRoom.data);
   };
 
@@ -59,15 +69,15 @@ const ServiceCategoryModal: React.FC<ServiceModalProps> = ({
     if (mode === MODE.ADD) {
       try {
         const serviceCategory = {
-            name: values.name,
-            roomId: values.roomId
-        }
+          name: values.name,
+          roomId: values.roomId,
+        };
         const response = await createServiceCategory(token, serviceCategory);
-        if(response.data !== null) {
-            message.success("Thêm phân loại dịch vụ thành công!");
-            setVisible(!visible);
+        if (response?.data !== null) {
+          message.success("Thêm phân loại dịch vụ thành công!");
+          setVisible(!visible);
         } else {
-            message.error("Thêm phân loại dịch vụ thất bại!");
+          message.error("Thêm phân loại dịch vụ thất bại!");
         }
       } catch (error) {
         console.log("Validation failed:", error);
@@ -76,17 +86,21 @@ const ServiceCategoryModal: React.FC<ServiceModalProps> = ({
     if (mode === MODE.EDIT) {
       try {
         const serviceCategory = {
-            name: values.name,
-            roomId: values.roomId
-        }
-        const response = await updateServiceCategory(token, serviceCategory, values.id);
+          name: values.name,
+          roomId: values.roomId,
+        };
+        const response = await updateServiceCategory(
+          token,
+          serviceCategory,
+          values.id
+        );
         console.log(response);
-        
-        if(response.data !== null) {
-            message.success("Cập nhật phân loại dịch vụ thành công!");
-            setVisible(!visible);
+
+        if (response?.data !== null) {
+          message.success("Cập nhật phân loại dịch vụ thành công!");
+          setVisible(!visible);
         } else {
-            message.error("Cập nhật phân loại dịch vụ thất bại!");
+          message.error("Cập nhật phân loại dịch vụ thất bại!");
         }
       } catch (error) {
         console.log("Validation failed:", error);

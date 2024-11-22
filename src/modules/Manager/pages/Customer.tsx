@@ -39,8 +39,8 @@ const CustomerPage: React.FC = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     const response = await getAllCustomer(token, 1, 100);
-    setCustomers(response.data);
-    console.log(response.data);
+    setCustomers(response?.data);
+    console.log(response?.data);
 
     setLoading(false);
   };

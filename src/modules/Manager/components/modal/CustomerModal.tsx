@@ -85,7 +85,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
         const response = await registerCustomer(formData);
         console.log(response);
 
-        if (response.data !== null) {
+        if (response?.data !== null) {
           message.success("Đăng ký thành công!");
           setVisible(!visible);
         }

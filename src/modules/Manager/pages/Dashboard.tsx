@@ -27,11 +27,11 @@ const Dashboard: React.FC = () => {
         2024
       );
       setTotalServices(
-        response.data?.reduce((total, o) => total + Number(o.revenue), 0)
+        response?.data?.reduce((total, o) => total + Number(o.revenue), 0)
       );
-      console.log(response.data);
+      console.log(response?.data);
 
-      setServices([...response.data]);
+      setServices([...response?.data]);
     };
 
     const getApiSalaryOfEmployeeByMonthYear = async () => {
@@ -41,23 +41,23 @@ const Dashboard: React.FC = () => {
         11,
         2024
       );
-      console.log(response.data);
+      console.log(response?.data);
       setTotalEmployees(
-        response.data?.reduce(
+        response?.data?.reduce(
           (total, o) => total + Number(o.salary) + Number(o.commissions),
           0
         )
       );
-      setEmployees([...response.data]);
+      setEmployees([...response?.data]);
     };
 
     const getApiExpenseByMonthYear = async () => {
       const response = await getExpenseByMonthYear(branchId, 11, 2024);
-      console.log(response.data);
+      console.log(response?.data);
       setTotalExpenses(
-        response.data?.reduce((total, o) => total + Number(o.expense), 0)
+        response?.data?.reduce((total, o) => total + Number(o.expense), 0)
       );
-      setExpenses([...response.data]);
+      setExpenses([...response?.data]);
     };
 
     getApiRevenueOfServiceByDate();
