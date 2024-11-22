@@ -88,9 +88,9 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
     try {
       const response = await getWagesByRole(token, role);
 
-      if (response.data && response.data[0].id) {
-        form.setFieldsValue({ wageId: response.data[0].id });
-        setWageId(response.data[0].id);
+      if (response?.data && response?.data[0].id) {
+        form.setFieldsValue({ wageId: response?.data[0].id });
+        setWageId(response?.data[0].id);
       }
     } catch (error) {
       console.error("Error fetching wage by role:", error);
@@ -132,7 +132,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         const response = await registerEmployee(formData);
         console.log(response);
 
-        if (response.data !== null) {
+        if (response?.data !== null) {
           message.success("Đăng ký thành công!");
           setVisible(!visible);
         }

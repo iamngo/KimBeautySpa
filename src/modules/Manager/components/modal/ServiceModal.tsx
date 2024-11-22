@@ -39,7 +39,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   const [categories, setCategories] = useState<[]>([]);
   const token = localStorage.getItem("accessToken");
 
-  
   useEffect(() => {
     if (visible) {
       fetchCategory();
@@ -56,7 +55,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
 
   const fetchCategory = async () => {
     const response = await getAllServiceCategory(1, 100);
-    setCategories(response.data);
+    setCategories(response?.data);
   };
 
   const handleCancel = () => {

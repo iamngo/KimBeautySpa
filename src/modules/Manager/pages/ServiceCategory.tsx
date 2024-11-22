@@ -3,7 +3,11 @@ import { Button, message, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { deleteServiceCategory, getAllRoom, getAllServiceCategory } from "../../../services/api";
+import {
+  deleteServiceCategory,
+  getAllRoom,
+  getAllServiceCategory,
+} from "../../../services/api";
 import { Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
@@ -22,7 +26,12 @@ const ServiceCategoryPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Service[]>([]);
   const [rooms, setRooms] = useState<[]>([]);
-  const [selectedColumns, setSelectedColumns] = useState(["id", "name", "roomId", "actions"]);
+  const [selectedColumns, setSelectedColumns] = useState([
+    "id",
+    "name",
+    "roomId",
+    "actions",
+  ]);
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
@@ -31,12 +40,14 @@ const ServiceCategoryPage: React.FC = () => {
 
   const fetchCategory = async () => {
     setLoading(true);
-    const responseRoom = await getAllRoom( 1, 200);
+    const responseRoom = await getAllRoom(1, 200);
     setRooms(responseRoom.data);
 
     const response = await getAllServiceCategory(1, 100);
-    const serviceCategoryDetail = response.data.map((serviceCategory) => {
-      const room = responseRoom.data.find((room) => room.id === serviceCategory.roomId);
+    const serviceCategoryDetail = response?.data?.map((serviceCategory) => {
+      const room = responseRoom.data.find(
+        (room) => room.id === serviceCategory.roomId
+      );
       return {
         ...serviceCategory,
         roomName: room ? room.name : "N/A",
@@ -65,18 +76,20 @@ const ServiceCategoryPage: React.FC = () => {
   }, [debouncedKeyword, categories]);
 
   const handleColumnChange = (value: string[]) => {
-    setSelectedColumns(value.includes("all") ? ["id", "name", "roomId", "actions"] : value);
+    setSelectedColumns(
+      value.includes("all") ? ["id", "name", "roomId", "actions"] : value
+    );
   };
 
   const handleDeleteServiceCategory = async (id: number) => {
     const response = await deleteServiceCategory(token, id);
-    if(response.data !== null){
-        message.success('Xóa thành công!');
-        fetchCategory();
-    }else {
-        message.error("Xóa thất bại");
+    if (response?.data !== null) {
+      message.success("Xóa thành công!");
+      fetchCategory();
+    } else {
+      message.error("Xóa thất bại");
     }
-  }
+  };
 
   const columns = [
     {
@@ -116,7 +129,11 @@ const ServiceCategoryPage: React.FC = () => {
               <Button type="link" onClick={() => handleEditService(record)}>
                 <BiEdit />
               </Button>
-              <Button type="link" danger onClick={() => handleDeleteServiceCategory(record.id)}>
+              <Button
+                type="link"
+                danger
+                onClick={() => handleDeleteServiceCategory(record.id)}
+              >
                 <MdDeleteForever />
               </Button>
             </div>

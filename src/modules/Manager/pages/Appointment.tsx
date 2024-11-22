@@ -60,7 +60,7 @@ const AppointmentPage: React.FC = () => {
   const [appointmentDetails, setAppointmentDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  
+
   useEffect(() => {
     if (branchId) {
       fetchServicesAndAppointments();
@@ -73,11 +73,11 @@ const AppointmentPage: React.FC = () => {
     // Fetch all services
 
     const customerResponse = await getAllCustomer(token, 1, 100);
-    setCustomers(customerResponse.data);
+    setCustomers(customerResponse?.data);
 
     const employeeResponse = await getAllEmployee(token, branchId, 1, 100);
 
-    setEmployees(employeeResponse.data);
+    setEmployees(employeeResponse?.data);
 
     // Fetch appointments and map service and employee names
     const appointmentsResponse = await getAllAppointment(
@@ -88,13 +88,13 @@ const AppointmentPage: React.FC = () => {
     );
 
     const appointmentsWithDetails = await Promise.all(
-      appointmentsResponse.data.map(async (appointment: Appointment) => {
+      appointmentsResponse?.data?.map(async (appointment: Appointment) => {
         const updatedAppointment = { ...appointment };
 
-        const customer = customerResponse.data.find(
+        const customer = customerResponse?.data?.find(
           (customer: Customer) => customer.id === appointment.customerId
         );
-        const employee = employeeResponse.data.find(
+        const employee = employeeResponse?.data?.find(
           (employee: Employee) => employee.id === appointment.employeeId
         );
 
@@ -196,6 +196,8 @@ const AppointmentPage: React.FC = () => {
     );
   };
 
+  const handleClickPayment = (id: number) => {};
+
   const columns = [
     {
       title: "ID",
@@ -230,6 +232,22 @@ const AppointmentPage: React.FC = () => {
       key: "customerName",
       sorter: (a: Appointment, b: Appointment) =>
         a.customerName?.localeCompare(b.customerName),
+    },
+    {
+      title: "Thanh Toán",
+      key: "payment",
+      render: (text, record) => (
+        <div>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => handleClickPayment(record.id)}
+            >
+              Thanh Toán
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Hành động",
@@ -338,19 +356,19 @@ const AppointmentPage: React.FC = () => {
     setSelectedAppointment(record);
     setLoadingDetails(true);
     const servicesResponse = await getAllService(1, 100);
-    setServices(servicesResponse.data);
+    setServices(servicesResponse?.data);
     const bedResponse = await getAllBed(token, 1, 200);
-    setBeds(bedResponse.data);
+    setBeds(bedResponse?.data);
     try {
       const response = await getAppointmentDetailById(token, record.id);
       const appointmentDetails = await Promise.all(
-        response.data.map(async (appointment) => {
+        response?.data.map(async (appointment) => {
           const updatedAppointment = { ...appointment };
 
-          const service = servicesResponse.data.find(
+          const service = servicesResponse?.data.find(
             (service: Service) => service.id === appointment.foreignKeyId
           );
-          const bed = bedResponse.data.find(
+          const bed = bedResponse?.data.find(
             (bed) => bed.id === appointment.bedId
           );
 
@@ -418,7 +436,7 @@ const AppointmentPage: React.FC = () => {
             haveImport={false}
             rowClassName={(record) =>
               record.id === selectedRow ? "selected-row" : ""
-            } 
+            }
             onRow={(record) => ({
               onClick: () => handleRowClick(record),
             })}

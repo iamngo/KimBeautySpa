@@ -40,15 +40,15 @@ const ServicePage: React.FC = () => {
   const fetchServices = async () => {
     setLoading(true);
     const response = await getAllService(1, 200);
-    setServices(response.data);
-    console.log(response.data);
+    setServices(response?.data);
+    console.log(response?.data);
 
     setLoading(false);
   };
 
   const fetchCategory = async () => {
     const response = await getAllServiceCategory(1, 100);
-    setCategories(response.data);
+    setCategories(response?.data);
   };
 
   const handleSearchChange = (value: string) => {
@@ -130,9 +130,9 @@ const ServicePage: React.FC = () => {
       dataIndex: "serviceCategoryId",
       key: "serviceCategoryId",
       render: (serviceCategoryId: number) => {
-        const category = categories.find(cat => cat.id === serviceCategoryId);
-        return category ? category.name : "Không xác định"; 
-    },
+        const category = categories.find((cat) => cat.id === serviceCategoryId);
+        return category ? category.name : "Không xác định";
+      },
       sorter: (a: Service, b: Service) =>
         a.serviceCategoryId - b.serviceCategoryId,
     },

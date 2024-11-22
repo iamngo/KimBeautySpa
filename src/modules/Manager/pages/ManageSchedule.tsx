@@ -62,7 +62,7 @@ const ManageSchedule: React.FC = () => {
     while (true) {
       const response = await getAllSchedule(token, currentPage, itemsPerPage);
       if (response?.data) {
-        allData = [...allData, ...response.data];
+        allData = [...allData, ...response?.data];
         if (currentPage >= response.pagination.totalPages) {
           break;
         }
@@ -78,8 +78,8 @@ const ManageSchedule: React.FC = () => {
 
   const fetchEmployee = async () => {
     const response = await getAllEmployee(token, branchId, 1, 1000);
-    setEmployees(response.data);
-    console.log(response.data);
+    setEmployees(response?.data);
+    console.log(response?.data);
   };
 
   const weekDays = useMemo(() => {
