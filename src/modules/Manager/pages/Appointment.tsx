@@ -65,6 +65,7 @@ const AppointmentPage: React.FC = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [visibleInvoiceModal, setVisibleInvoiceModal] = useState<boolean>(false);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
 
   useEffect(() => {
     if (branchId) {
@@ -349,6 +350,10 @@ const AppointmentPage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
+  const handleAddAppointmentDetail = () => {
+    setVisibleModalDetail(true);
+    setMode(MODE.ADD);
+  };
   const handleEditEmployee = (appointment: Appointment) => {
     console.log(appointment);
 
@@ -376,10 +381,13 @@ const AppointmentPage: React.FC = () => {
     setSelectedRow(record.id);
     setSelectedAppointment(record);
     setLoadingDetails(true);
+    setSelectedRecord(record); // Lưu record đã chọn
     const servicesResponse = await getAllService(1, 100);
     setServices(servicesResponse?.data);
     const bedResponse = await getAllBed(token, 1, 200);
     setBeds(bedResponse?.data);
+    const employeeResponse = await getAllEmployee(token, branchId, 1, 200);
+    setEmployees(employeeResponse);
     try {
       const response = await getAppointmentDetailById(token, record.id);
       const appointmentDetails = await Promise.all(
@@ -389,6 +397,9 @@ const AppointmentPage: React.FC = () => {
           const service = servicesResponse?.data.find(
             (service: Service) => service.id === appointment.foreignKeyId
           );
+          const employee = employeeResponse?.data.find(
+            (emp: Employee) =>emp.id === appointment.employeeId
+          );
           const bed = bedResponse?.data.find(
             (bed) => bed.id === appointment.bedId
           );
@@ -396,12 +407,12 @@ const AppointmentPage: React.FC = () => {
           updatedAppointment.serviceName = service
             ? service.name
             : "Unknown Service";
-          updatedAppointment.bedName = bed ? bed.name : "Unknown Bed";
+            updatedAppointment.bedName = bed ? bed.name : "Unknown Bed";
+            updatedAppointment.employeeName = employee ? employee.fullName : "Unknown Employee";
 
           return updatedAppointment;
         })
       );
-
       setAppointmentDetails(appointmentDetails);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
@@ -409,7 +420,11 @@ const AppointmentPage: React.FC = () => {
       setLoadingDetails(false);
     }
   };
-
+  const handleRefreshDetail = () => {
+    if (selectedRecord) {
+      handleRowClick(selectedRecord); 
+    }
+  };
   return (
     <div className="manage-account">
       <AppointmentModal
@@ -424,6 +439,8 @@ const AppointmentPage: React.FC = () => {
         setVisible={setVisibleModalDetail}
         mode={mode}
         appointmentData={dataEdit}
+        appointmentId={selectedAppointment?.id}
+        onSuccess={handleRefreshDetail} 
       />
       <InvoiceModal
         visible={visibleInvoiceModal}
@@ -481,35 +498,50 @@ const AppointmentPage: React.FC = () => {
       </div>
       <div className="appointment-detail">
         <h3>Chi tiết lịch hẹn</h3>
-        <Tabs
-          defaultActiveKey="all"
-          onChange={handleTabChange}
-          style={{
-            opacity: selectedAppointment ? 1 : 0.5,
-            pointerEvents: selectedAppointment ? "auto" : "none",
-          }}
-        >
-          <Tabs.TabPane
-            tab="Tất cả"
-            key="all"
-            disabled={!selectedAppointment}
-          />
-          <Tabs.TabPane
-            tab="Đã đặt hẹn"
-            key="booked"
-            disabled={!selectedAppointment}
-          />
-          <Tabs.TabPane
-            tab="Đang thực hiện"
-            key="in-progress"
-            disabled={!selectedAppointment}
-          />
-          <Tabs.TabPane
-            tab="Đã hoàn thành"
-            key="completed"
-            disabled={!selectedAppointment}
-          />
-        </Tabs>
+        <div style={{display: 'flex', justifyContent:'space-between'}}>
+          <Tabs
+            defaultActiveKey="all"
+            onChange={handleTabChange}
+            style={{
+              opacity: selectedAppointment ? 1 : 0.5,
+              pointerEvents: selectedAppointment ? "auto" : "none",
+            }}
+          >
+            <Tabs.TabPane
+              tab="Tất cả"
+              key="all"
+              disabled={!selectedAppointment}
+            />
+            <Tabs.TabPane
+              tab="Đã đặt hẹn"
+              key="booked"
+              disabled={!selectedAppointment}
+            />
+            <Tabs.TabPane
+              tab="Đang thực hiện"
+              key="in-progress"
+              disabled={!selectedAppointment}
+            />
+            <Tabs.TabPane
+              tab="Đã hoàn thành"
+              key="completed"
+              disabled={!selectedAppointment}
+            />
+          </Tabs>
+          <Button
+            type="primary"
+            className="btn-add"
+            icon={<TiPlusOutline />}
+            size="large"
+            onClick={handleAddAppointmentDetail}
+            style={{
+              opacity: selectedAppointment ? 1 : 0.5,
+              pointerEvents: selectedAppointment ? "auto" : "none",
+            }}
+          >
+            Thêm chi tiết
+          </Button>
+        </div>
         {loadingDetails ? (
           <Skeleton active />
         ) : (

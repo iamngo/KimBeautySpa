@@ -761,8 +761,6 @@ export const paymentMomo = async (
   voucherId: Array<number>
 ) => {
   if (!token || !appointmentId || !voucherId) return;
-  console.log(token);
-
   const response = await axios.get(`${API_URL}/${APPOINTMENT}/payments/momo`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -773,5 +771,15 @@ export const paymentMomo = async (
     },
   });
 
+  return response?.data;
+};
+
+export const createAppointmentDetail = async (token: string | null, appointmentDetail) => {
+  if (!token) return;
+  const response = await axios.post(`${API_URL}/${APPOINTMENT_DETAIL}`, appointmentDetail, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
