@@ -53,11 +53,11 @@ const TriangleBar = (props) => {
 export default function BarCharts({ services }) {
   return (
     <BarChart
-      width={1250}
-      height={310}
+      width={1230}
+      height={500}
       data={services}
       margin={{
-        top: 230,
+        top: 50,
         right: 30,
         left: 20,
         bottom: 5,

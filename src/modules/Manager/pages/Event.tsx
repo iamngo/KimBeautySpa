@@ -3,19 +3,20 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllAccount, getAllEvent } from "../../../services/api";
-import { Account } from "../types";
+import { getAllEvent } from "../../../services/api";
+import { Event } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import EventModal from "../components/modal/EventModal";
 import { MODE } from "../../../utils/constants";
 import { useBranch } from "../../../hooks/branchContext";
+import moment from "moment";
 
 const EventPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState<Account[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
     "id",
     "name",
@@ -29,20 +30,22 @@ const EventPage: React.FC = () => {
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
-  const [dataEdit, setDataEdit] = useState<Account>();
+  const [dataEdit, setDataEdit] = useState<Event>();
   const { branchId, setBranchId } = useBranch();
+  const [refreshPage, setRefreshPage] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(branchId);
-
     fetchEvents();
-  }, []);
+  }, [refreshPage]);
+
+  const toggleRefresh = () => {
+    setRefreshPage((prev) => !prev); // Correct usage
+  };
 
   const fetchEvents = async () => {
-    console.log(token);
-
     setLoading(true);
     const response = await getAllEvent();
+    console.log(response?.data);
     setEvents(response?.data);
     setLoading(false);
   };
@@ -73,17 +76,14 @@ const EventPage: React.FC = () => {
     );
   };
 
-  const handleDeleteEventFromLocalStorage = (phone: string) => {
-    const storedEvents = localStorage.getItem("importedDataAccount");
+  const handleDeleteEventFromLocalStorage = (name: string) => {
+    const storedEvents = localStorage.getItem("importedDataEvent");
     if (storedEvents) {
       const eventsArray = JSON.parse(storedEvents);
       const updatedEvents = eventsArray.filter(
-        (account: Account) => account.phone !== phone
+        (event: Event) => event.name !== name
       );
-      localStorage.setItem(
-        "importedDataAccount",
-        JSON.stringify(updatedEvents)
-      );
+      localStorage.setItem("importedDataEvent", JSON.stringify(updatedEvents));
       setEvents(updatedEvents);
     }
   };
@@ -93,14 +93,18 @@ const EventPage: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      sorter: (a: Account, b: Account) => a.id - b.id,
+      sorter: (a: Event, b: Event) => a.id - b.id,
     },
-    { title: "Tên dịch vụ", dataIndex: "name", key: "name" },
+    {
+      title: "Tên dịch vụ",
+      dataIndex: "name",
+      key: "name",
+      sorter: (a: Event, b: Event) => a.name.localeCompare(b.name),
+    },
     {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
       key: "startDate",
-      sorter: (a: Account, b: Account) => a.type.localeCompare(b.type),
       render: (dateTime: string) => {
         const date = new Date(dateTime);
         return date
@@ -108,10 +112,6 @@ const EventPage: React.FC = () => {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
           })
           .replace(",", "");
       },
@@ -120,7 +120,6 @@ const EventPage: React.FC = () => {
       title: "Ngày hết hạn",
       dataIndex: "expiryDate",
       key: "expiryDate",
-      sorter: (a: Account, b: Account) => a.status.localeCompare(b.status),
       render: (dateTime: string) => {
         const date = new Date(dateTime);
         return date
@@ -128,10 +127,6 @@ const EventPage: React.FC = () => {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
           })
           .replace(",", "");
       },
@@ -151,24 +146,22 @@ const EventPage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
-      render: (text: string, record: Account) => (
+      render: (text: string, record: Event) => (
         <div>
           {record.isNew ? (
             <div>
-              <Button type="link" onClick={() => handleEditAccount(record)}>
+              <Button type="link" onClick={() => handleEditEvent(record)}>
                 <TiPlusOutline />
               </Button>
               <Button type="link" danger>
                 <MdDeleteForever
-                  onClick={() =>
-                    handleDeleteEventFromLocalStorage(record.phone)
-                  }
+                  onClick={() => handleDeleteEventFromLocalStorage(record.name)}
                 />
               </Button>
             </div>
           ) : (
             <div>
-              <Button type="link" onClick={() => handleEditAccount(record)}>
+              <Button type="link" onClick={() => handleEditEvent(record)}>
                 <BiEdit />
               </Button>
               <Button type="link" danger>
@@ -185,10 +178,18 @@ const EventPage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditAccount = (account: Account) => {
+  const handleEditEvent = (event: Event) => {
+    console.log(event);
+
     setVisibleModal(true);
     setMode(MODE.EDIT);
-    setDataEdit(account);
+    setDataEdit({
+      id: event.id,
+      name: event.name,
+      startDate: moment(event.startDate),
+      expiryDate: moment(event.expiryDate),
+      image: event.image,
+    });
   };
 
   return (
@@ -197,7 +198,8 @@ const EventPage: React.FC = () => {
         visible={visibleModal}
         setVisible={setVisibleModal}
         mode={mode}
-        account={dataEdit}
+        event={dataEdit}
+        toggleRefresh={toggleRefresh}
       />
       <div className="header-container">
         <Search
@@ -219,13 +221,13 @@ const EventPage: React.FC = () => {
       {loading ? (
         <Skeleton active />
       ) : (
-        <DataTable<Account>
+        <DataTable<Event>
           columns={columns}
           data={filteredEvents}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
-          tableName="Account"
+          tableName="Event"
         />
       )}
     </div>

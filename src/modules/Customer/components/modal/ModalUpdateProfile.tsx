@@ -76,13 +76,13 @@ const ModalUpdateProfile: React.FC<ModalUpdateProfileProps> = ({
           email: values.email ? values.email : null,
           address: values.address,
           phone: customer?.phone,
-          accountId: userId
+          accountId: userId,
         })
       );
       const response = await updateInfoCustomer(token, formData, customer?.id);
       console.log(response);
-      if(response.data){
-        message.success('Cập nhật thông tin thành công!');
+      if (response?.data) {
+        message.success("Cập nhật thông tin thành công!");
         setVisible(!visible);
       } else {
         message.error("Cập nhật thất bại!");
@@ -98,7 +98,7 @@ const ModalUpdateProfile: React.FC<ModalUpdateProfileProps> = ({
 
   const getInfoCustomer = async () => {
     const response = await getInfoByAccountId(token, userId);
-    setCustomer(response.data);
+    setCustomer(response?.data);
   };
 
   return (

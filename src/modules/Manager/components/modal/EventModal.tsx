@@ -4,38 +4,70 @@ import {
   Form,
   FormInstance,
   Input,
+  message,
   Modal,
   Select,
   Upload,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { Account } from "../../types";
+import { Event } from "../../types";
 import { MODE } from "../../../../utils/constants";
+import moment from "moment";
+import { createEvent, updateEvent } from "../../../../services/api";
 
 interface EventModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   mode: string;
-  account?: Account;
+  event?: Event;
+  toggleRefresh: () => void;
+}
+
+interface EventFormValues {
+  id?: number;
+  name?: number;
+  startDate?: moment.Moment;
+  expiryDate?: moment.Moment;
+  image?: string;
 }
 
 const EventModal: React.FC<EventModalProps> = ({
   visible,
   setVisible,
   mode,
-  account,
+  event,
+  toggleRefresh,
 }) => {
-  const [form] = Form.useForm<FormInstance>();
+  const [form] = Form.useForm<EventFormValues>();
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [selectedStartDate, setSelectedStartDate] = useState<string | null>(
+    null
+  );
+  const [selectedExpiryDate, setSelectedExpiryDate] = useState<string | null>(
+    null
+  );
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     if (visible) {
       if (mode === MODE.ADD) {
         form.resetFields(); // Reset form khi ở chế độ add
-      } else if (mode === MODE.EDIT && account) {
-        form.setFieldsValue(account); // Điền dữ liệu khi ở chế độ edit
+        setFileList([]);
+      } else if (mode === MODE.EDIT && event) {
+        form.setFieldsValue(event); // Điền dữ liệu khi ở chế độ edit
+        if (event.image) {
+          setFileList([
+            {
+              uid: "-1",
+              name: "Ảnh nhân viên",
+              status: "done",
+              url: event.image,
+            },
+          ]);
+        }
       }
     }
-  }, [visible, mode, account, form]);
+  }, [visible, mode, event, form]);
 
   const handleCancel = () => {
     form.resetFields();
@@ -45,12 +77,73 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   };
 
-  const onFinish = async (values: Account) => {
+  const disabledDate = (current) => {
+    return current && current < moment().startOf("day");
+  };
+
+  const handleStartDateChange = (date: any) => {
+    if (date) {
+      const formattedDate = date.format("YYYY-MM-DD");
+      setSelectedStartDate(formattedDate);
+    } else {
+      setSelectedStartDate(null);
+    }
+  };
+
+  const handleExpiryDateChange = (date: any) => {
+    if (date) {
+      const formattedDate = date.format("YYYY-MM-DD");
+      setSelectedExpiryDate(formattedDate);
+    } else {
+      setSelectedExpiryDate(null);
+    }
+  };
+
+  const onFinish = async (values: Event) => {
+    const formData = new FormData();
+    formData.append(
+      "file",
+      fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+    );
+    formData.append(
+      "data",
+      JSON.stringify({
+        name: values.name,
+        startDate: `${values.startDate.format("YYYY-MM-DD")}`,
+        expiryDate: `${values.expiryDate.format("YYYY-MM-DD")}`,
+        image: values.image,
+      })
+    );
     if (mode === MODE.ADD) {
-      console.log(values);
+      try {
+        const response = await createEvent(token, formData);
+        console.log(response.data);
+        if (response?.data !== null) {
+          message.success("Thêm thành công!");
+          setVisible(!visible);
+          toggleRefresh();
+        } else {
+          console.log(response.error);
+        }
+      } catch (error) {
+        console.log("Validation failed:", error);
+      }
     }
     if (mode === MODE.EDIT) {
       console.log(values);
+      try {
+        const response = await updateEvent(token, formData, Number(values.id));
+        console.log(response.data);
+        if (response?.data !== null) {
+          message.success("Cập nhật thành công!");
+          setVisible(!visible);
+          toggleRefresh();
+        } else {
+          console.log(response.error);
+        }
+      } catch (error) {
+        console.log("Validation failed:", error);
+      }
     }
   };
 
@@ -62,6 +155,16 @@ const EventModal: React.FC<EventModalProps> = ({
       title={mode === MODE.ADD ? "Thêm sự kiện" : "Cập nhật sự kiện"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
+        <Form.Item
+          label="ID:"
+          name="id"
+          rules={[{ required: true, message: "Vui lòng ID sự kiện" }]}
+          style={{
+            display: "none",
+          }}
+        >
+          <Input placeholder="Nhập ID sự kiện" />
+        </Form.Item>
         <Form.Item
           label="Tên sự kiện:"
           name="name"
@@ -76,26 +179,26 @@ const EventModal: React.FC<EventModalProps> = ({
         >
           <DatePicker
             style={{ width: "100%" }}
-            // onChange={handleDateChange}
-            // disabledDate={disabledDate}
+            onChange={handleStartDateChange}
+            disabledDate={disabledDate}
           />
         </Form.Item>
         <Form.Item
           label="Ngày hết hạn:"
-          name="endDate"
+          name="expiryDate"
           rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc" }]}
         >
           <DatePicker
             style={{ width: "100%" }}
-            // onChange={handleDateChange}
-            // disabledDate={disabledDate}
+            onChange={handleExpiryDateChange}
+            disabledDate={disabledDate}
           />
         </Form.Item>
         <Form.Item label="Ảnh" name="image">
           <Upload
             listType="picture-card"
-            // fileList={fileList}
-            // onChange={({ fileList }) => setFileList(fileList)}
+            fileList={fileList}
+            onChange={({ fileList }) => setFileList(fileList)}
             beforeUpload={() => false}
             maxCount={1}
           >

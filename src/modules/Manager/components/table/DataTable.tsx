@@ -14,9 +14,9 @@ interface DataTableProps<T> extends TableProps<T> {
   loading: boolean;
   selectedColumns: string[];
   onColumnChange: (value: string[]) => void;
-  tableName: string
-  haveImport?: boolean,
-  scrolly?: number
+  tableName: string;
+  haveImport?: boolean;
+  scrolly?: number;
 }
 
 const DataTable = <T extends object>({
@@ -39,7 +39,7 @@ const DataTable = <T extends object>({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const storedData = localStorage.getItem(`importedData${tableName}`);    
+    const storedData = localStorage.getItem(`importedData${tableName}`);
     if (storedData) {
       setDataTable([...JSON.parse(storedData), ...data]);
     } else {
@@ -51,26 +51,25 @@ const DataTable = <T extends object>({
   const handleExport = () => {
     const csvData = data.map((row) =>
       displayedColumns
-        .filter((col) => col.key !== "actions") 
+        .filter((col) => col.key !== "actions")
         .map((col) => {
           const cellData = row[col.key];
           return cellData;
         })
         .join(",")
     );
-  
+
     const csvContent = [
       displayedColumns
-        .filter((col) => col.key !== "actions") 
+        .filter((col) => col.key !== "actions")
         .map((col) => col.title)
         .join(","),
       ...csvData,
     ].join("\n");
-  
+
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, "exported_data.csv");
   };
-  
 
   // Hàm xử lý nhập dữ liệu
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,22 +80,10 @@ const DataTable = <T extends object>({
         skipEmptyLines: true,
         complete: (result) => {
           const columnKeyMapping: { [key: string]: string } = {
-            "Số điện thoại": "phone",
-            "Loại": "type",
-            "Trạng thái": "status",
-            "AccountId": "accountId",
-            "Họ và tên": "fullName",
-            "Ngày sinh": "dob",
-            "Địa chỉ": "address",
-            "Giới tính": "gender",
-            "Hình ảnh": "image",
-            "Email": "email",
-            "Vai trò": "role",
-            "WageID": "wageId",
             "Tên dịch vụ": "name",
-            "Phân loại": "serviceCategoryId",
-            "Thời gian": "duration",
-            
+            "Ngày bắt đầu": "startDate",
+            "Ngày hết hạn": "endDate",
+            "Hình ảnh": "image",
           };
           const importedDataCSV = result.data.map((item: any) => {
             const rowData: { [key: string]: any } = {};
@@ -105,13 +92,15 @@ const DataTable = <T extends object>({
                 const csvKey = Object.keys(columnKeyMapping).find(
                   (key) => columnKeyMapping[key] === col.key
                 );
-                rowData[col.key] = csvKey ? item[csvKey] || undefined : undefined;
+                rowData[col.key] = csvKey
+                  ? item[csvKey] || undefined
+                  : undefined;
               }
             });
             rowData.isNew = true;
             return rowData;
           });
-  
+
           let allValid = true;
           importedDataCSV.forEach((data, index) => {
             const errors: string[] = [];
@@ -120,13 +109,13 @@ const DataTable = <T extends object>({
                 errors.push(`${col.title} is missing`);
               }
             });
-  
+
             if (errors.length > 0) {
               allValid = false;
               message.error(`Row ${index + 1}: ${errors.join(", ")}`);
             }
           });
-  
+
           if (!allValid) {
             return;
           }
@@ -140,12 +129,6 @@ const DataTable = <T extends object>({
       });
     }
   };
-  
-  
-  
-  
-  
-  
 
   return (
     <>
@@ -167,31 +150,35 @@ const DataTable = <T extends object>({
             ))}
           </Select>
         </div>
-        {haveImport === false ? <></>:( <div className="btn">
-          <Button
-            icon={<MdLabelImportantOutline />}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Nhập dữ liệu
-          </Button>
-          <Button icon={<TiExportOutline />} onClick={handleExport}>
-            Xuất dữ liệu
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            accept=".csv"
-            onChange={handleImport}
-          />
-        </div>)}
+        {haveImport === false ? (
+          <></>
+        ) : (
+          <div className="btn">
+            <Button
+              icon={<MdLabelImportantOutline />}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Nhập dữ liệu
+            </Button>
+            <Button icon={<TiExportOutline />} onClick={handleExport}>
+              Xuất dữ liệu
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept=".csv"
+              onChange={handleImport}
+            />
+          </div>
+        )}
       </div>
       <Table
         columns={displayedColumns}
         dataSource={dataTable}
         // rowKey="id"
         loading={loading}
-        scroll={{ y: scrolly? scrolly: 380 }}
+        scroll={{ y: scrolly ? scrolly : 380 }}
         {...tableProps}
       />
     </>
