@@ -57,7 +57,7 @@ const HeaderHomepage: React.FC = () => {
       if (decodedPayload.role === "customer") {
         const getCustomer = async () => {
           const response = await getInfoByAccountId(token, decodedPayload.id);
-          setCustomer(response.data);
+          setCustomer(response?.data);
         };
         getCustomer();
       }
@@ -70,8 +70,8 @@ const HeaderHomepage: React.FC = () => {
             token,
             decodedPayload.id
           );
-          setEmployee(response.data);          
-          setBranchId(response.data.branchId);
+          setEmployee(response?.data);          
+          setBranchId(response?.data?.branchId);
         };
         getEmployee();
       }
@@ -81,14 +81,14 @@ const HeaderHomepage: React.FC = () => {
 
   const getServiceCategory = async () => {
     const response = await getAllServiceCategory(1, 100);
-    setServiceCategory(response.data);
+    setServiceCategory(response?.data);
   };
 
   const getServiceByServiceCategory = async (serviceCategory: any) => {
     const response = await getServiceByCategory(serviceCategory.id, 1, 200);
     setServicesByCategory((prevServicesByCategory) => ({
       ...prevServicesByCategory,
-      [serviceCategory.id]: response.data,
+      [serviceCategory.id]: response?.data,
     }));
     setCategory(serviceCategory);
   };

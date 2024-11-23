@@ -685,15 +685,34 @@ export const updateStatusAppointmentDetail = async (
   return response?.data;
 };
 
-export const getCustomerById = async (
-  token: string | null,
-  id: number,
-) => {
+export const getCustomerById = async (token: string | null, id: number) => {
   if (!token || !id) return;
   const response = await axios.get(`${API_URL}/${CUSTOMER}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-    }
+    },
   });
+  return response?.data;
+};
+
+export const paymentMomo = async (
+  token: string | null,
+  appointmentId: number,
+  amount: number,
+  voucherId: Array<number>
+) => {
+  if (!token || !appointmentId || !voucherId) return;
+  console.log(token);
+
+  const response = await axios.get(`${API_URL}/${APPOINTMENT}/payments/momo`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      appointmentId: appointmentId,
+      amount: amount,
+    },
+  });
+
   return response?.data;
 };

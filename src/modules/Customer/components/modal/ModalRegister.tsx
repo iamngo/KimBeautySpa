@@ -90,23 +90,23 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getInfoCustomer = async () => {
     const response = await getInfoByAccountId(token, userId);
-    setCustomer(response.data);
+    setCustomer(response?.data);
   };
 
   const getBranch = async () => {
     const response = await getAllBranch(1, 5);
-    setBranch(response.data);
+    setBranch(response?.data);
   };
 
   const getServiceCategory = async () => {
     const response = await getAllServiceCategory(1, 10);
-    setServiceCategory(response.data);
+    setServiceCategory(response?.data);
 
     // Fetch services for each category
     const services = {};
-    for (const category of response.data) {
-      const servicesResponse = await getServiceByCategory(category.id, 1, 100);
-      services[category.id] = servicesResponse.data;
+    for (const category of response?.data) {
+      const servicesResponse = await getServiceByCategory(category?.id, 1, 100);
+      services[category.id] = servicesResponse?.data;
     }
     setServicesByCategory(services);
     console.log(services);
@@ -127,7 +127,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const getNewIdBonus = async () => {
     const response = await getIdBonus();
-    setIdBonus(response.data.id);
+    setIdBonus(response?.data?.id);
   };
   const getTimeByServiceIdAndDate = async () => {
     const response = await getWorkingTimeByServiceIdAndDate(
@@ -141,12 +141,12 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     // Nếu ngày được chọn là ngày hiện tại, chỉ hiển thị các giờ sau thời gian hiện tại cộng thêm 1 giờ
     if (selectedDateMoment.isSame(currentDate, "day")) {
       const oneHourLater = currentDate.format("HH:mm");
-      const filteredTimes = response.data.filter(
+      const filteredTimes = response?.data.filter(
         (timeSlot: { time: string }) => timeSlot.time > oneHourLater
       );
       setListTime(filteredTimes);
     } else {
-      setListTime(response.data);
+      setListTime(response?.data);
     }
   };
 
@@ -156,7 +156,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       selectedBranch,
       room?.roomId
     );
-    setBed(response.data);
+    setBed(response?.data);
   };
 
   const getEmployees = async () => {
@@ -164,14 +164,14 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       selectedBranch,
       `${selectedDate} ${time}:00`
     );
-    setEmployees(response.data);
+    setEmployees(response?.data);
   };
 
   const fetchCategoryById = async () => {
     const response = await getCategoryServiceById(selectedCategoryId);
-    console.log(response.data);
+    console.log(response?.data);
 
-    setRoom(response.data);
+    setRoom(response?.data);
   };
 
   const disabledDate = (current) => {
@@ -220,7 +220,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
       const response = await registerAppointment(appointment);
       console.log(response);
 
-      if (response.data !== null) {
+      if (response?.data !== null) {
         message.success("Đăng ký thành công!");
         setVisible(false);
       } else {
@@ -278,7 +278,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             }}
           >
             {/* Sử dụng OptGroup để nhóm dịch vụ theo phân loại */}
-            {serviceCategory.map((category) => (
+            {serviceCategory?.map((category) => (
               <Select.OptGroup key={category.id} label={category.name}>
                 {servicesByCategory[category.id]?.map((service) => (
                   <Select.Option key={service.id} value={service.id}>
@@ -308,7 +308,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             placeholder="Chọn chi nhánh"
             onChange={(value) => setSelectedBranch(value)}
           >
-            {branch.map((item) => (
+            {branch?.map((item) => (
               <Select.Option key={item.id} value={item.id}>
                 {item.name} - {item.address}
               </Select.Option>
@@ -337,7 +337,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
               onChange={(value) => setTime(value)}
             >
               {listTime &&
-                listTime.map(
+                listTime?.map(
                   (timeSlot: { id: number; time: string; status: string }) => (
                     <Select.Option key={timeSlot.id} value={timeSlot.time}>
                       {timeSlot.time}
@@ -357,7 +357,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
               placeholder="Chọn giường"
               onChange={(value) => setSelectedBed(value)}
             >
-              {bed.map((item) => (
+              {bed?.map((item) => (
                 <Select.Option key={item.id} value={item.id}>
                   {item.name}
                 </Select.Option>
@@ -371,7 +371,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
           rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
         >
           <Select placeholder="Chọn nhân viên">
-            {employees.map((item) => (
+            {employees?.map((item) => (
               <Select.Option key={item.id} value={item.id}>
                 {item.fullName}
               </Select.Option>

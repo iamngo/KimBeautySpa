@@ -1,6 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
 import './ChatboxAI.scss';
 import { BiCommentDetail } from 'react-icons/bi';
+import { RiRobot3Fill } from 'react-icons/ri';
 
 interface ChatboxAIProps {
   initialMessage?: string;
@@ -91,7 +92,7 @@ const ChatboxAI = forwardRef<ChatboxAIRef, ChatboxAIProps>((props, ref) => {
   return (
     <div className={`chatbox-ai ${isOpen ? 'open' : ''}`}>
       <button className="chatbox-toggle" onClick={handleToggleChat}>
-        <BiCommentDetail className='chatbox-icon'/>
+      <RiRobot3Fill className='chatbox-icon'/>
       </button>
 
       {isOpen && (
