@@ -18,6 +18,7 @@ export const PRICES = "prices";
 export const DETAIL_SERVICE = "detail-service";
 export const DISCOUNT = "discount";
 export const EVENT = "events";
+export const PRODUCT = "product";
 export const WAGE = "wage";
 export const MODE = {
   ADD: "add",
