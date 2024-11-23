@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:3000";
+export const API_URL = "https://3d0d-115-78-5-154.ngrok-free.app";
 export const ACCOUNT = "account";
 export const CUSTOMER = "customer";
 export const EMPLOYEE = "employee";
