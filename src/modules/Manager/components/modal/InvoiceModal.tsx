@@ -12,7 +12,7 @@ import {
   Space,
 } from "antd";
 import { Appointment, Service } from "../../types";
-import { getAllService, getAppointmentDetailById, getCustomerById, getGiftByCustomerId, getInfoByAccountId, getVoucherById, getGiftById } from "../../../../services/api";
+import { getAllService, getAppointmentDetailById, getCustomerById, getGiftByCustomerId, getInfoByAccountId, getVoucherById, getGiftById, paymentMomo } from "../../../../services/api";
 import moment from "moment";
 import { 
   UserOutlined, 
@@ -51,13 +51,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   useEffect(() => {
     if (visible && appointmentData) {
-      calculateTotal();
       fetchInfoCustomer();
       fetchAppointmentDetail();
       fetchGiftByCustomer();
     }
-    
   }, [visible, appointmentData]);
+
+  useEffect(() => {
+    if (appointmentDetails) {
+      calculateTotal();
+    }
+  }, [appointmentDetails, selectedRewards]);
 
   const fetchInfoCustomer = async () => {
     const response = await getCustomerById(token, appointmentData?.customerId);
@@ -127,12 +131,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
 
   const calculateTotal = () => {
-    if (!appointmentDetails) return;
-
-    const total = appointmentDetails.reduce(
+    const total = appointmentDetails?.reduce(
       (sum, detail) => sum + detail.expense,
       0
-    );
+    );    
     setTotalAmount(total);
 
     let totalDiscount = 0;
@@ -150,21 +152,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     setDiscountAmount(totalDiscount);
   };
 
-  const handleVoucherChange = (value: string) => {
-    setSelectedVoucher(value);
-    calculateTotal();
+  const handleVoucherChange = (value: string[]) => {
+    setSelectedRewards(value);
   };
 
   const handleMomoPayment = async () => {
     try {
-      // Gọi API thanh toán MoMo
-      // const response = await createMomoPayment({
-      //   appointmentId: appointmentData?.id,
-      //   amount: totalAmount - discountAmount,
-      //   voucherId: selectedVoucher
-      // });
-      message.success("Đang chuyển hướng đến trang thanh toán MoMo...");
-      // window.location.href = response.paymentUrl;
+console.log(totalAmount - discountAmount);
+
+      const response = await paymentMomo(token, appointmentData?.id, totalAmount - discountAmount, selectedRewards);
+      console.log(response);
+      
     } catch (error) {
       message.error("Có lỗi xảy ra khi tạo thanh toán MoMo!");
     }
