@@ -50,7 +50,7 @@ export const register = async (data: { account: any; customer: any }) => {
   return response?.data;
 };
 
-export const getInfoByAccountId = async (token: string | null, id: string) => {
+export const getInfoByAccountId = async (token: string | null, id: number) => {
   if (!token || !id) {
     return;
   }
@@ -682,5 +682,18 @@ export const updateStatusAppointmentDetail = async (
       },
     }
   );
+  return response?.data;
+};
+
+export const getCustomerById = async (
+  token: string | null,
+  id: number,
+) => {
+  if (!token || !id) return;
+  const response = await axios.get(`${API_URL}/${CUSTOMER}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
   return response?.data;
 };
