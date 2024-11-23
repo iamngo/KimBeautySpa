@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Select, DatePicker, Button, message, Row, Col } from 'antd';
 import moment from 'moment';
 import { MODE } from '../../../../utils/constants';
+import { getAllServiceCategory, getServiceByCategory } from '../../../../services/api';
 
 interface UpdateAppointmentModalProps {
   visible: boolean;
@@ -22,24 +23,29 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   const [staffList, setStaffList] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [timeSlots, setTimeSlots] = useState<any[]>([]);
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
+    null
+  );
+  const [expense, setExpense] = useState(0);
+  const [serviceCategory, setServiceCategory] = useState<any[]>([]);
+  const [servicesByCategory, setServicesByCategory] = useState<any>({});
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
     if (visible) {
       fetchServices();
       fetchStaff();
-      
+      getServiceCategory();
       if (mode === MODE.ADD) {
         form.resetFields();
-        form.setFieldsValue({ status: 'PENDING' });
+        form.setFieldsValue({ status: 'Đã xác nhận' });
       } else if (mode === MODE.EDIT && appointmentData) {
-        // Format data for edit mode
         const formattedData = {
           ...appointmentData,
           appointmentDate: moment(appointmentData.appointmentDate),
         };
         form.setFieldsValue(formattedData);
         
-        // Fetch time slots based on selected date
         if (appointmentData.appointmentDate) {
           handleDateChange(moment(appointmentData.appointmentDate));
         }
@@ -106,140 +112,172 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
     }
   };
 
+  const getServiceCategory = async () => {
+    const response = await getAllServiceCategory(1, 10);
+    setServiceCategory(response?.data);
+
+    // Fetch services for each category
+    const services = {};
+    for (const category of response?.data) {
+      const servicesResponse = await getServiceByCategory(category.id, 1, 100);
+      services[category.id] = servicesResponse?.data;
+    }
+    setServicesByCategory(services);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    // Reset các trường liên quan khi thay đổi category
+    form.resetFields(['productId', 'serviceId', 'bedId', 'employeeId']);
+  };
+
+  const handleServiceChange = (value: number) => {
+    setSelectedService(value);
+    // Reset giường và nhân viên khi đổi dịch vụ
+    form.resetFields(['bedId', 'employeeId']);
+  };
+
   return (
     <Modal
-      title={mode === MODE.ADD ? "Thêm lịch hẹn" : "Cập nhật lịch hẹn"}
+      title={mode === MODE.ADD ? "Thêm chi tiết" : "Chỉnh sửa chi tiết"}
       open={visible}
+      onOk={handleSubmit}
       onCancel={() => setVisible(false)}
-      footer={null}
-      destroyOnClose
+      width={800}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        initialValues={{ status: 'PENDING' }}
-      >
+      <Form form={form} layout="vertical">
+        {/* Dòng 1: Phân loại và Trạng thái */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              name="customerName"
-              label="Tên khách hàng"
-              rules={[{ required: true, message: 'Vui lòng nhập tên khách hàng!' }]}
-            >
-              <Input placeholder="Nhập tên khách hàng" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="phone"
-              label="Số điện thoại"
-              rules={[
-                { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                { pattern: /^[0-9]{10}$/, message: 'Số điện thoại không hợp lệ!' }
-              ]}
-            >
-              <Input placeholder="Nhập số điện thoại" />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item
-              name="serviceId"
-              label="Dịch vụ"
-              rules={[{ required: true, message: 'Vui lòng chọn dịch vụ!' }]}
+              name="category"
+              label="Phân loại"
+              rules={[{ required: true, message: "Vui lòng chọn phân loại!" }]}
             >
               <Select
-                placeholder="Chọn dịch vụ"
-                onChange={(value) => setSelectedService(value)}
-              >
-                {serviceList.map(service => (
-                  <Select.Option key={service.id} value={service.id}>
-                    {service.name} - {service.price.toLocaleString('vi-VN')}đ
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="appointmentDate"
-              label="Ngày hẹn"
-              rules={[{ required: true, message: 'Vui lòng chọn ngày hẹn!' }]}
-            >
-              <DatePicker 
-                style={{ width: '100%' }}
-                format="DD/MM/YYYY"
-                onChange={handleDateChange}
-                disabledDate={(current) => {
-                  return current && current < moment().startOf('day');
-                }}
+                placeholder="Chọn phân loại"
+                onChange={handleCategoryChange}
+                options={[
+                  { value: "services", label: "Dịch vụ" },
+                  { value: "products", label: "Sản phẩm" },
+                ]}
               />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="time"
-              label="Thời gian"
-              rules={[{ required: true, message: 'Vui lòng chọn thời gian!' }]}
-            >
-              <Select placeholder="Chọn thời gian">
-                {timeSlots.map(slot => (
-                  <Select.Option key={slot.id} value={slot.time}>
-                    {slot.time}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="staffId"
-              label="Nhân viên thực hiện"
-              rules={[{ required: true, message: 'Vui lòng chọn nhân viên!' }]}
-            >
-              <Select placeholder="Chọn nhân viên">
-                {staffList.map(staff => (
-                  <Select.Option key={staff.id} value={staff.id}>
-                    {staff.name}
-                  </Select.Option>
-                ))}
-              </Select>
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
               name="status"
               label="Trạng thái"
-              rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+              rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
             >
-              <Select placeholder="Chọn trạng thái">
-                <Select.Option value="PENDING">Chờ xác nhận</Select.Option>
-                <Select.Option value="CONFIRMED">Đã xác nhận</Select.Option>
-                <Select.Option value="CANCELLED">Đã hủy</Select.Option>
-                <Select.Option value="COMPLETED">Hoàn thành</Select.Option>
-              </Select>
+              <Select
+                placeholder="Chọn trạng thái"
+                options={[
+                  { value: "confirmed", label: "Đã xác nhận" },
+                  { value: "implement", label: "Đang thực hiện" },
+                  { value: "finished", label: "Hoàn thành" },
+                  { value: "canceled", label: "Đã hủy" },
+                ]}
+              />
             </Form.Item>
           </Col>
         </Row>
 
-        <Form.Item name="note" label="Ghi chú">
-          <Input.TextArea rows={4} placeholder="Nhập ghi chú nếu có" />
-        </Form.Item>
+        {/* Dòng 2: Sản phẩm */}
+        {selectedCategory === "products" && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="productId"
+                label="Sản phẩm"
+                rules={[{ required: true, message: "Vui lòng chọn sản phẩm!" }]}
+              >
+                <Select
+                  placeholder="Chọn sản phẩm"
+                  options={products?.map(product => ({
+                    value: product.id,
+                    label: `${product.name} - ${product.price.toLocaleString('vi-VN')}đ`
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" block>
-            {mode === MODE.ADD ? 'Thêm lịch hẹn' : 'Cập nhật lịch hẹn'}
-          </Button>
-        </Form.Item>
+        {/* Dòng 3: Dịch vụ */}
+        {selectedCategory === "services" && (
+          <Row gutter={16}>
+            <Col span={24}>
+            <Form.Item
+              label="Chọn dịch vụ:"
+              name="service"
+              rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
+            >
+              <Select
+                placeholder="Chọn dịch vụ"
+                onChange={(value) => {
+                  setSelectedServiceId(Number(value.split(" - ")[0]));
+                  setExpense(Number(value.split(" - ")[1]));
+                }}
+              >
+                {/* Sử dụng OptGroup để nhóm dịch vụ theo phân loại */}
+                {serviceCategory?.map((category) => (
+                  <Select.OptGroup key={category.id} label={category.name}>
+                    {servicesByCategory[category.id]?.map((service) => (
+                      <Select.Option
+                        key={service.id}
+                        value={`${service.id} - ${service.specialPrice}`}
+                      >
+                        {service.name} -{" "}
+                        {service.specialPrice.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Select.Option>
+                    ))}
+                  </Select.OptGroup>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          </Row>
+        )}
+
+        {/* Dòng 4: Giường và Nhân viên - chỉ hiển thị khi đã chọn dịch vụ */}
+        {selectedCategory === "services" && selectedService && (
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="bedId"
+                label="Giường"
+                rules={[{ required: true, message: "Vui lòng chọn giường!" }]}
+              >
+                <Select
+                  placeholder="Chọn giường"
+                  options={beds?.map(bed => ({
+                    value: bed.id,
+                    label: bed.name
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="employeeId"
+                label="Nhân viên"
+                rules={[{ required: true, message: "Vui lòng chọn nhân viên!" }]}
+              >
+                <Select
+                  placeholder="Chọn nhân viên"
+                  options={employees?.map(employee => ({
+                    value: employee.id,
+                    label: employee.fullName
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
       </Form>
     </Modal>
   );

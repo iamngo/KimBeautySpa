@@ -102,7 +102,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       })
     );
     setGifts(giftsWithDetails);
-    console.log(giftsWithDetails);
   }
 
   const fetchAppointmentDetail = async () => {
@@ -158,11 +157,14 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   const handleMomoPayment = async () => {
     try {
-console.log(totalAmount - discountAmount);
-
       const response = await paymentMomo(token, appointmentData?.id, totalAmount - discountAmount, selectedRewards);
-      console.log(response);
-      
+      if (response?.data?.shortLink) {
+        window.open(response.data.shortLink, '_blank');
+        message.success("Đang chuyển đến trang thanh toán MoMo...");
+        onClose();
+      } else {
+        message.error("Không nhận được link thanh toán từ MoMo!");
+      }
     } catch (error) {
       message.error("Có lỗi xảy ra khi tạo thanh toán MoMo!");
     }
