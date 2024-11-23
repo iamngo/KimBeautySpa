@@ -3,8 +3,8 @@ import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllEvent } from "../../../services/api";
-import { Event } from "../types";
+import { getAllProduct, getAllServiceCategory } from "../../../services/api";
+import { Event, Product } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
@@ -12,17 +12,18 @@ import EventModal from "../components/modal/EventModal";
 import { MODE } from "../../../utils/constants";
 import { useBranch } from "../../../hooks/branchContext";
 import moment from "moment";
+import ProductModal from "../components/modal/ProductModal";
 
-const EventPage: React.FC = () => {
+const ProductPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [objects, setObjects] = useState<Product[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
     "id",
     "name",
-    "startDate",
-    "expiryDate",
+    "status",
     "image",
+    "serviceCategoryId",
     "actions",
   ]);
   const token = localStorage.getItem("accessToken") || "";
@@ -30,23 +31,30 @@ const EventPage: React.FC = () => {
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
-  const [dataEdit, setDataEdit] = useState<Event>();
+  const [dataEdit, setDataEdit] = useState<Product>();
   const { branchId, setBranchId } = useBranch();
+  const [serviceCategories, setServiceCategories] = useState<any[]>([]);
   const [refreshPage, setRefreshPage] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchEvents();
+    fetchObjects();
+    const getApiAllServiceCategory = async () => {
+      const response = await getAllServiceCategory(1, 100);
+      console.log(response.data);
+      setServiceCategories([...response.data]);
+    };
+    getApiAllServiceCategory();
   }, [refreshPage]);
 
   const toggleRefresh = () => {
     setRefreshPage((prev) => !prev); // Correct usage
   };
 
-  const fetchEvents = async () => {
+  const fetchObjects = async () => {
     setLoading(true);
-    const response = await getAllEvent();
+    const response = await getAllProduct(1, 100);
     console.log(response?.data);
-    setEvents(response?.data);
+    setObjects(response?.data);
     setLoading(false);
   };
 
@@ -63,28 +71,31 @@ const EventPage: React.FC = () => {
   };
 
   const filteredEvents = useMemo(() => {
-    return events?.filter((event: Event) =>
-      event.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
+    return objects?.filter((object: Product) =>
+      object.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
-  }, [debouncedKeyword, events]);
+  }, [debouncedKeyword, objects]);
 
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
-        ? ["id", "name", "startDate", "expiryDate", "image", "actions"]
+        ? ["id", "name", "status", "image", "serviceCategoryId", "actions"]
         : value
     );
   };
 
-  const handleDeleteEventFromLocalStorage = (name: string) => {
-    const storedEvents = localStorage.getItem("importedDataEvent");
-    if (storedEvents) {
-      const eventsArray = JSON.parse(storedEvents);
-      const updatedEvents = eventsArray.filter(
-        (event: Event) => event.name !== name
+  const handleDeleteObjectFromLocalStorage = (name: string) => {
+    const storeObjects = localStorage.getItem("importedDataObject");
+    if (storeObjects) {
+      const objectsArray = JSON.parse(storeObjects);
+      const updatedObjects = objectsArray.filter(
+        (object: Product) => object.name !== name
       );
-      localStorage.setItem("importedDataEvent", JSON.stringify(updatedEvents));
-      setEvents(updatedEvents);
+      localStorage.setItem(
+        "importedDataObject",
+        JSON.stringify(updatedObjects)
+      );
+      setObjects(updatedObjects);
     }
   };
 
@@ -93,43 +104,18 @@ const EventPage: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      sorter: (a: Event, b: Event) => a.id - b.id,
+      sorter: (a: Product, b: Product) => a.id - b.id,
     },
     {
-      title: "Tên dịch vụ",
+      title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      sorter: (a: Event, b: Event) => a.name.localeCompare(b.name),
+      sorter: (a: Product, b: Product) => a.name.localeCompare(b.name),
     },
     {
-      title: "Ngày bắt đầu",
-      dataIndex: "startDate",
-      key: "startDate",
-      render: (dateTime: string) => {
-        const date = new Date(dateTime);
-        return date
-          .toLocaleString("en-GB", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-          .replace(",", "");
-      },
-    },
-    {
-      title: "Ngày hết hạn",
-      dataIndex: "expiryDate",
-      key: "expiryDate",
-      render: (dateTime: string) => {
-        const date = new Date(dateTime);
-        return date
-          .toLocaleString("en-GB", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-          .replace(",", "");
-      },
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
     },
     {
       title: "Hình ảnh",
@@ -144,24 +130,33 @@ const EventPage: React.FC = () => {
       ),
     },
     {
+      title: "Loại",
+      dataIndex: "serviceCategoryId",
+      key: "serviceCategoryId",
+      sorter: (a: Product, b: Product) =>
+        a.serviceCategoryId - b.serviceCategoryId,
+    },
+    {
       title: "Hành động",
       key: "actions",
       render: (text: string, record: Event) => (
         <div>
           {record.isNew ? (
             <div>
-              <Button type="link" onClick={() => handleEditEvent(record)}>
+              <Button type="link" onClick={() => handleEditObject(record)}>
                 <TiPlusOutline />
               </Button>
               <Button type="link" danger>
                 <MdDeleteForever
-                  onClick={() => handleDeleteEventFromLocalStorage(record.name)}
+                  onClick={() =>
+                    handleDeleteObjectFromLocalStorage(record.name)
+                  }
                 />
               </Button>
             </div>
           ) : (
             <div>
-              <Button type="link" onClick={() => handleEditEvent(record)}>
+              <Button type="link" onClick={() => handleEditObject(record)}>
                 <BiEdit />
               </Button>
               <Button type="link" danger>
@@ -174,32 +169,33 @@ const EventPage: React.FC = () => {
     },
   ];
 
-  const handleAddEvent = () => {
+  const handleAddObject = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditEvent = (event: Event) => {
-    console.log(event);
+  const handleEditObject = (object: Product) => {
+    console.log(object);
 
     setVisibleModal(true);
     setMode(MODE.EDIT);
     setDataEdit({
-      id: event.id,
-      name: event.name,
-      startDate: moment(event.startDate),
-      expiryDate: moment(event.expiryDate),
-      image: event.image,
+      id: object.id,
+      name: object.name,
+      status: object.status,
+      image: object.image,
+      serviceCategoryId: object.serviceCategoryId,
     });
   };
 
   return (
     <div className="manage-account">
-      <EventModal
+      <ProductModal
         visible={visibleModal}
         setVisible={setVisibleModal}
         mode={mode}
-        event={dataEdit}
+        object={dataEdit}
         toggleRefresh={toggleRefresh}
+        serviceCategories={serviceCategories}
       />
       <div className="header-container">
         <Search
@@ -213,25 +209,25 @@ const EventPage: React.FC = () => {
           className="btn-add"
           icon={<TiPlusOutline />}
           size="large"
-          onClick={handleAddEvent}
+          onClick={handleAddObject}
         >
-          Thêm sự kiện mới
+          Thêm sản phẩm mới
         </Button>
       </div>
       {loading ? (
         <Skeleton active />
       ) : (
-        <DataTable<Event>
+        <DataTable<Product>
           columns={columns}
           data={filteredEvents}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
-          tableName="Event"
+          tableName="Product"
         />
       )}
     </div>
   );
 };
 
-export default EventPage;
+export default ProductPage;

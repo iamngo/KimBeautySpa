@@ -30,6 +30,7 @@ import {
   EMPLOYEE,
   EVENT,
   MANAGE_SCHEDULE,
+  PRODUCT,
   SERVICE,
   SERVICE_CATEGORY,
 } from "./utils/constants";
@@ -41,6 +42,7 @@ import AppointmentPage from "./modules/Manager/pages/Appointment";
 import ServiceCategoryPage from "./modules/Manager/pages/ServiceCategory";
 import ManageSchedule from "./modules/Manager/pages/ManageSchedule";
 import EventPage from "./modules/Manager/pages/Event";
+import ProductPage from "./modules/Manager/pages/Product";
 
 const App: React.FC = () => {
   return (
@@ -66,6 +68,7 @@ const App: React.FC = () => {
         <Route path={SERVICE_CATEGORY} element={<ServiceCategoryPage />} />
         <Route path={MANAGE_SCHEDULE} element={<ManageSchedule />} />
         <Route path={EVENT} element={<EventPage />} />
+        <Route path={PRODUCT} element={<ProductPage />} />
       </Route>
     </Routes>
   );

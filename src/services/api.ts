@@ -18,6 +18,7 @@ import {
   GIFT,
   INTERNAL_EXPENSE,
   PRICES,
+  PRODUCT,
   ROOM,
   SCHEDULE,
   SERVICE,
@@ -477,8 +478,66 @@ export const createEmployee = async (
   return response?.data;
 };
 
+export const createEvent = async (token: string | null, formData: FormData) => {
+  const response = await axios.post(`${API_URL}/${EVENT}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const createProduct = async (
+  token: string | null,
+  formData: FormData
+) => {
+  const response = await axios.post(`${API_URL}/${PRODUCT}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const updateEvent = async (
+  token: string | null,
+  formData: FormData,
+  id: number
+) => {
+  const response = await axios.put(`${API_URL}/${EVENT}/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const updateProduct = async (
+  token: string | null,
+  formData: FormData,
+  id: number
+) => {
+  const response = await axios.put(`${API_URL}/${PRODUCT}/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
 export const getAllEvent = async () => {
   const response = await axios.get(`${API_URL}/${EVENT}`);
+  return response?.data;
+};
+
+export const getAllProduct = async (page: number, limit: number) => {
+  const response = await axios.get(`${API_URL}/${PRODUCT}`, {
+    params: { page, limit },
+  });
   return response?.data;
 };
 

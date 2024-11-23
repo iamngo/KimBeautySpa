@@ -48,19 +48,19 @@ const Homepage = () => {
 
   const fetchEvent = async () => {
     const response = await getAllEvent(1, 100);
-    setEvent(response.data);
+    setEvent(response?.data);
   };
 
   const fetchOutStandingServices = async () => {
     const response = await getOutStandingServices();
-    setOutStandingServices(response.data);
+    setOutStandingServices(response?.data);
   };
 
   const handleClickService = async (categoryId, serviceId) => {
     const response = await getCategoryServiceById(categoryId);
-    if (response.data) {
+    if (response?.data) {
       navigate(`${HOME}${SERVICE}/${serviceId}`, {
-        state: { category: response.data },
+        state: { category: response?.data },
       });
     }
   };
@@ -112,7 +112,7 @@ const Homepage = () => {
       <section className="services-section">
         <h2 className="section-title">Dịch vụ nổi bật</h2>
         <div className="services-grid">
-          {outStandingServices.map((item, index) => (
+          {outStandingServices?.map((item, index) => (
             <div
               className={`service-item ${index >= 2 ? "row-reverse" : ""}`}
               key={index}

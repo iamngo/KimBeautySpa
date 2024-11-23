@@ -1,51 +1,36 @@
-import {
-  Button,
-  DatePicker,
-  Form,
-  FormInstance,
-  Input,
-  message,
-  Modal,
-  Select,
-  Upload,
-} from "antd";
+import { Button, Form, Input, message, Modal, Select, Upload } from "antd";
 import React, { useEffect, useState } from "react";
-import { Event } from "../../types";
+import { Product, ServiceCategory } from "../../types";
 import { MODE } from "../../../../utils/constants";
-import moment from "moment";
-import { createEvent, updateEvent } from "../../../../services/api";
+import { createProduct, updateProduct } from "../../../../services/api";
 
-interface EventModalProps {
+interface ObjectModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   mode: string;
-  event?: Event;
+  object?: Product;
   toggleRefresh: () => void;
+  serviceCategories: ServiceCategory[];
 }
 
-interface EventFormValues {
+interface ObjectFormValues {
   id?: number;
   name?: string;
-  startDate?: moment.Moment;
-  expiryDate?: moment.Moment;
+  status?: string;
   image?: string;
+  serviceCategoryId?: number;
 }
 
-const EventModal: React.FC<EventModalProps> = ({
+const ProductModal: React.FC<ObjectModalProps> = ({
   visible,
   setVisible,
   mode,
-  event,
+  object,
   toggleRefresh,
+  serviceCategories,
 }) => {
-  const [form] = Form.useForm<EventFormValues>();
+  const [form] = Form.useForm<ObjectFormValues>();
   const [fileList, setFileList] = useState<any[]>([]);
-  const [selectedStartDate, setSelectedStartDate] = useState<string | null>(
-    null
-  );
-  const [selectedExpiryDate, setSelectedExpiryDate] = useState<string | null>(
-    null
-  );
   const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -53,21 +38,21 @@ const EventModal: React.FC<EventModalProps> = ({
       if (mode === MODE.ADD) {
         form.resetFields(); // Reset form khi ở chế độ add
         setFileList([]);
-      } else if (mode === MODE.EDIT && event) {
-        form.setFieldsValue(event); // Điền dữ liệu khi ở chế độ edit
-        if (event.image) {
+      } else if (mode === MODE.EDIT && object) {
+        form.setFieldsValue(object); // Điền dữ liệu khi ở chế độ edit
+        if (object.image) {
           setFileList([
             {
               uid: "-1",
-              name: "Ảnh nhân viên",
+              name: "Ảnh sản phẩm",
               status: "done",
-              url: event.image,
+              url: object.image,
             },
           ]);
         }
       }
     }
-  }, [visible, mode, event, form]);
+  }, [visible, mode, object, form]);
 
   const handleCancel = () => {
     form.resetFields();
@@ -77,29 +62,12 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   };
 
-  const disabledDate = (current) => {
-    return current && current < moment().startOf("day");
+  const handleSelectServiceCategory = async (value) => {
+    form.setFieldsValue({ serviceCategoryId: value });
   };
 
-  const handleStartDateChange = (date: any) => {
-    if (date) {
-      const formattedDate = date.format("YYYY-MM-DD");
-      setSelectedStartDate(formattedDate);
-    } else {
-      setSelectedStartDate(null);
-    }
-  };
-
-  const handleExpiryDateChange = (date: any) => {
-    if (date) {
-      const formattedDate = date.format("YYYY-MM-DD");
-      setSelectedExpiryDate(formattedDate);
-    } else {
-      setSelectedExpiryDate(null);
-    }
-  };
-
-  const onFinish = async (values: Event) => {
+  const onFinish = async (values: Product) => {
+    console.log(values);
     const formData = new FormData();
     formData.append(
       "file",
@@ -109,14 +77,14 @@ const EventModal: React.FC<EventModalProps> = ({
       "data",
       JSON.stringify({
         name: values.name,
-        startDate: `${values.startDate.format("YYYY-MM-DD")}`,
-        expiryDate: `${values.expiryDate.format("YYYY-MM-DD")}`,
+        status: values.status,
         image: values.image,
+        serviceCategoryId: values.serviceCategoryId,
       })
     );
     if (mode === MODE.ADD) {
       try {
-        const response = await createEvent(token, formData);
+        const response = await createProduct(token, formData);
         console.log(response.data);
         if (response?.data !== null) {
           message.success("Thêm thành công!");
@@ -132,7 +100,11 @@ const EventModal: React.FC<EventModalProps> = ({
     if (mode === MODE.EDIT) {
       console.log(values);
       try {
-        const response = await updateEvent(token, formData, Number(values.id));
+        const response = await updateProduct(
+          token,
+          formData,
+          Number(values.id)
+        );
         console.log(response.data);
         if (response?.data !== null) {
           message.success("Cập nhật thành công!");
@@ -152,47 +124,60 @@ const EventModal: React.FC<EventModalProps> = ({
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      title={mode === MODE.ADD ? "Thêm sự kiện" : "Cập nhật sự kiện"}
+      title={mode === MODE.ADD ? "Thêm sản phẩm" : "Cập nhật sản phẩm"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
         <Form.Item
           label="ID:"
           name="id"
-          rules={[{ required: true, message: "Vui lòng ID sự kiện" }]}
+          rules={[{ required: true, message: "Vui lòng ID sản phẩm" }]}
           style={{
             display: "none",
           }}
         >
-          <Input placeholder="Nhập ID sự kiện" />
+          <Input placeholder="Nhập ID sản phẩm" />
         </Form.Item>
         <Form.Item
-          label="Tên sự kiện:"
+          label="Tên sản phẩm:"
           name="name"
-          rules={[{ required: true, message: "Vui lòng nhập tên sự kiện" }]}
+          rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
         >
-          <Input placeholder="Nhập tên sự kiện" />
+          <Input placeholder="Nhập tên sản phẩm" />
+        </Form.Item>
+        <Form.Item label="Trạng thái" name="status">
+          <Select placeholder="Chọn trạng thái">
+            <Select.Option key={1} value={"active"}>
+              Hoạt động
+            </Select.Option>
+            <Select.Option key={2} value={"inactive"}>
+              Ngưng hoạt động
+            </Select.Option>
+          </Select>
         </Form.Item>
         <Form.Item
-          label="Ngày bắt đầu:"
-          name="startDate"
-          rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu" }]}
+          label="Chọn loại dịch vụ"
+          name="serviceCategoryId"
+          rules={[{ required: true, message: "Vui lòng chọn loại dịch vụ" }]}
         >
-          <DatePicker
-            style={{ width: "100%" }}
-            onChange={handleStartDateChange}
-            disabledDate={disabledDate}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Ngày hết hạn:"
-          name="expiryDate"
-          rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc" }]}
-        >
-          <DatePicker
-            style={{ width: "100%" }}
-            onChange={handleExpiryDateChange}
-            disabledDate={disabledDate}
-          />
+          <Select
+            placeholder="Chọn loại dịch vụ"
+            showSearch
+            onChange={(value) => {
+              handleSelectServiceCategory(value);
+            }}
+            filterOption={(input, option) =>
+              option && option.children
+                ? option.children.includes(input)
+                : false
+            }
+            allowClear
+          >
+            {serviceCategories?.map((sc) => (
+              <Select.Option key={sc.id} value={sc.id}>
+                {sc.name}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item label="Ảnh" name="image">
           <Upload
@@ -215,4 +200,4 @@ const EventModal: React.FC<EventModalProps> = ({
   );
 };
 
-export default EventModal;
+export default ProductModal;
