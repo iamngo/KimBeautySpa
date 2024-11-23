@@ -13,6 +13,20 @@ export interface Event {
   image: string;
 }
 
+export interface ServiceCategory {
+  id?: number;
+  name: string;
+  roomId: number;
+}
+
+export interface Product {
+  id?: number;
+  name: string;
+  status: string;
+  image: string;
+  serviceCategoryId: number;
+}
+
 export interface Customer {
   id: number;
   accountId: number;
