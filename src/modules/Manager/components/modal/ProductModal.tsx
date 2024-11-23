@@ -126,7 +126,15 @@ const ProductModal: React.FC<ObjectModalProps> = ({
       footer={null}
       title={mode === MODE.ADD ? "Thêm sản phẩm" : "Cập nhật sản phẩm"}
     >
-      <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
+      <Form key={mode} layout="vertical" form={form} onFinish={onFinish} initialValues={{
+        status: 'active' 
+      }}>
+        <Form.Item
+          label="ID:"
+          name="id"
+        >
+          <Input disabled placeholder="ID sản phẩm" />
+        </Form.Item>
         <Form.Item
           label="Tên sản phẩm:"
           name="name"

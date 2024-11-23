@@ -65,6 +65,7 @@ const AppointmentPage: React.FC = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [visibleInvoiceModal, setVisibleInvoiceModal] = useState<boolean>(false);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
 
   useEffect(() => {
     if (branchId) {
@@ -380,6 +381,7 @@ const AppointmentPage: React.FC = () => {
     setSelectedRow(record.id);
     setSelectedAppointment(record);
     setLoadingDetails(true);
+    setSelectedRecord(record); // Lưu record đã chọn
     const servicesResponse = await getAllService(1, 100);
     setServices(servicesResponse?.data);
     const bedResponse = await getAllBed(token, 1, 200);
@@ -418,7 +420,11 @@ const AppointmentPage: React.FC = () => {
       setLoadingDetails(false);
     }
   };
-
+  const handleRefreshDetail = () => {
+    if (selectedRecord) {
+      handleRowClick(selectedRecord); 
+    }
+  };
   return (
     <div className="manage-account">
       <AppointmentModal
@@ -433,6 +439,8 @@ const AppointmentPage: React.FC = () => {
         setVisible={setVisibleModalDetail}
         mode={mode}
         appointmentData={dataEdit}
+        appointmentId={selectedAppointment?.id}
+        onSuccess={handleRefreshDetail} 
       />
       <InvoiceModal
         visible={visibleInvoiceModal}
