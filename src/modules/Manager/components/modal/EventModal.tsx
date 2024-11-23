@@ -11,6 +11,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Account } from "../../types";
 import { MODE } from "../../../../utils/constants";
+import moment from "moment";
 
 interface EventModalProps {
   visible: boolean;
@@ -26,6 +27,8 @@ const EventModal: React.FC<EventModalProps> = ({
   account,
 }) => {
   const [form] = Form.useForm<FormInstance>();
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible) {
@@ -42,6 +45,28 @@ const EventModal: React.FC<EventModalProps> = ({
     setVisible(false);
     if (typeof setVisible === "function") {
       setVisible(false);
+    }
+  };
+
+  const disabledDate = (current) => {
+    return current && current < moment().startOf("day");
+  };
+
+  const handleStartDateChange = (date: any) => {
+    if (date) {
+      const formattedDate = date.format("YYYY-MM-DD");
+      setSelectedDate(formattedDate);
+    } else {
+      setSelectedDate(null);
+    }
+  };
+
+  const handleEndDateChange = (date: any) => {
+    if (date) {
+      const formattedDate = date.format("YYYY-MM-DD");
+      setSelectedDate(formattedDate);
+    } else {
+      setSelectedDate(null);
     }
   };
 
@@ -76,8 +101,8 @@ const EventModal: React.FC<EventModalProps> = ({
         >
           <DatePicker
             style={{ width: "100%" }}
-            // onChange={handleDateChange}
-            // disabledDate={disabledDate}
+            onChange={handleStartDateChange}
+            disabledDate={disabledDate}
           />
         </Form.Item>
         <Form.Item
@@ -87,15 +112,15 @@ const EventModal: React.FC<EventModalProps> = ({
         >
           <DatePicker
             style={{ width: "100%" }}
-            // onChange={handleDateChange}
-            // disabledDate={disabledDate}
+            onChange={handleEndDateChange}
+            disabledDate={disabledDate}
           />
         </Form.Item>
         <Form.Item label="Ảnh" name="image">
           <Upload
             listType="picture-card"
-            // fileList={fileList}
-            // onChange={({ fileList }) => setFileList(fileList)}
+            fileList={fileList}
+            onChange={({ fileList }) => setFileList(fileList)}
             beforeUpload={() => false}
             maxCount={1}
           >
