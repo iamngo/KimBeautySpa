@@ -45,7 +45,6 @@ const HeaderHomepage: React.FC = () => {
   const [employee, setEmployee] = useState();
   const { branchId, setBranchId } = useBranch();
 
-
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken") || "";
     if (accessToken !== "") {
@@ -70,7 +69,7 @@ const HeaderHomepage: React.FC = () => {
             token,
             decodedPayload.id
           );
-          setEmployee(response?.data);          
+          setEmployee(response?.data);
           setBranchId(response?.data?.branchId);
         };
         getEmployee();
@@ -109,7 +108,7 @@ const HeaderHomepage: React.FC = () => {
       message.success("Đăng xuất thành công!");
     }
     if (key === "manage") {
-      navigate(`${MANAGER}/${DASHBOARD}`, {state: {branchId: branchId}});
+      navigate(`${MANAGER}/${DASHBOARD}`, { state: { branchId: branchId } });
     }
   };
 
@@ -121,16 +120,18 @@ const HeaderHomepage: React.FC = () => {
       <Menu.Item key="gifts" icon={<FaGift />}>
         Tích điểm - Quà tặng
       </Menu.Item>
-      {employee?.role === 'employee' && (
+      {employee?.role === "employee" && (
         <Menu.Item key="schedule" icon={<AiFillSchedule />}>
           Xem lịch làm
         </Menu.Item>
       )}
-      {employee?.role === 'admin' || employee?.role === 'manager' ? (
+      {employee?.role === "admin" || employee?.role === "manager" ? (
         <Menu.Item key="manage" icon={<GrSystem />}>
           Quản lý hệ thống
         </Menu.Item>
-      ):""}
+      ) : (
+        ""
+      )}
       <Menu.Item key="profile" icon={<UserOutlined />}>
         Cập nhật thông tin
       </Menu.Item>
@@ -161,8 +162,7 @@ const HeaderHomepage: React.FC = () => {
       navigate(`${TREATMENTS}`);
     } else if (key === "promotion") {
       navigate(`${PROMOTION}`);
-    } 
-
+    }
   };
 
   const handleSubmenuCategoryServiceClick = (category: any) => {
