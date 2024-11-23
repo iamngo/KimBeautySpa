@@ -21,10 +21,13 @@ import { MODE } from "../../../utils/constants";
 import AppointmentModal from "../components/modal/AppointmentModal";
 import { useBranch } from "../../../hooks/branchContext";
 import dayjs from "dayjs";
+import AppointmentDetailModal from "../components/modal/AppointmentDetailModal";
+import InvoiceModal from "../components/modal/InvoiceModal";
 
 const AppointmentPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
+  const [visibleModalDetail, setVisibleModalDetail] = useState<boolean>(false);
   const [mode, setMode] = useState("");
   const [dataEdit, setDataEdit] = useState<Appointment>();
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -34,6 +37,7 @@ const AppointmentPage: React.FC = () => {
   const [selectedColumns, setSelectedColumns] = useState([
     "dateTime",
     "customerName",
+    'payment',
     "actions",
   ]);
   const [selectedDetailColumns, setSelectedDetailColumns] = useState([
@@ -60,6 +64,7 @@ const AppointmentPage: React.FC = () => {
   const [appointmentDetails, setAppointmentDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [visibleInvoiceModal, setVisibleInvoiceModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (branchId) {
@@ -175,7 +180,7 @@ const AppointmentPage: React.FC = () => {
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
-        ? ["id", "dateTime", "employeeName", "customerName", "actions"]
+        ? ["id", "dateTime", "customerName","payment", "actions"]
         : value
     );
   };
@@ -196,7 +201,13 @@ const AppointmentPage: React.FC = () => {
     );
   };
 
-  const handleClickPayment = (id: number) => {};
+  const handleClickPayment = (id: number) => {
+    const appointmentData = appointments.find(app => app.id === id);
+    if (appointmentData) {
+      setSelectedAppointment(appointmentData);
+      setVisibleInvoiceModal(true);
+    }
+  };
 
   const columns = [
     {
@@ -242,6 +253,7 @@ const AppointmentPage: React.FC = () => {
             <Button
               type="primary"
               onClick={() => handleClickPayment(record.id)}
+              disabled={record.status === "unpaid"? false : true}
             >
               Thanh Toán
             </Button>
@@ -318,10 +330,10 @@ const AppointmentPage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
-      render: (text: string, record: Employee) => (
+      render: (text: string, record: Appointment) => (
         <div>
           <div>
-            <Button type="link" onClick={() => handleEditEmployee(record)}>
+            <Button type="link" onClick={() => handleEditAppointmentDetail(record)}>
               <BiEdit />
             </Button>
             <Button type="link" danger>
@@ -337,10 +349,19 @@ const AppointmentPage: React.FC = () => {
     setVisibleModal(true);
     setMode(MODE.ADD);
   };
-  const handleEditEmployee = (employee: Employee) => {
+  const handleEditEmployee = (appointment: Appointment) => {
+    console.log(appointment);
+
     setVisibleModal(true);
     setMode(MODE.EDIT);
-    setDataEdit(employee);
+    setDataEdit(appointment);
+  };
+  const handleEditAppointmentDetail = (appointmentDetail) => {
+    console.log(appointmentDetail);
+
+    setVisibleModalDetail(true);
+    setMode(MODE.EDIT);
+    setDataEdit(appointmentDetail);
   };
 
   const handleTabChange = (key: string) => {
@@ -397,6 +418,21 @@ const AppointmentPage: React.FC = () => {
         mode={mode}
         appointment={dataEdit}
         branchId={branchId}
+      />
+      <AppointmentDetailModal
+        visible={visibleModalDetail}
+        setVisible={setVisibleModalDetail}
+        mode={mode}
+        appointmentData={dataEdit}
+      />
+      <InvoiceModal
+        visible={visibleInvoiceModal}
+        onClose={() => setVisibleInvoiceModal(false)}
+        appointmentData={selectedAppointment}
+        onPaymentSuccess={() => {
+          fetchServicesAndAppointments();
+          setVisibleInvoiceModal(false);
+        }}
       />
       <div className="header-container">
         <Search
