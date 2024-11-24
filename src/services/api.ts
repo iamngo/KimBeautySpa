@@ -771,7 +771,20 @@ export const paymentMomo = async (
       amount: amount,
     },
   });
+  return response?.data;
+};
 
+export const paymentCash = async (
+  token: string | null,
+  appointmentId: number,
+  data
+) => {
+  if (!token || !appointmentId || !data) return;
+  const response = await axios.put(`${API_URL}/${APPOINTMENT}/${appointmentId}`,data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 

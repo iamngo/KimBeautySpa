@@ -12,7 +12,7 @@ import {
   Space,
 } from "antd";
 import { Appointment, Service } from "../../types";
-import { getAllService, getAppointmentDetailById, getCustomerById, getGiftByCustomerId, getInfoByAccountId, getVoucherById, getGiftById, paymentMomo } from "../../../../services/api";
+import { getAllService, getAppointmentDetailById, getCustomerById, getGiftByCustomerId, getInfoByAccountId, getVoucherById, getGiftById, paymentMomo, paymentCash } from "../../../../services/api";
 import moment from "moment";
 import { 
   UserOutlined, 
@@ -38,8 +38,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   appointmentData,
   onPaymentSuccess,
 }) => {
-  const [vouchers, setVouchers] = useState<any[]>([]);
-  const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const token = localStorage.getItem("accessToken");
@@ -171,16 +169,25 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   };
 
   const handleCashPayment = async () => {
+    console.log(appointmentData);
+    
     try {
-      // Gọi API thanh toán tiền mặt
-      // const response = await createCashPayment({
-      //   appointmentId: appointmentData?.id,
-      //   amount: totalAmount - discountAmount,
-      //   voucherId: selectedVoucher
-      // });
-      message.success("Thanh toán thành công!");
-      onPaymentSuccess();
-      onClose();
+      const data = {
+        status: 'paid',
+        voucherId: selectedRewards,
+        bonusId: appointmentData?.bonusId,
+        branchId: appointmentData?.branchId,
+        customerId: appointmentData?.customerId,
+        dateTime: moment(appointmentData?.dateTime).format("YYYY-MM-DD")
+      }
+      const response = await paymentCash(token, appointmentData?.id, data );
+      if(response.data){
+        message.success("Thanh toán thành công!");
+        onPaymentSuccess();
+        onClose();
+      }else {
+        message.error('Lỗi thanh toán!');
+      }
     } catch (error) {
       message.error("Có lỗi xảy ra khi thanh toán!");
     }
