@@ -8,12 +8,11 @@ import {
   getAllBed,
   getAllCustomer,
   getAllEmployee,
+  getAllProduct,
   getAllService,
   getAppointmentDetailById,
-  getEmployeeById,
-  updateStatusAppointment,
 } from "../../../services/api";
-import { Appointment, Customer, Employee, Service } from "../types";
+import { Appointment, Customer, Employee, Product, Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
@@ -37,7 +36,7 @@ const AppointmentPage: React.FC = () => {
   const [selectedColumns, setSelectedColumns] = useState([
     "dateTime",
     "customerName",
-    'payment',
+    "payment",
     "actions",
   ]);
   const [selectedDetailColumns, setSelectedDetailColumns] = useState([
@@ -62,9 +61,11 @@ const AppointmentPage: React.FC = () => {
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
   const [appointmentDetails, setAppointmentDetails] = useState<any>(null);
+  const [products, setProducts] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [visibleInvoiceModal, setVisibleInvoiceModal] = useState<boolean>(false);
+  const [visibleInvoiceModal, setVisibleInvoiceModal] =
+    useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
 
   useEffect(() => {
@@ -104,12 +105,8 @@ const AppointmentPage: React.FC = () => {
           (employee: Employee) => employee.id === appointment.employeeId
         );
 
-        updatedAppointment.customerName = customer
-          ? customer.fullName
-          : "Unknown Customer";
-        updatedAppointment.employeeName = employee
-          ? employee.fullName
-          : "Unknown Employee";
+        updatedAppointment.customerName = customer ? customer.fullName : "";
+        updatedAppointment.employeeName = employee ? employee.fullName : "";
 
         return updatedAppointment;
       })
@@ -158,7 +155,6 @@ const AppointmentPage: React.FC = () => {
   const filteredAppointmentDetail = useMemo(() => {
     let filtered = appointmentDetails;
 
-    // Nếu tab là "booked", lọc các cuộc hẹn có status là "confirmed"
     if (selectedTab === "booked") {
       filtered = filtered.filter(
         (appointment) => appointment.status === "confirmed"
@@ -166,12 +162,17 @@ const AppointmentPage: React.FC = () => {
     }
     if (selectedTab === "in-progress") {
       filtered = filtered.filter(
-        (appointment) => appointment.status === "performing"
+        (appointment) => appointment.status === "implement"
       );
     }
     if (selectedTab === "completed") {
       filtered = filtered.filter(
         (appointment) => appointment.status === "finished"
+      );
+    }
+    if (selectedTab === "canceled") {
+      filtered = filtered.filter(
+        (appointment) => appointment.status === "canceled"
       );
     }
 
@@ -181,7 +182,7 @@ const AppointmentPage: React.FC = () => {
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
-        ? ["id", "dateTime", "customerName","payment", "actions"]
+        ? ["id", "dateTime", "customerName", "payment", "actions"]
         : value
     );
   };
@@ -203,7 +204,7 @@ const AppointmentPage: React.FC = () => {
   };
 
   const handleClickPayment = (id: number) => {
-    const appointmentData = appointments.find(app => app.id === id);
+    const appointmentData = appointments.find((app) => app.id === id);
     if (appointmentData) {
       setSelectedAppointment(appointmentData);
       setVisibleInvoiceModal(true);
@@ -254,7 +255,7 @@ const AppointmentPage: React.FC = () => {
             <Button
               type="primary"
               onClick={() => handleClickPayment(record.id)}
-              disabled={record.status === "unpaid"? false : true}
+              disabled={record.status === "unpaid" ? false : true}
             >
               Thanh Toán
             </Button>
@@ -286,13 +287,18 @@ const AppointmentPage: React.FC = () => {
       key: "id",
       sorter: (a: Appointment, b: Appointment) => a.id - b.id,
     },
-
     {
-      title: "Tên dịch vụ",
+      title: "Tên dịch vụ/sản phẩm",
       dataIndex: "serviceName",
       key: "serviceName",
-      sorter: (a: Appointment, b: Appointment) =>
-        a.serviceName?.localeCompare(b.serviceName),
+      render: (serviceName: string, record: any) => {
+        return serviceName || record.productName || "";
+      },
+      sorter: (a: Appointment, b: Appointment) => {
+        const aName = a.serviceName || a.productName || "";
+        const bName = b.serviceName || b.productName || "";
+        return aName.localeCompare(bName);
+      },
     },
     {
       title: "Giá tiền",
@@ -318,6 +324,20 @@ const AppointmentPage: React.FC = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      render: (status: string) => {
+        switch (status) {
+          case "confirmed":
+            return "Đã xác nhận";
+          case "implement":
+            return "Đang thực hiện";
+          case "finished":
+            return "Hoàn thành";
+          case "canceled":
+            return "Đã hủy";
+          default:
+            return status;
+        }
+      },
       sorter: (a: Appointment, b: Appointment) =>
         a.status.localeCompare(b.status),
     },
@@ -325,6 +345,9 @@ const AppointmentPage: React.FC = () => {
       title: "Phân loại",
       dataIndex: "category",
       key: "category",
+      render: (category: string) => {
+        return category === "services" ? "Dịch vụ" : "Sản phẩm";
+      },
       sorter: (a: Appointment, b: Appointment) =>
         a.category.localeCompare(b.category),
     },
@@ -334,7 +357,10 @@ const AppointmentPage: React.FC = () => {
       render: (text: string, record: Appointment) => (
         <div>
           <div>
-            <Button type="link" onClick={() => handleEditAppointmentDetail(record)}>
+            <Button
+              type="link"
+              onClick={() => handleEditAppointmentDetail(record)}
+            >
               <BiEdit />
             </Button>
             <Button type="link" danger>
@@ -355,15 +381,11 @@ const AppointmentPage: React.FC = () => {
     setMode(MODE.ADD);
   };
   const handleEditEmployee = (appointment: Appointment) => {
-    console.log(appointment);
-
     setVisibleModal(true);
     setMode(MODE.EDIT);
     setDataEdit(appointment);
   };
   const handleEditAppointmentDetail = (appointmentDetail) => {
-    console.log(appointmentDetail);
-
     setVisibleModalDetail(true);
     setMode(MODE.EDIT);
     setDataEdit(appointmentDetail);
@@ -388,6 +410,8 @@ const AppointmentPage: React.FC = () => {
     setBeds(bedResponse?.data);
     const employeeResponse = await getAllEmployee(token, branchId, 1, 200);
     setEmployees(employeeResponse);
+    const productsReponse = await getAllProduct(1, 200);
+    setProducts(productsReponse.data);
     try {
       const response = await getAppointmentDetailById(token, record.id);
       const appointmentDetails = await Promise.all(
@@ -397,18 +421,20 @@ const AppointmentPage: React.FC = () => {
           const service = servicesResponse?.data.find(
             (service: Service) => service.id === appointment.foreignKeyId
           );
+          const product = productsReponse?.data.find(
+            (product: Product) => product.id === appointment.foreignKeyId
+          );
           const employee = employeeResponse?.data.find(
-            (emp: Employee) =>emp.id === appointment.employeeId
+            (emp: Employee) => emp.id === appointment.employeeId
           );
           const bed = bedResponse?.data.find(
             (bed) => bed.id === appointment.bedId
           );
 
-          updatedAppointment.serviceName = service
-            ? service.name
-            : "Unknown Service";
-            updatedAppointment.bedName = bed ? bed.name : "Unknown Bed";
-            updatedAppointment.employeeName = employee ? employee.fullName : "Unknown Employee";
+          updatedAppointment.serviceName = service ? service.name : "";
+          updatedAppointment.productName = product? product.name : "";
+          updatedAppointment.bedName = bed ? bed.name : "";
+          updatedAppointment.employeeName = employee ? employee.fullName : "";
 
           return updatedAppointment;
         })
@@ -422,7 +448,7 @@ const AppointmentPage: React.FC = () => {
   };
   const handleRefreshDetail = () => {
     if (selectedRecord) {
-      handleRowClick(selectedRecord); 
+      handleRowClick(selectedRecord);
     }
   };
   return (
@@ -440,7 +466,7 @@ const AppointmentPage: React.FC = () => {
         mode={mode}
         appointmentData={dataEdit}
         appointmentId={selectedAppointment?.id}
-        onSuccess={handleRefreshDetail} 
+        onSuccess={handleRefreshDetail}
       />
       <InvoiceModal
         visible={visibleInvoiceModal}
@@ -498,7 +524,7 @@ const AppointmentPage: React.FC = () => {
       </div>
       <div className="appointment-detail">
         <h3>Chi tiết lịch hẹn</h3>
-        <div style={{display: 'flex', justifyContent:'space-between'}}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Tabs
             defaultActiveKey="all"
             onChange={handleTabChange}
@@ -525,6 +551,11 @@ const AppointmentPage: React.FC = () => {
             <Tabs.TabPane
               tab="Đã hoàn thành"
               key="completed"
+              disabled={!selectedAppointment}
+            />
+            <Tabs.TabPane
+              tab="Đã hủy"
+              key="canceled"
               disabled={!selectedAppointment}
             />
           </Tabs>

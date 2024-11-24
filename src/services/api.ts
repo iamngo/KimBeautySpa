@@ -730,11 +730,12 @@ export const updateStatusAppointment = async (id: number) => {
 
 export const updateStatusAppointmentDetail = async (
   token: string | null,
-  id: number
+  id: number,
+  status
 ) => {
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT_DETAIL}/${id}/status`,
-    { status: "canceled" },
+    status,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -807,3 +808,4 @@ export const updateAppointmentDetail = async (
   );
   return response?.data;
 };
+
