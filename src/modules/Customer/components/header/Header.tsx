@@ -51,7 +51,6 @@ const HeaderHomepage: React.FC = () => {
       const payload = accessToken.split(".")[1];
       const decodedPayload = JSON.parse(atob(payload));
       setUserId(decodedPayload.id);
-      console.log(decodedPayload);
 
       if (decodedPayload.role === "customer") {
         const getCustomer = async () => {
@@ -231,7 +230,11 @@ const HeaderHomepage: React.FC = () => {
                   <UserOutlined />
                 )
               }
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                border: "1px solid black",
+                background: "white",
+              }}
             />
           </Dropdown>
         ) : (
