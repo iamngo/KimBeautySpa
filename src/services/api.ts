@@ -730,11 +730,12 @@ export const updateStatusAppointment = async (id: number) => {
 
 export const updateStatusAppointmentDetail = async (
   token: string | null,
-  id: number
+  id: number,
+  status
 ) => {
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT_DETAIL}/${id}/status`,
-    { status: "canceled" },
+    status,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -761,8 +762,6 @@ export const paymentMomo = async (
   voucherId: Array<number>
 ) => {
   if (!token || !appointmentId || !voucherId) return;
-  console.log(token);
-
   const response = await axios.get(`${API_URL}/${APPOINTMENT}/payments/momo`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -772,6 +771,54 @@ export const paymentMomo = async (
       amount: amount,
     },
   });
-
   return response?.data;
 };
+
+export const paymentCash = async (
+  token: string | null,
+  appointmentId: number,
+  data
+) => {
+  if (!token || !appointmentId || !data) return;
+  const response = await axios.put(`${API_URL}/${APPOINTMENT}/${appointmentId}`,data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const createAppointmentDetail = async (
+  token: string | null,
+  appointmentDetail
+) => {
+  if (!token) return;
+  const response = await axios.post(
+    `${API_URL}/${APPOINTMENT_DETAIL}`,
+    appointmentDetail,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
+export const updateAppointmentDetail = async (
+  token: string | null,
+  id: number,
+  data
+) => {
+  const response = await axios.put(
+    `${API_URL}/${APPOINTMENT_DETAIL}/${id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
