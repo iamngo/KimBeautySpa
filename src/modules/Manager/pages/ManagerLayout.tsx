@@ -10,7 +10,6 @@ import {
   FaShoppingCart,
   FaUsers,
   FaUserTie,
-  FaBriefcase,
   FaMoneyBill,
   FaGift,
   FaClipboard,
@@ -18,6 +17,7 @@ import {
   FaDoorOpen,
   FaBed,
   FaChartLine,
+  FaUserCheck,
 } from "react-icons/fa";
 import "../styles.scss";
 import { DASHBOARD, MANAGER } from "../../../routes";
@@ -25,6 +25,7 @@ import CustomHeader from "../components/header/CustomHeader";
 import {
   ACCOUNT,
   APPOINTMENT,
+  ATTENDANCE_CHECKING,
   CUSTOMER,
   EMPLOYEE,
   MANAGE_SCHEDULE,
@@ -32,7 +33,6 @@ import {
   SERVICE_CATEGORY,
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
-import { BranchProvider } from "../../../hooks/branchContext";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -82,7 +82,14 @@ const ManagerLayout: React.FC = () => {
               <FaChartLine />
               <span>Lịch làm việc</span>
             </Menu.Item>
-            <Menu.Item key="2-3" onClick={() => handleMenuClick("2-3", "wage")}>
+            <Menu.Item
+              key="2-3"
+              onClick={() => handleMenuClick("2-3", ATTENDANCE_CHECKING)}
+            >
+              <FaUserCheck />
+              <span>Chấm công</span>
+            </Menu.Item>
+            <Menu.Item key="2-4" onClick={() => handleMenuClick("2-4", "wage")}>
               <FaMoneyBill />
               <span>Lương</span>
             </Menu.Item>

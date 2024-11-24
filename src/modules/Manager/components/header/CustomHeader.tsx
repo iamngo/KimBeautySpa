@@ -5,9 +5,10 @@ import { FaBell, FaCodeBranch, FaFacebookMessenger } from "react-icons/fa";
 import { TiUserOutline } from "react-icons/ti";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LOGIN } from "../../../../routes";
-import { getAllBranch } from "../../../../services/api";
+import { HOME, LOGIN } from "../../../../routes";
+import { getAllBranch, getInfoEmpByAccountId } from "../../../../services/api";
 import { useBranch } from "../../../../hooks/branchContext";
+import { BiHome } from "react-icons/bi";
 const { Header } = Layout;
 const { Option } = Select;
 
@@ -15,14 +16,15 @@ const CustomHeader: React.FC = () => {
   const [userId, setUserId] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("accessToken");
   const [branches, setBranches] = useState();
   const { branchId, setBranchId } = useBranch();
   const location = useLocation();
+  const [employee, setEmployee] = useState();
+  const token = localStorage.getItem("accessToken");
 
   const handleMenuClick = ({ key }: { key: string }) => {
-    if (key === "profile") {
-      // setUpdateProfileVisible(true);
+    if (key === "backHome") {
+      navigate(`${HOME}`);
     }
     if (key === "logout") {
       localStorage.removeItem("accessToken");
@@ -33,11 +35,34 @@ const CustomHeader: React.FC = () => {
   };
 
   useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken") || "";
+    if (accessToken !== "") {
+      const payload = accessToken.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      setUserId(decodedPayload.id);
+      if (
+        decodedPayload.role === "admin" ||
+        decodedPayload.role === "manager"
+      ) {
+        const getEmployee = async () => {
+          const response = await getInfoEmpByAccountId(
+            token,
+            decodedPayload.id
+          );
+          setEmployee(response?.data);
+          setBranchId(response?.data?.branchId);
+        };
+        getEmployee();
+      }
+    }
+  }, [userId]);
+
+  useEffect(() => {
     fetchBranch();
   }, []);
 
   const fetchBranch = async () => {
-    const response = await getAllBranch( 1, 10);
+    const response = await getAllBranch(1, 10);
     setBranches(response.data);
   };
 
@@ -47,8 +72,8 @@ const CustomHeader: React.FC = () => {
 
   const avatarMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="profile" icon={<TiUserOutline />}>
-        Cập nhật thông tin
+      <Menu.Item key="backHome" icon={<BiHome />}>
+        Quay lại trang chủ
       </Menu.Item>
       <Menu.Item key="logout" icon={<IoLogOutOutline />}>
         Đăng xuất
@@ -58,11 +83,11 @@ const CustomHeader: React.FC = () => {
   return (
     <Header className="custom-header-admin">
       <div className="branch-info">
-      <Select
-      defaultValue={location.state?.branchId}
-          value={branchId }  
-          onChange={handleBranchChange}  
-          style={{ width: '250px' }}
+        <Select
+          defaultValue={location.state?.branchId}
+          value={branchId}
+          onChange={handleBranchChange}
+          style={{ width: "250px" }}
           suffixIcon={<FaCodeBranch />}
         >
           {branches?.map((branch) => (
@@ -73,8 +98,6 @@ const CustomHeader: React.FC = () => {
         </Select>
       </div>
       <div className="actions">
-        <Button icon={<FaBell />} type="text" />
-        <Button icon={<FaFacebookMessenger />} type="text" />
         <Dropdown
           overlay={avatarMenu}
           trigger={["hover"]}
@@ -83,8 +106,13 @@ const CustomHeader: React.FC = () => {
         >
           <Avatar
             size="large"
-            icon={<TiUserOutline />}
-            style={{ cursor: "pointer" }}
+            src={employee?.image}
+            icon={employee?.image ? undefined : <TiUserOutline />}
+            style={{
+              cursor: "pointer",
+              border: "1px solid black",
+              background: "white",
+            }}
           />
         </Dropdown>
       </div>

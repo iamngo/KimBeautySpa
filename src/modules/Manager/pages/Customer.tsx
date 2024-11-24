@@ -196,11 +196,13 @@ const CustomerPage: React.FC = () => {
         customer={dataEdit}
       />
       <div className="header-container">
+        <h2>Quản lý khách hàng</h2>
         <Search
           placeholder="Tìm kiếm khách hàng bằng số điện thoại"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           className="btn-add"

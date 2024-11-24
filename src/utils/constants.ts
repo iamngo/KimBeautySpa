@@ -30,3 +30,4 @@ export const VOUCHER = "voucher";
 export const CUSTOMER_GIFT = "customer-gift";
 export const CUSTOMER_POINT = "customer-point";
 export const INTERNAL_EXPENSE = "internal-expense";
+export const ATTENDANCE_CHECKING = "attendance-checking";

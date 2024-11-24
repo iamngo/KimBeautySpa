@@ -200,11 +200,13 @@ const ProductPage: React.FC = () => {
         serviceCategories={serviceCategories}
       />
       <div className="header-container">
+        <h2>Quản lý sản phẩm</h2>
         <Search
           placeholder="Tìm kiếm sự kiện theo tên"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           type="primary"

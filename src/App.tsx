@@ -26,6 +26,7 @@ import PromotionPage from "./modules/Customer/pages/PromotionPage";
 import {
   ACCOUNT,
   APPOINTMENT,
+  ATTENDANCE_CHECKING,
   CUSTOMER,
   EMPLOYEE,
   EVENT,
@@ -43,6 +44,7 @@ import ServiceCategoryPage from "./modules/Manager/pages/ServiceCategory";
 import ManageSchedule from "./modules/Manager/pages/ManageSchedule";
 import EventPage from "./modules/Manager/pages/Event";
 import ProductPage from "./modules/Manager/pages/Product";
+import AttendanceChecking from "./modules/Manager/pages/AttendanceChecking";
 
 const App: React.FC = () => {
   return (
@@ -69,6 +71,7 @@ const App: React.FC = () => {
         <Route path={MANAGE_SCHEDULE} element={<ManageSchedule />} />
         <Route path={EVENT} element={<EventPage />} />
         <Route path={PRODUCT} element={<ProductPage />} />
+        <Route path={ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
       </Route>
     </Routes>
   );
