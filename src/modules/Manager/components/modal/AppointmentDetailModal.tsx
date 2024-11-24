@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Select, Button, message, Row, Col } from "antd";
+import { Modal, Form, Select, Button, message, Row, Col, Divider } from "antd";
 import moment from "moment";
 import { MODE } from "../../../../utils/constants";
 import {
@@ -12,6 +12,7 @@ import {
   getPricesByForeignKeyId,
   getServiceByCategory,
   updateAppointmentDetail,
+  updateStatusAppointmentDetail,
 } from "../../../../services/api";
 import { useBranch } from "../../../../hooks/branchContext";
 import { Appointment } from "../../types";
@@ -34,7 +35,6 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm();
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
     null
   );
@@ -60,51 +60,16 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
-    
-      getServiceCategory();
-      if (mode === MODE.ADD) {
-        form.resetFields();
-        form.setFieldsValue({ status: "confirmed" });
-      } else if (mode === MODE.EDIT && appointmentData) {
-        setSelectedCategory(appointmentData.category);
-        if (appointmentData.category === "services") {
-          setSelectedServiceId(appointmentData.foreignKeyId);
-
-          // Tìm categoryId từ foreignKeyId trong servicesByCategory
-          const categoryId = Object.keys(servicesByCategory).find(
-            (categoryId) =>
-              servicesByCategory[categoryId]?.some(
-                (service) => service.id === appointmentData.foreignKeyId
-              )
-          );
-
-          if (categoryId) {
-            setSelectedCategoryId(Number(categoryId));
-            // Lấy room từ categoryId
-            getCategoryServiceById(Number(categoryId))
-              .then((response) => {
-                setRoom(response?.data);
-                const formattedData = {
-                  ...appointmentData,
-                  service: `${appointmentData.foreignKeyId} - ${appointmentData.expense}`,
-                  bedId: appointmentData.bedId,
-                  employeeId: appointmentData.employeeId,
-                };
-                form.setFieldsValue(formattedData);
-              })
-              .catch((error) => {
-                console.error("Error fetching category:", error);
-              });
-          }
-        } else {
-          const formattedData = {
-            ...appointmentData,
-            productId: `${appointmentData.foreignKeyId} - ${appointmentData.expense}`,
-          };
-          form.setFieldsValue(formattedData);
-        }
-      }
-    
+    getServiceCategory();
+    if (mode === MODE.ADD) {
+      form.resetFields();
+      form.setFieldsValue({ status: "confirmed" });
+    } else if (mode === MODE.EDIT && appointmentData) {
+      form.setFieldsValue({
+        status: appointmentData.status,
+        id: appointmentData.id,
+      });
+    }
   }, [visible, mode, appointmentData]);
 
   useEffect(() => {
@@ -140,8 +105,6 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
       (emp) => emp.role === "employee"
     );
     setEmployees(filteredEmployees);
-    console.log(dateTimeString);
-    
   };
 
   const fetchProduct = async () => {
@@ -196,12 +159,10 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
           onSuccess?.();
           setVisible(false);
         }
-      } else if (mode === MODE.EDIT && appointmentData?.id) {
-        const response = await updateAppointmentDetail(
-          token,
-          appointmentData?.id,
-          appointmentData
-        );
+      } else if (mode === MODE.EDIT) {
+        const response = await updateStatusAppointmentDetail(token, values.id, {
+          status: values.status,
+        });
         if (response.data) {
           message.success("Cập nhật chi tiết thành công!");
           onSuccess?.();
@@ -272,149 +233,194 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
 
   return (
     <Modal
-      title={mode === MODE.ADD ? "Thêm chi tiết" : "Chỉnh sửa chi tiết"}
+      title={mode === MODE.ADD ? "Thêm chi tiết" : "Cập nhật trạng thái"}
       open={visible}
       onCancel={() => setVisible(false)}
-      width={800}
+      width={600}
       footer={null}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        {/* Dòng 1: Phân loại và Trạng thái */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="category"
-              label="Phân loại"
-              rules={[{ required: true, message: "Vui lòng chọn phân loại!" }]}
-            >
-              <Select
-                placeholder="Chọn phân loại"
-                onChange={handleCategoryChange}
-                options={[
-                  { value: "services", label: "Dịch vụ" },
-                  { value: "products", label: "Sản phẩm" },
-                ]}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="status"
-              label="Trạng thái"
-              rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-            >
-              <Select placeholder="Chọn trạng thái">
-                <Select.Option value="confirmed">Đã xác nhận</Select.Option>
-                <Select.Option value="implement">Đang thực hiện</Select.Option>
-                <Select.Option value="finished">Hoàn thành</Select.Option>
-                <Select.Option value="canceled">Đã hủy</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        {/* Dòng 2: Sản phẩm */}
-        {(selectedCategory === "products" ||
-          (mode === MODE.EDIT && appointmentData?.category === "products")) && (
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="productId"
-                label="Sản phẩm"
-                rules={[{ required: true, message: "Vui lòng chọn sản phẩm!" }]}
-              >
-                <Select
-                  placeholder="Chọn sản phẩm"
-                  options={products?.map((product) => ({
-                    value: `${product.id} - ${product.price}`,
-                    label: `${product.name} - ${product.price.toLocaleString(
-                      "vi-VN"
-                    )}đ`,
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        )}
-
-        {/* Dòng 3: Dịch vụ */}
-        {(selectedCategory === "services" ||
-          (mode === MODE.EDIT && appointmentData?.category === "services")) && (
-          <>
+        {mode === MODE.ADD && (
+          <div>
+            {/* Dòng 1: Phân loại và Trạng thái */}
             <Row gutter={16}>
-              <Col span={24}>
+              <Col span={12}>
                 <Form.Item
-                  label="Chọn dịch vụ:"
-                  name="service"
-                  rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
+                  name="category"
+                  label="Phân loại"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn phân loại!" },
+                  ]}
                 >
                   <Select
-                    placeholder="Chọn dịch vụ"
-                    onChange={handleServiceChange}
-                  >
-                    {serviceCategory?.map((category) => (
-                      <Select.OptGroup key={category.id} label={category.name}>
-                        {servicesByCategory[category.id]?.map((service) => (
-                          <Select.Option
-                            key={service.id}
-                            value={`${service.id} - ${service.specialPrice}`}
-                          >
-                            {service.name} -{" "}
-                            {service.specialPrice.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                          </Select.Option>
-                        ))}
-                      </Select.OptGroup>
-                    ))}
+                    placeholder="Chọn phân loại"
+                    onChange={handleCategoryChange}
+                    options={[
+                      { value: "services", label: "Dịch vụ" },
+                      { value: "products", label: "Sản phẩm" },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="status"
+                  label="Trạng thái"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn trạng thái!" },
+                  ]}
+                >
+                  <Select placeholder="Chọn trạng thái">
+                    <Select.Option value="confirmed">Đã xác nhận</Select.Option>
+                    <Select.Option value="implement">
+                      Đang thực hiện
+                    </Select.Option>
+                    <Select.Option value="finished">Hoàn thành</Select.Option>
+                    <Select.Option value="canceled">Đã hủy</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
             </Row>
 
-            {/* Dòng 4: Giường và Nhân viên */}
-            {(selectedServiceId ||
+            {/* Dòng 2: Sản phẩm */}
+            {(selectedCategory === "products" ||
               (mode === MODE.EDIT &&
-                appointmentData?.category === "services")) && (
+                appointmentData?.category === "products")) && (
               <Row gutter={16}>
-                <Col span={12}>
+                <Col span={24}>
                   <Form.Item
-                    name="bedId"
-                    label="Giường"
+                    name="productId"
+                    label="Sản phẩm"
                     rules={[
-                      { required: true, message: "Vui lòng chọn giường!" },
+                      { required: true, message: "Vui lòng chọn sản phẩm!" },
                     ]}
                   >
                     <Select
-                      placeholder="Chọn giường"
-                      options={bed?.map((bed) => ({
-                        value: bed.id,
-                        label: bed.name,
-                      }))}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    name="employeeId"
-                    label="Nhân viên"
-                    rules={[
-                      { required: true, message: "Vui lòng chọn nhân viên!" },
-                    ]}
-                  >
-                    <Select
-                      placeholder="Chọn nhân viên"
-                      options={employees?.map((employee) => ({
-                        value: employee.id,
-                        label: employee.fullName,
+                      placeholder="Chọn sản phẩm"
+                      options={products?.map((product) => ({
+                        value: `${product.id} - ${product.price}`,
+                        label: `${
+                          product.name
+                        } - ${product.price.toLocaleString("vi-VN")}đ`,
                       }))}
                     />
                   </Form.Item>
                 </Col>
               </Row>
             )}
-          </>
+
+            {/* Dòng 3: Dịch vụ */}
+            {(selectedCategory === "services" ||
+              (mode === MODE.EDIT &&
+                appointmentData?.category === "services")) && (
+              <>
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item
+                      label="Chọn dịch vụ:"
+                      name="service"
+                      rules={[
+                        { required: true, message: "Vui lòng chọn dịch vụ" },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Chọn dịch vụ"
+                        onChange={handleServiceChange}
+                      >
+                        {serviceCategory?.map((category) => (
+                          <Select.OptGroup
+                            key={category.id}
+                            label={category.name}
+                          >
+                            {servicesByCategory[category.id]?.map((service) => (
+                              <Select.Option
+                                key={service.id}
+                                value={`${service.id} - ${service.specialPrice}`}
+                              >
+                                {service.name} -{" "}
+                                {service.specialPrice.toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                              </Select.Option>
+                            ))}
+                          </Select.OptGroup>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                {/* Dòng 4: Giường và Nhân viên */}
+                {(selectedServiceId ||
+                  (mode === MODE.EDIT &&
+                    appointmentData?.category === "services")) && (
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="bedId"
+                        label="Giường"
+                        rules={[
+                          { required: true, message: "Vui lòng chọn giường!" },
+                        ]}
+                      >
+                        <Select
+                          placeholder="Chọn giường"
+                          options={bed?.map((bed) => ({
+                            value: bed.id,
+                            label: bed.name,
+                          }))}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="employeeId"
+                        label="Nhân viên"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn nhân viên!",
+                          },
+                        ]}
+                      >
+                        <Select
+                          placeholder="Chọn nhân viên"
+                          options={employees?.map((employee) => ({
+                            value: employee.id,
+                            label: employee.fullName,
+                          }))}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                )}
+              </>
+            )}
+          </div>
+        )}
+        {mode === MODE.EDIT && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item name="id" style={{ display: "none" }}></Form.Item>
+              <Form.Item
+                name="status"
+                label="Trạng thái"
+                rules={[
+                  { required: true, message: "Vui lòng chọn trạng thái!" },
+                ]}
+              >
+                <Select placeholder="Chọn trạng thái">
+                  <Select.Option value="confirmed">Đã xác nhận</Select.Option>
+                  <Select.Option value="implement">
+                    Đang thực hiện
+                  </Select.Option>
+                  <Select.Option value="finished">Hoàn thành</Select.Option>
+                  <Select.Option value="canceled">Đã hủy</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
         )}
         <Form.Item>
           <Row justify="end" gutter={8}>

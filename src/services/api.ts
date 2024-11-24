@@ -730,11 +730,12 @@ export const updateStatusAppointment = async (id: number) => {
 
 export const updateStatusAppointmentDetail = async (
   token: string | null,
-  id: number
+  id: number,
+  status
 ) => {
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT_DETAIL}/${id}/status`,
-    { status: "canceled" },
+    status,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -770,7 +771,20 @@ export const paymentMomo = async (
       amount: amount,
     },
   });
+  return response?.data;
+};
 
+export const paymentCash = async (
+  token: string | null,
+  appointmentId: number,
+  data
+) => {
+  if (!token || !appointmentId || !data) return;
+  const response = await axios.put(`${API_URL}/${APPOINTMENT}/${appointmentId}`,data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 
@@ -807,3 +821,4 @@ export const updateAppointmentDetail = async (
   );
   return response?.data;
 };
+
