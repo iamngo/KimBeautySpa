@@ -774,12 +774,36 @@ export const paymentMomo = async (
   return response?.data;
 };
 
-export const createAppointmentDetail = async (token: string | null, appointmentDetail) => {
+export const createAppointmentDetail = async (
+  token: string | null,
+  appointmentDetail
+) => {
   if (!token) return;
-  const response = await axios.post(`${API_URL}/${APPOINTMENT_DETAIL}`, appointmentDetail, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.post(
+    `${API_URL}/${APPOINTMENT_DETAIL}`,
+    appointmentDetail,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
+export const updateAppointmentDetail = async (
+  token: string | null,
+  id: number,
+  data
+) => {
+  const response = await axios.put(
+    `${API_URL}/${APPOINTMENT_DETAIL}/${id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response?.data;
 };
