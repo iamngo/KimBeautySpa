@@ -70,7 +70,9 @@ const ProductPage: React.FC = () => {
     setTimeoutId(newTimeoutId);
   };
 
-  const filteredEvents = useMemo(() => {
+  const filteredObjects = useMemo(() => {
+    console.log(serviceCategories.find((sc) => sc.id === 1)?.name);
+
     return objects?.filter((object: Product) =>
       object.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
     );
@@ -219,7 +221,7 @@ const ProductPage: React.FC = () => {
       ) : (
         <DataTable<Product>
           columns={columns}
-          data={filteredEvents}
+          data={filteredObjects}
           loading={loading}
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}

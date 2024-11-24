@@ -80,10 +80,10 @@ const DataTable = <T extends object>({
         skipEmptyLines: true,
         complete: (result) => {
           const columnKeyMapping: { [key: string]: string } = {
-            "Tên dịch vụ": "name",
-            "Ngày bắt đầu": "startDate",
-            "Ngày hết hạn": "endDate",
+            "Tên sản phẩm": "name",
+            "Trạng thái": "status",
             "Hình ảnh": "image",
+            Loại: "serviceCategoryId",
           };
           const importedDataCSV = result.data.map((item: any) => {
             const rowData: { [key: string]: any } = {};
