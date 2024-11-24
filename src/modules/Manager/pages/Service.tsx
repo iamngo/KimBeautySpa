@@ -200,11 +200,13 @@ const ServicePage: React.FC = () => {
         service={dataEdit}
       />
       <div className="header-container">
+        <h2>Quản lý dịch vụ</h2>
         <Search
           placeholder="Tìm kiếm dịch vụ bằng tên"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           className="btn-add"

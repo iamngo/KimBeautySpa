@@ -822,3 +822,20 @@ export const updateAppointmentDetail = async (
   return response?.data;
 };
 
+export const updateSchedule = async (
+  token: string | null,
+  id: number,
+  data
+) => {
+  const response = await axios.put(
+    `${API_URL}/${SCHEDULE}/${id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+

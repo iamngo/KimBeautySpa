@@ -125,8 +125,8 @@ const ManageSchedule: React.FC = () => {
   const handleOk = async () => {
     console.log("Selected Employees:", selectedEmployees);
 
-    const checkInTime = selectedShift === "morning" ? "07:00:00" : "15:00:00";
-    const checkOutTime = selectedShift === "morning" ? "15:00:00" : "23:00:00";
+    const checkInTime = selectedShift === "morning" ? "00:00:00" : "00:00:00";
+    const checkOutTime = selectedShift === "morning" ? "00:00:00" : "00:00:00";
     const selectedDateStr = selectedDateSchedule?.format("YYYY-MM-DD");
 
     for (const employeeId of selectedEmployees) {
@@ -196,19 +196,16 @@ const ManageSchedule: React.FC = () => {
     <div className="manage-schedule">
       <div className="utils-schedule">
         <div className="date-picker">
+          <h2>Quản lý lịch làm việc</h2>
           <DatePicker
             value={selectedDate}
-            onChange={(date) => {
-              setSelectedDate(date);
-            }}
+            onChange={(date) => setSelectedDate(date)}
             format="DD/MM/YYYY"
             allowClear={false}
           />
         </div>
         <div className="week-navigation">
-          <button
-            onClick={() => setSelectedDate(selectedDate?.subtract(1, "week"))}
-          >
+          <button onClick={() => setSelectedDate(selectedDate?.subtract(1, "week"))}>
             Tuần trước
           </button>
           <span>Tuần {selectedDate?.week()}</span>
@@ -244,7 +241,7 @@ const ManageSchedule: React.FC = () => {
                           key={filteredSchedule.id}
                           style={{ padding: "5px 10px" }}
                         >
-                          {employees.map((employee) => {
+                          {employees?.map((employee) => {
                             if (filteredSchedule.employeeId === employee.id) {
                               return (
                                 <div key={employee.id}>{employee.fullName}</div>
@@ -266,7 +263,7 @@ const ManageSchedule: React.FC = () => {
         onOk={handleOk}
         onCancel={() => setIsModalVisible(false)}
       >
-        {employees.map((employee) => (
+        {employees?.map((employee) => (
           <div key={employee.id}>
             <Checkbox
               id={`employee-${employee.id}`}

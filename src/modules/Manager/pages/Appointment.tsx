@@ -478,16 +478,18 @@ const AppointmentPage: React.FC = () => {
         }}
       />
       <div className="header-container">
+        <h2>Quản lý lịch hẹn</h2>
         <Search
           placeholder="Tìm kiếm lịch hẹn theo tên khách hàng"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "500px" }}
         />
         <DatePicker
           placeholder="Tìm kiếm theo ngày"
           onChange={handleDateChange}
-          style={{ width: 200 }}
+          style={{ width: "200px" }}
           defaultValue={dayjs()}
         />
         <Button

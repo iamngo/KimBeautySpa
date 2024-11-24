@@ -202,11 +202,13 @@ const EventPage: React.FC = () => {
         toggleRefresh={toggleRefresh}
       />
       <div className="header-container">
+        <h2>Quản lý sự kiện</h2>
         <Search
           placeholder="Tìm kiếm sự kiện theo tên"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           type="primary"

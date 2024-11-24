@@ -208,11 +208,13 @@ const EmployeePage: React.FC = () => {
         employee={dataEdit}
       />
       <div className="header-container">
+        <h2>Quản lý nhân viên</h2>
         <Search
           placeholder="Tìm kiếm nhân viên bằng số điện thoại"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           className="btn-add"
