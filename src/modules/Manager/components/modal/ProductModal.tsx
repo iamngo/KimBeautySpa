@@ -98,7 +98,6 @@ const ProductModal: React.FC<ObjectModalProps> = ({
       }
     }
     if (mode === MODE.EDIT) {
-      console.log(values);
       try {
         const response = await updateProduct(
           token,
@@ -132,6 +131,9 @@ const ProductModal: React.FC<ObjectModalProps> = ({
         <Form.Item
           label="ID:"
           name="id"
+          style={{
+            display: "none",
+          }}
         >
           <Input disabled placeholder="ID sản phẩm" />
         </Form.Item>

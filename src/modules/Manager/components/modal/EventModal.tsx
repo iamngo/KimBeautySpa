@@ -158,7 +158,6 @@ const EventModal: React.FC<EventModalProps> = ({
         <Form.Item
           label="ID:"
           name="id"
-          rules={[{ required: true, message: "Vui lòng ID sự kiện" }]}
           style={{
             display: "none",
           }}
