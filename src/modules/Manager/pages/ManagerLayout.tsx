@@ -31,6 +31,7 @@ import {
   MANAGE_SCHEDULE,
   SERVICE,
   SERVICE_CATEGORY,
+  WAGE,
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
 
@@ -89,9 +90,9 @@ const ManagerLayout: React.FC = () => {
               <FaUserCheck />
               <span>Chấm công</span>
             </Menu.Item>
-            <Menu.Item key="2-4" onClick={() => handleMenuClick("2-4", "wage")}>
+            <Menu.Item key="2-4" onClick={() => handleMenuClick("2-4", WAGE)}>
               <FaMoneyBill />
-              <span>Lương</span>
+              <span>Mức lương</span>
             </Menu.Item>
           </SubMenu>
 

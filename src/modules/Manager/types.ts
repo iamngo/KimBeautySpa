@@ -81,3 +81,10 @@ export interface Appointment {
   bedName?: string;
   expense?: number;
 }
+
+export interface IWage {
+  id: number;
+  hourlyRate: number;
+  effectiveDate: string;
+  role: string;
+}

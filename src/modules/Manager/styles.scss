@@ -124,6 +124,9 @@ body {
     font-size: 24px;
   }
   }
+  .ant-table-thead > tr > th {
+    background: var(--menuItemHover);
+  }
 }
 .feature {
   display: flex;
