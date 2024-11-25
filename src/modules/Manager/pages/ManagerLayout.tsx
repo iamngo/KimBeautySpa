@@ -28,6 +28,7 @@ import {
   ATTENDANCE_CHECKING,
   CUSTOMER,
   EMPLOYEE,
+  GIFT,
   MANAGE_SCHEDULE,
   SERVICE,
   SERVICE_CATEGORY,
@@ -35,6 +36,8 @@ import {
   WAGE,
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
+import { GiFoxTail } from "react-icons/gi";
+import { FaGifts } from "react-icons/fa6";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -111,8 +114,15 @@ const ManagerLayout: React.FC = () => {
               key="3-4"
               onClick={() => handleMenuClick("3-4", VOUCHER)}
             >
-              <FaGift />
+              <FaGifts />
               <span>Voucher</span>
+            </Menu.Item>
+            <Menu.Item
+              key="3-5"
+              onClick={() => handleMenuClick("3-5", GIFT)}
+            >
+              <FaGift />
+              <span>Quà tặng</span>
             </Menu.Item>
           </SubMenu>
 

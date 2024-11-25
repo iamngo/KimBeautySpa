@@ -1,4 +1,3 @@
-import { getAllVoucher } from './api';
 import axios from "axios";
 import {
   ACCOUNT,
@@ -348,34 +347,12 @@ export const getBonusPointByCustomerId = async (id: number) => {
   return response?.data;
 };
 
-export const getAllGift = async (token: string) => {
-  return await axiosClient.get('/gifts', {
-    headers: { Authorization: `Bearer ${token}` }
+export const getAllGift = async (page: number, limit: number) => {
+  if (!page || !limit) return;
+  const response = await axios.get(`${API_URL}/${GIFT}`, {
+    params: { page, limit },
   });
-};
-
-export const createGift = async (token: string, data: FormData) => {
-  return await axiosClient.post('/gifts', data, {
-    headers: { 
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  });
-};
-
-export const updateGift = async (token: string, data: FormData, id: number) => {
-  return await axiosClient.put(`/gifts/${id}`, data, {
-    headers: { 
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  });
-};
-
-export const deleteGift = async (token: string, id: number) => {
-  return await axiosClient.delete(`/gifts/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  return response?.data;
 };
 
 export const getAllVoucher = async (page: number, limit: number) => {
@@ -933,6 +910,36 @@ export const updateVoucher = async (token: string | null, voucher, voucherId: nu
 export const deleteVoucher = async (token: string | null, voucherId: number) => {
   if (!token) return;
   const response = await axios.delete(`${API_URL}/${VOUCHER}/${voucherId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const createGift = async (token: string | null, gift) => {
+  if (!token) return;
+  const response = await axios.post(`${API_URL}/${GIFT}`, gift, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const updateGift = async (token: string | null, gift, giftId: number) => {
+  if (!token) return;
+  const response = await axios.put(`${API_URL}/${GIFT}/${giftId}`, gift, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const deleteGift = async (token: string | null, giftId: number) => {
+  if (!token) return;
+  const response = await axios.delete(`${API_URL}/${GIFT}/${giftId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
