@@ -348,12 +348,34 @@ export const getBonusPointByCustomerId = async (id: number) => {
   return response?.data;
 };
 
-export const getAllGift = async (page: number, limit: number) => {
-  if (!page || !limit) return;
-  const response = await axios.get(`${API_URL}/${GIFT}`, {
-    params: { page, limit },
+export const getAllGift = async (token: string) => {
+  return await axiosClient.get('/gifts', {
+    headers: { Authorization: `Bearer ${token}` }
   });
-  return response?.data;
+};
+
+export const createGift = async (token: string, data: FormData) => {
+  return await axiosClient.post('/gifts', data, {
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
+
+export const updateGift = async (token: string, data: FormData, id: number) => {
+  return await axiosClient.put(`/gifts/${id}`, data, {
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
+
+export const deleteGift = async (token: string, id: number) => {
+  return await axiosClient.delete(`/gifts/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 };
 
 export const getAllVoucher = async (page: number, limit: number) => {

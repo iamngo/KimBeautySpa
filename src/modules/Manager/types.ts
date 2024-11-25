@@ -98,3 +98,11 @@ export interface IVoucher {
   point: number;
   image: string;
 }
+
+export interface IGift {
+  id: number;
+  name: string;
+  point: number;
+  image: string;
+  status: boolean;
+}
