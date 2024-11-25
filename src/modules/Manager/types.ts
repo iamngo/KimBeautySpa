@@ -81,3 +81,28 @@ export interface Appointment {
   bedName?: string;
   expense?: number;
 }
+
+export interface IWage {
+  id: number;
+  hourlyRate: number;
+  effectiveDate: string;
+  role: string;
+}
+
+export interface IVoucher {
+  id: number;
+  discount: number;
+  minimumOrder: number;
+  maximumDiscount: number;
+  expiryDate: string;
+  point: number;
+  image: string;
+}
+
+export interface IGift {
+  id: number;
+  name: string;
+  point: number;
+  image: string;
+  status: boolean;
+}

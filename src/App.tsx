@@ -30,10 +30,13 @@ import {
   CUSTOMER,
   EMPLOYEE,
   EVENT,
+  GIFT,
   MANAGE_SCHEDULE,
   PRODUCT,
   SERVICE,
   SERVICE_CATEGORY,
+  VOUCHER,
+  WAGE,
 } from "./utils/constants";
 import CustomerPage from "./modules/Manager/pages/Customer";
 import AccountPage from "./modules/Manager/pages/Account";
@@ -45,6 +48,9 @@ import ManageSchedule from "./modules/Manager/pages/ManageSchedule";
 import EventPage from "./modules/Manager/pages/Event";
 import ProductPage from "./modules/Manager/pages/Product";
 import AttendanceChecking from "./modules/Manager/pages/AttendanceChecking";
+import WagePage from "./modules/Manager/pages/Wage";
+import VoucherPage from "./modules/Manager/pages/Voucher";
+import GiftPage from "./modules/Manager/pages/Gift";
 
 const App: React.FC = () => {
   return (
@@ -72,6 +78,9 @@ const App: React.FC = () => {
         <Route path={EVENT} element={<EventPage />} />
         <Route path={PRODUCT} element={<ProductPage />} />
         <Route path={ATTENDANCE_CHECKING} element={<AttendanceChecking />} />
+        <Route path={WAGE} element={<WagePage />} />
+        <Route path={VOUCHER} element={<VoucherPage />} />
+        <Route path={GIFT} element={<GiftPage />} />
       </Route>
     </Routes>
   );
