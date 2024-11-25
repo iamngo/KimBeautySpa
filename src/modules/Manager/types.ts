@@ -88,3 +88,13 @@ export interface IWage {
   effectiveDate: string;
   role: string;
 }
+
+export interface IVoucher {
+  id: number;
+  discount: number;
+  minimumOrder: number;
+  maximumDiscount: number;
+  expiryDate: string;
+  point: number;
+  image: string;
+}

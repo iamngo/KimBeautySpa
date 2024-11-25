@@ -31,6 +31,7 @@ import {
   MANAGE_SCHEDULE,
   SERVICE,
   SERVICE_CATEGORY,
+  VOUCHER,
   WAGE,
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
@@ -108,7 +109,7 @@ const ManagerLayout: React.FC = () => {
             
             <Menu.Item
               key="3-4"
-              onClick={() => handleMenuClick("3-4", "voucher")}
+              onClick={() => handleMenuClick("3-4", VOUCHER)}
             >
               <FaGift />
               <span>Voucher</span>
