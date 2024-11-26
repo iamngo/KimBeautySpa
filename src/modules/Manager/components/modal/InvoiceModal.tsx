@@ -12,16 +12,26 @@ import {
   Space,
 } from "antd";
 import { Appointment, Service } from "../../types";
-import { getAllService, getAppointmentDetailById, getCustomerById, getGiftByCustomerId, getInfoByAccountId, getVoucherById, getGiftById, paymentMomo, paymentCash } from "../../../../services/api";
+import {
+  getAllService,
+  getAppointmentDetailById,
+  getCustomerById,
+  getGiftByCustomerId,
+  getInfoByAccountId,
+  getVoucherById,
+  getGiftById,
+  paymentMomo,
+  paymentCash,
+} from "../../../../services/api";
 import moment from "moment";
-import { 
-  UserOutlined, 
-  ShoppingOutlined, 
-  GiftOutlined, 
-  WalletOutlined, 
-  DollarOutlined 
-} from '@ant-design/icons';
-import { Table } from 'antd';
+import {
+  UserOutlined,
+  ShoppingOutlined,
+  GiftOutlined,
+  WalletOutlined,
+  DollarOutlined,
+} from "@ant-design/icons";
+import { Table } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -73,9 +83,14 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   };
 
   const fetchGiftByCustomer = async () => {
-    const response = await getGiftByCustomerId(token, appointmentData?.customerId);
-    const notUsedGifts = response?.data.filter(item => item.status === "notused");
-    
+    const response = await getGiftByCustomerId(
+      token,
+      appointmentData?.customerId
+    );
+    const notUsedGifts = response?.data.filter(
+      (item) => item.status === "notused"
+    );
+
     // Xử lý thêm thông tin cho voucher và gift
     const giftsWithDetails = await Promise.all(
       notUsedGifts.map(async (item) => {
@@ -87,7 +102,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             name: `Voucher giảm ${voucherResponse?.data?.discount}%`,
             maximumDiscount: voucherResponse?.data?.maximumDiscount,
             minimumOrder: voucherResponse?.data?.minimumOrder,
-            expiryDate: voucherResponse?.data?.expiryDate
+            expiryDate: voucherResponse?.data?.expiryDate,
           };
         } else if (item.category === "gift") {
           const giftResponse = await getGiftById(item.giftId);
@@ -100,14 +115,14 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       })
     );
     setGifts(giftsWithDetails);
-  }
+  };
 
   const fetchAppointmentDetail = async () => {
     const servicesResponse = await getAllService(1, 200);
     const response = await getAppointmentDetailById(token, appointmentData.id);
     const appointmentDetails = await Promise.all(
       response?.data
-        .filter(appointment => appointment.status === "finished")
+        .filter((appointment) => appointment.status === "finished")
         .map(async (appointment) => {
           const updatedAppointment = { ...appointment };
 
@@ -123,21 +138,19 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         })
     );
     setAppointmentDetails(appointmentDetails);
-    
-  }
-
+  };
 
   const calculateTotal = () => {
     const total = appointmentDetails?.reduce(
       (sum, detail) => sum + detail.expense,
       0
-    );    
+    );
     setTotalAmount(total);
 
     let totalDiscount = 0;
-    selectedRewards?.forEach(rewardId => {
-      const reward = gifts?.find(g => g.id === rewardId);
-      if (reward?.category === 'voucher' && total >= reward.minimumOrder) {
+    selectedRewards?.forEach((rewardId) => {
+      const reward = gifts?.find((g) => g.id === rewardId);
+      if (reward?.category === "voucher" && total >= reward.minimumOrder) {
         const discountAmount = Math.min(
           (total * reward.value) / 100,
           reward.maximumDiscount
@@ -155,9 +168,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   const handleMomoPayment = async () => {
     try {
-      const response = await paymentMomo(token, appointmentData?.id, totalAmount - discountAmount, selectedRewards);
+      const response = await paymentMomo(
+        token,
+        appointmentData?.id,
+        totalAmount - discountAmount,
+        selectedRewards,
+        appointmentDetails
+      );
       if (response?.data?.shortLink) {
-        window.open(response.data.shortLink, '_blank');
+        window.open(response.data.shortLink, "_blank");
         message.success("Đang chuyển đến trang thanh toán MoMo...");
         onClose();
       } else {
@@ -170,42 +189,49 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   const handleCashPayment = async () => {
     console.log(appointmentData);
-    
+
     try {
       const data = {
-        status: 'paid',
+        status: "paid",
         voucherId: selectedRewards,
         bonusId: appointmentData?.bonusId,
         branchId: appointmentData?.branchId,
         customerId: appointmentData?.customerId,
-        dateTime: moment(appointmentData?.dateTime).format("YYYY-MM-DD")
-      }
-      const response = await paymentCash(token, appointmentData?.id, data );
-      if(response.data){
+        dateTime: moment(appointmentData?.dateTime).format("YYYY-MM-DD"),
+      };
+      const response = await paymentCash(token, appointmentData?.id, data);
+      if (response.data) {
         message.success("Thanh toán thành công!");
         onPaymentSuccess();
         onClose();
-      }else {
-        message.error('Lỗi thanh toán!');
+      } else {
+        message.error("Lỗi thanh toán!");
       }
     } catch (error) {
       message.error("Có lỗi xảy ra khi thanh toán!");
     }
   };
 
-  const availableRewards = gifts?.map(item => ({
-    label: item.category === 'voucher' 
-      ? `🎫 ${item.name} (Giảm ${item.value}% - Tối đa ${item.maximumDiscount?.toLocaleString('vi-VN')}đ)`
-      : `🎁 ${item.name}`,
+  const availableRewards = gifts?.map((item) => ({
+    label:
+      item.category === "voucher"
+        ? `🎫 ${item.name} (Giảm ${
+            item.value
+          }% - Tối đa ${item.maximumDiscount?.toLocaleString("vi-VN")}đ)`
+        : `🎁 ${item.name}`,
     value: item.id,
     category: item.category,
     minimumOrder: item.minimumOrder,
-    maximumDiscount: item.maximumDiscount
+    maximumDiscount: item.maximumDiscount,
   }));
 
   return (
     <Modal
-      title={<Title level={3} style={{ margin: 0 }}>Hóa đơn thanh toán</Title>}
+      title={
+        <Title level={3} style={{ margin: 0 }}>
+          Hóa đơn thanh toán
+        </Title>
+      }
       open={visible}
       onCancel={onClose}
       width={800}
@@ -215,7 +241,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       <Form form={form} layout="vertical">
         <div className="invoice-content" style={{ padding: "0 20px" }}>
           {/* Phần thông tin khách hàng */}
-          <div className="section-container" style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
+          <div
+            className="section-container"
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "20px",
+              borderRadius: "8px",
+              marginBottom: "24px",
+            }}
+          >
             <Title level={4} style={{ marginTop: 0 }}>
               <UserOutlined style={{ marginRight: 8 }} />
               Thông tin khách hàng
@@ -234,14 +268,18 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <Col span={12}>
                 <Form.Item label="Ngày thực hiện" style={{ marginBottom: 12 }}>
                   <Text strong>
-                    {appointmentData?.dateTime ? moment(appointmentData.dateTime).format("DD/MM/YYYY") : ""}
+                    {appointmentData?.dateTime
+                      ? moment(appointmentData.dateTime).format("DD/MM/YYYY")
+                      : ""}
                   </Text>
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item label="Giờ thực hiện" style={{ marginBottom: 12 }}>
                   <Text strong>
-                    {appointmentData?.dateTime ? moment(appointmentData.dateTime).format("HH:mm") : ""}
+                    {appointmentData?.dateTime
+                      ? moment(appointmentData.dateTime).format("HH:mm")
+                      : ""}
                   </Text>
                 </Form.Item>
               </Col>
@@ -249,7 +287,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
 
           {/* Phần chi tiết dịch vụ */}
-          <div className="section-container" style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
+          <div
+            className="section-container"
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "20px",
+              borderRadius: "8px",
+              marginBottom: "24px",
+            }}
+          >
             <Title level={4} style={{ marginTop: 0 }}>
               <ShoppingOutlined style={{ marginRight: 8 }} />
               Chi tiết dịch vụ
@@ -259,11 +305,16 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               pagination={false}
               style={{ marginBottom: 16 }}
             >
-              <Table.Column title="STT" dataIndex="index" render={(_, __, index) => index + 1} width={60} />
+              <Table.Column
+                title="STT"
+                dataIndex="index"
+                render={(_, __, index) => index + 1}
+                width={60}
+              />
               <Table.Column title="Dịch vụ" dataIndex="serviceName" />
-              <Table.Column 
-                title="Giá tiền" 
-                dataIndex="expense" 
+              <Table.Column
+                title="Giá tiền"
+                dataIndex="expense"
                 align="right"
                 render={(value) => `${value.toLocaleString("vi-VN")}đ`}
               />
@@ -271,7 +322,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
 
           {/* Phần quà tặng/voucher */}
-          <div className="section-container" style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
+          <div
+            className="section-container"
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "20px",
+              borderRadius: "8px",
+              marginBottom: "24px",
+            }}
+          >
             <Title level={4} style={{ marginTop: 0 }}>
               <GiftOutlined style={{ marginRight: 8 }} />
               Quà tặng & Voucher
@@ -282,7 +341,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 placeholder="Chọn quà tặng hoặc voucher"
                 value={selectedRewards}
                 onChange={(value) => handleVoucherChange(value)}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 options={availableRewards}
                 optionLabelProp="label"
               />
@@ -290,10 +349,18 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           </div>
 
           {/* Phần tổng tiền */}
-          <div className="section-container" style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
+          <div
+            className="section-container"
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "20px",
+              borderRadius: "8px",
+              marginBottom: "24px",
+            }}
+          >
             <Row justify="end">
               <Col span={12}>
-                <Space direction="vertical" style={{ width: '100%' }}>
+                <Space direction="vertical" style={{ width: "100%" }}>
                   <Row justify="space-between">
                     <Text>Tổng tiền:</Text>
                     <Text strong>{totalAmount.toLocaleString("vi-VN")}đ</Text>
@@ -301,12 +368,16 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
                   {discountAmount > 0 && (
                     <Row justify="space-between">
                       <Text>Giảm giá:</Text>
-                      <Text type="success">-{discountAmount.toLocaleString("vi-VN")}đ</Text>
+                      <Text type="success">
+                        -{discountAmount.toLocaleString("vi-VN")}đ
+                      </Text>
                     </Row>
                   )}
-                  <Divider style={{ margin: '12px 0' }} />
+                  <Divider style={{ margin: "12px 0" }} />
                   <Row justify="space-between">
-                    <Title level={4} style={{ margin: 0 }}>Thành tiền:</Title>
+                    <Title level={4} style={{ margin: 0 }}>
+                      Thành tiền:
+                    </Title>
                     <Title level={4} type="danger" style={{ margin: 0 }}>
                       {(totalAmount - discountAmount).toLocaleString("vi-VN")}đ
                     </Title>
@@ -320,13 +391,20 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <Row justify="end" gutter={16}>
             <Col>
               <Space size="middle">
-                <Button onClick={onClose}>
-                  Hủy bỏ
-                </Button>
-                <Button onClick={handleMomoPayment} type="primary" danger icon={<WalletOutlined />}>
+                <Button onClick={onClose}>Hủy bỏ</Button>
+                <Button
+                  onClick={handleMomoPayment}
+                  type="primary"
+                  danger
+                  icon={<WalletOutlined />}
+                >
                   Thanh toán MoMo
                 </Button>
-                <Button onClick={handleCashPayment} type="primary" icon={<DollarOutlined />}>
+                <Button
+                  onClick={handleCashPayment}
+                  type="primary"
+                  icon={<DollarOutlined />}
+                >
                   Thanh toán tiền mặt
                 </Button>
               </Space>
