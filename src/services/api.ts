@@ -828,3 +828,124 @@ export const updateAppointmentDetail = async (
   );
   return response?.data;
 };
+
+export const updateSchedule = async (
+  token: string | null,
+  id: number,
+  data
+) => {
+  const response = await axios.put(`${API_URL}/${SCHEDULE}/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const getAllWage = async (
+  token: string | null,
+  page: number,
+  limit: number
+) => {
+  if (!token || !page || !limit) return;
+  const response = await axios.get(`${API_URL}/${WAGE}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      page: page,
+      limit: limit,
+    },
+  });
+  return response?.data;
+};
+
+export const createWage = async (token: string | null, wage) => {
+  if (!token) return;
+  const response = await axios.post(`${API_URL}/${WAGE}`, wage, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const updateWage = async (token: string | null, wage, wageId: number) => {
+  if (!token) return;
+  const response = await axios.put(`${API_URL}/${WAGE}/${wageId}`, wage, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const deleteWage = async (token: string | null, wageId: number) => {
+  if (!token) return;
+  const response = await axios.delete(`${API_URL}/${WAGE}/${wageId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const createVoucher = async (token: string | null, voucher) => {
+  if (!token) return;
+  const response = await axios.post(`${API_URL}/${VOUCHER}`, voucher, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const updateVoucher = async (token: string | null, voucher, voucherId: number) => {
+  if (!token) return;
+  const response = await axios.put(`${API_URL}/${VOUCHER}/${voucherId}`, voucher, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const deleteVoucher = async (token: string | null, voucherId: number) => {
+  if (!token) return;
+  const response = await axios.delete(`${API_URL}/${VOUCHER}/${voucherId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const createGift = async (token: string | null, gift) => {
+  if (!token) return;
+  const response = await axios.post(`${API_URL}/${GIFT}`, gift, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const updateGift = async (token: string | null, gift, giftId: number) => {
+  if (!token) return;
+  const response = await axios.put(`${API_URL}/${GIFT}/${giftId}`, gift, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+export const deleteGift = async (token: string | null, giftId: number) => {
+  if (!token) return;
+  const response = await axios.delete(`${API_URL}/${GIFT}/${giftId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};

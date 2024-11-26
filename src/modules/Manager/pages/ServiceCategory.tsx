@@ -163,11 +163,13 @@ const ServiceCategoryPage: React.FC = () => {
         service={dataEdit}
       />
       <div className="header-container">
+        <h2>Quản lý phân loại dịch vụ</h2>
         <Search
           placeholder="Tìm kiếm phân loại dịch vụ theo tên"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           className="btn-add"

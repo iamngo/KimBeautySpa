@@ -159,11 +159,13 @@ const AccountPage: React.FC = () => {
         account={dataEdit}
       />
       <div className="header-container">
+        <h2>Quản lý tài khoản</h2>
         <Search
           placeholder="Tìm kiếm tài khoản bằng số điện thoại"
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
+          style={{ width: "600px" }}
         />
         <Button
           type="primary"
