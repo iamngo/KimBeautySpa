@@ -7,6 +7,8 @@ import ModalRegister from "../modal/ModalRegister";
 import { useNavigate } from "react-router-dom";
 import {
   DASHBOARD,
+  EMPLOYEE_SCHEDULE,
+  EMPLOYEE_PATH,
   HOME,
   LOGIN,
   MANAGER,
@@ -61,7 +63,8 @@ const HeaderHomepage: React.FC = () => {
       }
       if (
         decodedPayload.role === "admin" ||
-        decodedPayload.role === "manager"
+        decodedPayload.role === "manager" ||
+        decodedPayload.role === "employee"
       ) {
         const getEmployee = async () => {
           const response = await getInfoEmpByAccountId(
@@ -70,6 +73,8 @@ const HeaderHomepage: React.FC = () => {
           );
           setEmployee(response?.data);
           setBranchId(response?.data?.branchId);
+          console.log(response?.data);
+          
         };
         getEmployee();
       }
@@ -109,6 +114,10 @@ const HeaderHomepage: React.FC = () => {
     if (key === "manage") {
       navigate(`${MANAGER}/${DASHBOARD}`, { state: { branchId: branchId } });
     }
+    if (key === "schedule") {
+      navigate(`${EMPLOYEE_PATH}/${EMPLOYEE_SCHEDULE}`);
+      localStorage.setItem("employeeId", employee?.id);
+    }
   };
 
   const avatarMenu = (
@@ -119,11 +128,11 @@ const HeaderHomepage: React.FC = () => {
       <Menu.Item key="gifts" icon={<FaGift />}>
         Tích điểm - Quà tặng
       </Menu.Item>
-      {employee?.role === "employee" && (
+      {employee?.role === "employee" ? (
         <Menu.Item key="schedule" icon={<AiFillSchedule />}>
           Xem lịch làm
         </Menu.Item>
-      )}
+      ):''}
       {employee?.role === "admin" || employee?.role === "manager" ? (
         <Menu.Item key="manage" icon={<GrSystem />}>
           Quản lý hệ thống
@@ -165,8 +174,6 @@ const HeaderHomepage: React.FC = () => {
   };
 
   const handleSubmenuCategoryServiceClick = (category: any) => {
-    console.log(category);
-
     setSelectedKey(`service-category-${category.id}`);
     navigate(`category-services/${category.id}`, {
       state: { category: category },
