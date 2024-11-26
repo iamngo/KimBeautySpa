@@ -759,7 +759,8 @@ export const paymentMomo = async (
   token: string | null,
   appointmentId: number,
   amount: number,
-  voucherId: Array<number>
+  voucherId: Array<number> = [],
+  appointmentDetails: Array<number> = []
 ) => {
   if (!token || !appointmentId || !voucherId) return;
   const response = await axios.get(`${API_URL}/${APPOINTMENT}/payments/momo`, {
@@ -769,6 +770,8 @@ export const paymentMomo = async (
     params: {
       appointmentId: appointmentId,
       amount: amount,
+      voucherId,
+      appointmentDetails,
     },
   });
   return response?.data;
