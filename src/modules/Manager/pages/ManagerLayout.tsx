@@ -36,7 +36,6 @@ import {
   WAGE,
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
-import { GiFoxTail } from "react-icons/gi";
 import { FaGifts } from "react-icons/fa6";
 
 const { Content, Sider } = Layout;
