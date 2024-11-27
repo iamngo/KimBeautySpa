@@ -1,0 +1,155 @@
+// Mobile styles
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    &.active {
+      .sign-in {
+        display: none;
+      }
+
+      .sign-up {
+        display: block;
+        opacity: 1;
+      }
+
+      .toggle-container {
+        transform: translateY(-100%);
+      }
+    }
+  }
+
+  .form-container {
+    position: relative;
+    width: 100%;
+    height: 60vh; // Giảm chiều cao để không bị che
+    padding: 20px;
+
+    form {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+  }
+
+  .sign-in, .sign-up {
+    width: 100%;
+    height: 60vh; // Đồng bộ với form-container
+    padding: 20px;
+  }
+
+  .sign-in {
+    display: block;
+  }
+
+  .sign-up {
+    display: none;
+    opacity: 0;
+  }
+
+  .toggle-container {
+    position: absolute; // Đổi lại thành absolute
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40vh; // Chiếm 40% chiều cao màn hình
+    background: #512da8;
+    transition: all 0.6s ease-in-out;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    border-radius: 30px 30px 0 0;
+    overflow: hidden; // Tránh nội dung bị tràn
+  }
+
+  .toggle {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #5c6bc0, #512da8);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .toggle-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.6s ease-in-out;
+
+    h1 {
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    button {
+      background: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 10px 30px;
+      margin-top: 15px;
+      cursor: pointer;
+      border-radius: 20px;
+      font-weight: 600;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  .toggle-right {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .toggle-left {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  .container.active {
+    .toggle-right {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+
+    .toggle-left {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Tablet styles
+@media (min-width: 481px) and (max-width: 1024px) {
+  // Copy các styles từ mobile và điều chỉnh kích thước phù hợp
+}
