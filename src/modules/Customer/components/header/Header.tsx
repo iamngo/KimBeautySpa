@@ -17,6 +17,7 @@ import {
   REWARD_POINTS,
   SERVICE,
   TREATMENTS,
+  PRODUCTS,
 } from "../../../../routes";
 import {
   getAllServiceCategory,
@@ -168,6 +169,8 @@ const HeaderHomepage: React.FC = () => {
       });
     } else if (key === "treatments") {
       navigate(`${TREATMENTS}`);
+    } else if (key === "products") {
+      navigate(`${PRODUCTS}`);
     } else if (key === "promotion") {
       navigate(`${PROMOTION}`);
     }
@@ -217,7 +220,8 @@ const HeaderHomepage: React.FC = () => {
             ))}
           </SubMenu>
 
-          <Menu.Item key="treatments">Liệu trình</Menu.Item>
+          {/* <Menu.Item key="treatments">Liệu trình</Menu.Item> */}
+          <Menu.Item key="products">Sản phẩm</Menu.Item>
           <Menu.Item key="promotion">Khuyến mãi</Menu.Item>
         </Menu>
 
