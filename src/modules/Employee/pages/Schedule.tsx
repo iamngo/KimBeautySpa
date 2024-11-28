@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { DatePicker } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { getAllSchedule } from "../../../services/api";
+import { getAllSchedule, getScheduleByDate } from "../../../services/api";
 import "../styles.scss";
 
 interface ISchedule {
@@ -64,12 +64,14 @@ const Schedule: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchSchedules();
-  }, []);
+    if(selectedDate){
+      fetchSchedules(selectedDate.format("YYYY-MM-DD"));
+    }
+  }, [selectedDate]);
 
-  const fetchSchedules = async () => {
+  const fetchSchedules = async (date: string) => {
     try {
-      const response = await getAllSchedule(token, 1, 200);
+      const response = await getScheduleByDate(date);
       setSchedules(response.data);
     } catch (error) {
       console.error("Error fetching schedules:", error);

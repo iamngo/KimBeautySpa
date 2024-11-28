@@ -1,4 +1,4 @@
-import { SCHEDULE } from './../utils/constants';
+import { SCHEDULE } from "./../utils/constants";
 import axios from "axios";
 import {
   ACCOUNT,
@@ -976,12 +976,8 @@ export const getAllProductWithPrice = async () => {
 };
 
 export const getScheduleByDate = async (date: string) => {
-  try {
     const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
-      params: {date}
+      params: { date },
     });
     return response?.data;
-  } catch (error) {
-    throw error;
-  }
 };
