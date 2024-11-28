@@ -14,7 +14,6 @@ import { FaCalendar, FaGift } from "react-icons/fa";
 import {
   getAllGift,
   getAllVoucher,
-  getBonusPointByCustomerId,
   getGiftByCustomerId,
   getGiftById,
   getInfoByAccountId,
@@ -24,7 +23,6 @@ import {
   updatePointOfCustomer,
 } from "../../../services/api";
 import { useLocation } from "react-router-dom";
-import { current } from "@reduxjs/toolkit";
 
 const RewardPage: React.FC = () => {
   const marks: SliderSingleProps["marks"] = {
@@ -34,8 +32,8 @@ const RewardPage: React.FC = () => {
   };
 
   const location = useLocation();
-  const [expense, setExpense] = useState<number | undefined>(undefined);
-  const [points, setPoints] = useState<number | undefined>(undefined);
+  const [expense, setExpense] = useState<number | undefined>(0);
+  const [points, setPoints] = useState<number | undefined>(0);
   const [customer, setCustomer] = useState<any>(null);
   const [gifts, setGifts] = useState<any[]>([]);
   const [vouchers, setVouchers] = useState<any[]>([]);
@@ -167,28 +165,39 @@ const RewardPage: React.FC = () => {
 
   const myGiftMenu = (
     <Menu>
-      {Array.isArray(myGifts) &&
+      {Array.isArray(myGifts) && myGifts.length > 0 ? (
         myGifts.map((gift) => (
           <Menu.Item key={gift.id}>
             {gift.category === "voucher" ? (
-              <div>
-                <p>
-                  <strong>Voucher giảm giá {gift.discount} %</strong>
-                </p>
-                <p>
-                  Thời hạn sử dụng:{" "}
-                  {new Date(gift.expiryDate).toLocaleDateString()}
-                </p>
-                
+              <div className="gift-item">
+                <div className="gift-info">
+                  <p>
+                    <strong>Voucher giảm giá {gift.discount} %</strong>
+                  </p>
+                  <p>
+                    Thời hạn sử dụng:{" "}
+                    {new Date(gift.expiryDate).toLocaleDateString()}
+                  </p>
+                  <p className="gift-count">
+                    Số lượng: <span>{gift.quantity || 1}</span>
+                  </p>
+                </div>
               </div>
             ) : (
-              <div>
-                <p><strong>Quà: {gift.name}</strong></p>
-                
+              <div className="gift-item">
+                <div className="gift-info">
+                  <p><strong>Quà: {gift.name}</strong></p>
+                  <p className="gift-count">
+                    Số lượng: <span>{gift.quantity || 1}</span>
+                  </p>
+                </div>
               </div>
             )}
           </Menu.Item>
-        ))}
+        ))
+      ) : (
+        <Menu.Item disabled>Bạn chưa có quà nào</Menu.Item>
+      )}
     </Menu>
   );
 
@@ -225,7 +234,7 @@ const RewardPage: React.FC = () => {
                 <span>
                   {remainingAmount > 0
                     ? `${remainingAmount.toLocaleString()}đ`
-                    : "0đ"}
+                    : "20.000.000đ"}
                 </span>{" "}
                 để nâng hạng KH{" "}
                 {expense! >= 20000000 && expense! < 50000000
@@ -239,7 +248,7 @@ const RewardPage: React.FC = () => {
               {" "}
               Điểm tích lũy: <strong>{points}</strong>
             </p>
-            <p> Điểm hiện tại: {pointOfCustomer?.currentPoints}</p>
+            <p> Điểm hiện tại: {pointOfCustomer?.currentPoints || 0}</p>
           </div>
         </div>
       </div>
@@ -259,7 +268,7 @@ const RewardPage: React.FC = () => {
               actions={[
                 <Button
                   type="primary"
-                  disabled={pointOfCustomer?.currentPoints! < gift.point}
+                  disabled={pointOfCustomer?.currentPoints! < gift.point || pointOfCustomer?.currentPoints === undefined}
                   onClick={() =>
                     handleGiftExchange(
                       gift.id,
@@ -302,7 +311,7 @@ const RewardPage: React.FC = () => {
               actions={[
                 <Button
                   type="primary"
-                  disabled={pointOfCustomer?.currentPoints! < voucher.point}
+                  disabled={pointOfCustomer?.currentPoints! < voucher.point || pointOfCustomer?.currentPoints === undefined}
                   onClick={() =>
                     handleGiftExchange(
                       voucher.id,

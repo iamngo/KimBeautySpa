@@ -694,6 +694,104 @@ body {
   
   }
 
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .left-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .type-icon {
+        font-size: 20px;
+        
+        &.service {
+          color: #1890ff;
+        }
+        
+        &.product {
+          color: #52c41a;
+        }
+      }
+
+      .item-name {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .info-card {
+    display: flex;
+    gap: 20px;
+    padding: 16px;
+    border-radius: 8px;
+    position: relative;
+
+    &.service-card {
+      background-color: #e6f7ff;
+      border: 1px solid #91d5ff;
+    }
+
+    &.product-card {
+      background-color: #f6ffed;
+      border: 1px solid #b7eb8f;
+    }
+
+    .item-image {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .info-section {
+      flex: 1;
+
+      .type-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-weight: 500;
+        font-size: 9px;
+
+        .service-card & {
+          background-color: #1890ff;
+          color: white;
+        }
+
+        .product-card & {
+          background-color: #52c41a;
+          color: white;
+        }
+      }
+
+      .datetime {
+        color: #f5222d;
+        font-weight: 500;
+      }
+
+      .price-section {
+        margin-top: 8px;
+
+        .original-price {
+          color: #999;
+          margin-right: 8px;
+          font-size: 14px;
+        }
+
+        .special-price {
+          color: #f5222d;
+          font-weight: 500;
+          font-size: 16px;
+        }
+      }
+    }
+  }
 }
 
 .promotion-page{
