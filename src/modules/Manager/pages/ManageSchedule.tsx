@@ -6,6 +6,7 @@ import {
   deleteSchedule,
   getAllEmployee,
   getAllSchedule,
+  getScheduleByDate,
 } from "../../../services/api";
 import dayjs, { Dayjs } from "dayjs";
 import { useBranch } from "../../../hooks/branchContext";
@@ -50,18 +51,36 @@ const ManageSchedule: React.FC = () => {
   ];
 
   useEffect(() => {
-    fetchSchedule();
+    if (selectedDate) {
+      fetchSchedule(selectedDate.format("YYYY-MM-DD"));
+    }
     fetchEmployee();
-  }, [isModalVisible]);
+  }, [isModalVisible, selectedDate]);
 
-  const fetchSchedule = async () => {
-    // const response 
+  const fetchSchedule = async (date: string) => {
+    try {
+      const response = await getScheduleByDate(date);
+      if (response && response.data) {
+        setSchedules(response.data);
+      }
+      console.log("Schedule response:", response);
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+      message.error("Không thể tải lịch làm việc");
+    }
   };
 
   const fetchEmployee = async () => {
-    const response = await getAllEmployee(token, branchId, 1, 1000);
-    setEmployees(response?.data);
-    console.log(response?.data);
+    try {
+      const response = await getAllEmployee(token, branchId, 1, 1000);
+      if (response && response.data) {
+        setEmployees(response.data);
+      }
+      console.log("Employee response:", response?.data);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      message.error("Không thể tải danh sách nhân viên");
+    }
   };
 
   const weekDays = useMemo(() => {

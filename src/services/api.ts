@@ -976,8 +976,12 @@ export const getAllProductWithPrice = async () => {
 };
 
 export const getScheduleByDate = async (date: string) => {
-  const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
-    params: date
-  });
-  return response?.data;
+  try {
+    const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
+      params: {date}
+    });
+    return response?.data;
+  } catch (error) {
+    throw error;
+  }
 };
