@@ -55,25 +55,7 @@ const ManageSchedule: React.FC = () => {
   }, [isModalVisible]);
 
   const fetchSchedule = async () => {
-    let allData: Schedule[] = [];
-    let currentPage = 1;
-    const itemsPerPage = 10;
-
-    while (true) {
-      const response = await getAllSchedule(token, currentPage, itemsPerPage);
-      if (response?.data) {
-        allData = [...allData, ...response?.data];
-        if (currentPage >= response.pagination.totalPages) {
-          break;
-        }
-        currentPage++;
-      } else {
-        console.error("Error fetching data:", response?.error);
-        break;
-      }
-    }
-    setSchedules(allData);
-    console.log(allData);
+    // const response 
   };
 
   const fetchEmployee = async () => {

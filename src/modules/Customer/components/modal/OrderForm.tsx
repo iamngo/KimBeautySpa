@@ -69,6 +69,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
       bonusId: idBonus,
       fullName: values.customerName,
       phone: values.phone,
+      expense: product.specialPrice
     };
     const response = await registerAppointment(appointment);
     console.log(response);
