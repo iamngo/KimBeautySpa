@@ -981,3 +981,14 @@ export const getScheduleByDate = async (date: string) => {
     });
     return response?.data;
 };
+
+export const getProductById = async (id: number) => {
+  if (!id) return;
+  try {
+    const response = await axios.get(`${API_URL}/${PRODUCT}/${id}`);
+    return response?.data;
+  } catch (error) {
+    console.error("Error getting product by id:", error);
+    throw error;
+  }
+};
