@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Form, Select, Button, message, Row, Col, Divider } from "antd";
-import moment from "moment";
 import { MODE } from "../../../../utils/constants";
 import {
   createAppointmentDetail,
@@ -11,7 +10,6 @@ import {
   getEmployeeByDateTime,
   getPricesByForeignKeyId,
   getServiceByCategory,
-  updateAppointmentDetail,
   updateStatusAppointmentDetail,
 } from "../../../../services/api";
 import { useBranch } from "../../../../hooks/branchContext";
