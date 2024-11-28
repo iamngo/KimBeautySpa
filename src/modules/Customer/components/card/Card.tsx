@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import { Card, Button, Tooltip, Image } from "antd";
 import "./Card.scss";
 
@@ -7,7 +7,8 @@ interface ServiceCardProps {
   imageUrl: string;
   price?: number;
   specialPrice?: number;
-  onDetailClick: () => void;
+  onDetailClick?: () => void;
+  onOrderClick?: () => void;
   onConsultClick?: (service: any) => void;
 }
 
@@ -16,7 +17,7 @@ const CustomCard: React.FC<ServiceCardProps> = ({
   imageUrl,
   onDetailClick,
   onConsultClick,
-
+  onOrderClick,
   price,
   specialPrice,
 }) => {
@@ -46,31 +47,40 @@ const CustomCard: React.FC<ServiceCardProps> = ({
           {price && (
             <p>
               Giá:{" "}
-              <del>
-                {(price ?? 0).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                } as Intl.NumberFormatOptions)}
-              </del>
-              &nbsp;&nbsp;
               <i>
-                <b style={{ color: "red", fontSize: "16px" }}>
-                  {(specialPrice ?? 0).toLocaleString("vi-VN", {
+                <del>
+                  {(price ?? 0).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
                   } as Intl.NumberFormatOptions)}
-                </b>
+                </del>
               </i>
+              &nbsp;&nbsp;
+              <b style={{ color: "red", fontSize: "16px" }}>
+                {(specialPrice ?? 0).toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                } as Intl.NumberFormatOptions)}
+              </b>
             </p>
           )}
 
           <div className="card-actions">
-            <Button type="default" onClick={() => onConsultClick({ name: title })}>
+            <Button
+              type="default"
+              onClick={() => onConsultClick({ name: title })}
+            >
               Nhận tư vấn
             </Button>
-            <Button onClick={onDetailClick} className="btn-detail">
-              Xem chi tiết
-            </Button>
+            {onOrderClick ? (
+              <Button onClick={onOrderClick} className="btn-detail">
+                Đặt hàng
+              </Button>
+            ) : (
+              <Button onClick={onDetailClick} className="btn-detail">
+                Xem chi tiết
+              </Button>
+            )}
           </div>
         </div>
       </Card>
