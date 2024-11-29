@@ -870,7 +870,11 @@ export const createWage = async (token: string | null, wage) => {
   return response?.data;
 };
 
-export const updateWage = async (token: string | null, wage, wageId: number) => {
+export const updateWage = async (
+  token: string | null,
+  wage,
+  wageId: number
+) => {
   if (!token) return;
   const response = await axios.put(`${API_URL}/${WAGE}/${wageId}`, wage, {
     headers: {
@@ -900,17 +904,28 @@ export const createVoucher = async (token: string | null, voucher) => {
   return response?.data;
 };
 
-export const updateVoucher = async (token: string | null, voucher, voucherId: number) => {
+export const updateVoucher = async (
+  token: string | null,
+  voucher,
+  voucherId: number
+) => {
   if (!token) return;
-  const response = await axios.put(`${API_URL}/${VOUCHER}/${voucherId}`, voucher, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.put(
+    `${API_URL}/${VOUCHER}/${voucherId}`,
+    voucher,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response?.data;
 };
 
-export const deleteVoucher = async (token: string | null, voucherId: number) => {
+export const deleteVoucher = async (
+  token: string | null,
+  voucherId: number
+) => {
   if (!token) return;
   const response = await axios.delete(`${API_URL}/${VOUCHER}/${voucherId}`, {
     headers: {
@@ -930,7 +945,11 @@ export const createGift = async (token: string | null, gift) => {
   return response?.data;
 };
 
-export const updateGift = async (token: string | null, gift, giftId: number) => {
+export const updateGift = async (
+  token: string | null,
+  gift,
+  giftId: number
+) => {
   if (!token) return;
   const response = await axios.put(`${API_URL}/${GIFT}/${giftId}`, gift, {
     headers: {
