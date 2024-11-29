@@ -11,6 +11,10 @@ import {
   REWARD_POINTS,
   SERVICE_DETAIL_URL,
   TREATMENTS,
+  EMPLOYEE_PATH,
+  EMPLOYEE_SCHEDULE,
+  EMPLOYEE_SALARY,
+  PRODUCTS,
 } from "./routes";
 import Authenticate from "./modules/Authenticate/pages/auth";
 import ManagerLayout from "./modules/Manager/pages/ManagerLayout";
@@ -51,6 +55,10 @@ import AttendanceChecking from "./modules/Manager/pages/AttendanceChecking";
 import WagePage from "./modules/Manager/pages/Wage";
 import VoucherPage from "./modules/Manager/pages/Voucher";
 import GiftPage from "./modules/Manager/pages/Gift";
+import EmployeeLayout from "./modules/Employee/layout/EmployeeLayout";
+import SchedulePage from "./modules/Employee/pages/Schedule";
+import SalaryPage from "./modules/Employee/pages/Salary";
+import Products from "./modules/Customer/pages/Products";
 
 const App: React.FC = () => {
   return (
@@ -64,6 +72,7 @@ const App: React.FC = () => {
         <Route path={REWARD_POINTS} element={<RewardPage />} />
         <Route path={MY_SERVICES} element={<MyServicePlanPage />} />
         <Route path={PROMOTION} element={<PromotionPage />} />
+        <Route path={PRODUCTS} element={<Products />} />
       </Route>
 
       <Route path={MANAGER} element={<ManagerLayout />}>
@@ -81,6 +90,11 @@ const App: React.FC = () => {
         <Route path={WAGE} element={<WagePage />} />
         <Route path={VOUCHER} element={<VoucherPage />} />
         <Route path={GIFT} element={<GiftPage />} />
+      </Route>
+
+      <Route path={EMPLOYEE_PATH} element={<EmployeeLayout />}>
+        <Route path={EMPLOYEE_SCHEDULE} element={<SchedulePage />} />
+        <Route path={EMPLOYEE_SALARY} element={<SalaryPage />} />
       </Route>
     </Routes>
   );

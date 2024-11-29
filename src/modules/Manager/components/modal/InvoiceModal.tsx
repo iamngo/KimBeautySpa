@@ -11,7 +11,7 @@ import {
   Divider,
   Space,
 } from "antd";
-import { Appointment, Service } from "../../types";
+import { Appointment, Product, Service } from "../../types";
 import {
   getAllService,
   getAppointmentDetailById,
@@ -22,6 +22,7 @@ import {
   getGiftById,
   paymentMomo,
   paymentCash,
+  getAllProduct,
 } from "../../../../services/api";
 import moment from "moment";
 import {
@@ -119,6 +120,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   const fetchAppointmentDetail = async () => {
     const servicesResponse = await getAllService(1, 200);
+    const productResponse = await getAllProduct(1, 1000);
     const response = await getAppointmentDetailById(token, appointmentData.id);
     const appointmentDetails = await Promise.all(
       response?.data
@@ -129,15 +131,18 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
           const service = servicesResponse?.data.find(
             (service: Service) => service.id === appointment.foreignKeyId
           );
+          const product = productResponse?.data.find(
+            (product: Product) => product.id === appointment.foreignKeyId
+          );
+          updatedAppointment.serviceName = service ? service.name : null;
 
-          updatedAppointment.serviceName = service
-            ? service.name
-            : "Unknown Service";
+          updatedAppointment.productName = product ? product.name : null;
 
           return updatedAppointment;
         })
     );
     setAppointmentDetails(appointmentDetails);
+    console.log(appointmentDetails);
   };
 
   const calculateTotal = () => {
@@ -312,6 +317,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 width={60}
               />
               <Table.Column title="Dịch vụ" dataIndex="serviceName" />
+              <Table.Column title="Sản phẩm" dataIndex="productName" />
               <Table.Column
                 title="Giá tiền"
                 dataIndex="expense"

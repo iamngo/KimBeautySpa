@@ -10,10 +10,14 @@ import {
   getEmployeeById,
   getInfoByAccountId,
   getPricesByForeignKeyId,
+  getProductById,
   getServiceById,
   updateStatusAppointmentDetail,
 } from "../../../services/api";
 import { useLocation } from "react-router-dom";
+import { ShoppingOutlined, CustomerServiceOutlined } from "@ant-design/icons";
+import { RiCustomerServiceFill } from "react-icons/ri";
+import { FaServicestack } from "react-icons/fa";
 
 const { Panel } = Collapse;
 
@@ -56,22 +60,26 @@ const MyServicePlanPage: React.FC = () => {
               appointmentDetails.data.length === 0
             )
               return null;
+
             const detailsWithInfo = await Promise.all(
               appointmentDetails.data.map(async (detail) => {
-                const [branch, employee, prices, service] = await Promise.all([
-                  getBranchById(token, appointment.branchId),
-                  getEmployeeById(token, detail.employeeId),
-                  getPricesByForeignKeyId(detail.foreignKeyId),
-                  getServiceById(detail.foreignKeyId),
-                ]);
+                const [branch, employee, prices, service, product] =
+                  await Promise.all([
+                    getBranchById(token, appointment.branchId),
+                    getEmployeeById(token, detail.employeeId),
+                    getPricesByForeignKeyId(detail.foreignKeyId),
+                    getServiceById(detail.foreignKeyId),
+                    getProductById(detail.foreignKeyId),
+                  ]);
 
                 return {
                   ...detail,
                   branch: branch.data,
-                  employee: employee.data,
+                  employee: employee?.data,
                   prices: prices.data[0],
-                  service: service.data,
+                  service: service?.data,
                   dateTime: appointment.dateTime,
+                  product: product?.data,
                 };
               })
             );
@@ -86,8 +94,8 @@ const MyServicePlanPage: React.FC = () => {
       const flattenedAppointments = appointmentsWithDetails
         .flat()
         .filter((item) => item !== null);
-
       setAppointment(flattenedAppointments);
+      console.log(flattenedAppointments);
     } catch (error) {
       console.error("Lỗi khi lấy lịch hẹn:", error);
       message.error("Không thể tải lịch hẹn, vui lòng thử lại sau!");
@@ -124,7 +132,11 @@ const MyServicePlanPage: React.FC = () => {
     );
 
     if (new Date(date) > twoDaysLater) {
-      const response = await updateStatusAppointmentDetail(token, id);
+      const response = await updateStatusAppointmentDetail(
+        token,
+        id,
+        "canceled"
+      );
 
       if (response.data !== null) {
         message.success("Hủy lịch hẹn thành công!");
@@ -139,12 +151,13 @@ const MyServicePlanPage: React.FC = () => {
   return (
     <div className="service-plan-page">
       <div className="header-section">
-        <h1>Dịch vụ - Liệu trình của bạn</h1>
+        <h1>Dịch vụ - Sản phẩm của bạn</h1>
         <div className="search-bar">
           <Search
-            placeholder="Tìm kiếm dịch vụ..."
+            placeholder="Tìm kiếm..."
             value={searchValue}
             onChange={handleSearchChange}
+            style={{opacity:0}}
           />
         </div>
       </div>
@@ -161,16 +174,19 @@ const MyServicePlanPage: React.FC = () => {
             filteredAppointment.map((item, index) => (
               <Panel
                 header={
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span>
-                      {item.service?.name || "Tên dịch vụ không xác định"}{" "}
-                    </span>
+                  <div className="panel-header">
+                    <div className="left-section">
+                      {item.category === "services" ? (
+                        <FaServicestack className="type-icon service" />
+                      ) : (
+                        <ShoppingOutlined className="type-icon product" />
+                      )}
+                      <span className="item-name">
+                        {item.service?.name ||
+                          item.product?.name ||
+                          "Không xác định"}
+                      </span>
+                    </div>
                     <div className="actions">
                       {item.status === "confirmed" && (
                         <Button
@@ -186,25 +202,30 @@ const MyServicePlanPage: React.FC = () => {
                           Hủy lịch
                         </Button>
                       )}
-                      {item.status === "performing" && (
-                        <Button type="primary" size="small">
-                          Thanh toán
-                        </Button>
-                      )}
                     </div>
                   </div>
                 }
                 key={index}
               >
-                <div className="info-card">
+                <div
+                  className={`info-card ${
+                    item.service ? "service-card" : "product-card"
+                  }`}
+                >
                   <img
-                    src={item.service?.image}
-                    alt={item.service?.name}
-                    className="service-image"
+                    src={item.service?.image || item.product?.image}
+                    alt={item.service?.name || item.product?.name}
+                    className="item-image"
                   />
                   <div className="info-section">
+                    <div className="type-badge">
+                      {item.service ? "Dịch vụ" : "Sản phẩm"}
+                    </div>
                     <p>
-                      <strong>Dịch vụ:</strong> {item.service?.name}
+                      <strong>
+                        {item.service ? "Tên dịch vụ:" : "Tên sản phẩm:"}
+                      </strong>{" "}
+                      {item.service?.name || item.product?.name}
                     </p>
                     <p>
                       <strong>Chi nhánh:</strong>{" "}
@@ -212,31 +233,28 @@ const MyServicePlanPage: React.FC = () => {
                     </p>
                     <p>
                       <strong>Thời gian:</strong>{" "}
-                      <span style={{ color: "red" }}>
-                        <b>{formatDateTime(item.dateTime)}</b>
+                      <span className="datetime">
+                        {formatDateTime(item.dateTime)}
                       </span>
                     </p>
-                    <p>
-                      <strong>Nhân viên:</strong> {item.employee?.fullName}
-                    </p>
-                    <p>
-                      <strong>Giá tiền:</strong>&nbsp;
-                      <s>
-                        <small>
-                          {item.prices?.price?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </small>
+                    {item.service && (
+                      <p>
+                        <strong>Nhân viên:</strong> {item.employee?.fullName}
+                      </p>
+                    )}
+                    <p className="price-section">
+                      <strong>Giá tiền:</strong>{" "}
+                      <s className="original-price">
+                        {item.prices?.price?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </s>
-                      &nbsp;&nbsp;
-                      <span style={{ color: "red" }}>
-                        <b>
-                          {item.prices?.specialPrice?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </b>
+                      <span className="special-price">
+                        {item.prices?.specialPrice?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </span>
                     </p>
                   </div>
