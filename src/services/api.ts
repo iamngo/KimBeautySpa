@@ -763,7 +763,7 @@ export const paymentMomo = async (
   voucherId: Array<number> = [],
   appointmentDetails: Array<number> = []
 ) => {
-  if (!token || !appointmentId || !voucherId) return;
+  if (!token || !appointmentId || !appointmentDetails) return;
   const response = await axios.get(`${API_URL}/${APPOINTMENT}/payments/momo`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -976,10 +976,10 @@ export const getAllProductWithPrice = async () => {
 };
 
 export const getScheduleByDate = async (date: string) => {
-    const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
-      params: { date },
-    });
-    return response?.data;
+  const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
+    params: { date },
+  });
+  return response?.data;
 };
 
 export const getProductById = async (id: number) => {
