@@ -976,10 +976,10 @@ export const getAllProductWithPrice = async () => {
 };
 
 export const getScheduleByDate = async (date: string) => {
-    const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
-      params: { date },
-    });
-    return response?.data;
+  const response = await axios.get(`${API_URL}/${SCHEDULE}/date/week`, {
+    params: { date },
+  });
+  return response?.data;
 };
 
 export const getProductById = async (id: number) => {
@@ -989,6 +989,25 @@ export const getProductById = async (id: number) => {
     return response?.data;
   } catch (error) {
     console.error("Error getting product by id:", error);
+    throw error;
+  }
+};
+
+export const getScheduleByDateAndEmployeeId = async (
+  id: number,
+  date: string
+) => {
+  if (!id || !date) return;
+  try {
+    const response = await axios.get(
+      `${API_URL}/${SCHEDULE}/date/week/employee/${id}`,
+      {
+        params: { date },
+      }
+    );
+    return response?.data;
+  } catch (error) {
+    console.error(error);
     throw error;
   }
 };
