@@ -57,7 +57,7 @@ export default function BarCharts({ services }) {
       height={500}
       data={services}
       margin={{
-        top: 50,
+        top: 200,
         right: 30,
         left: 20,
         bottom: 5,
