@@ -63,7 +63,6 @@ const ManageSchedule: React.FC = () => {
       if (response && response.data) {
         setSchedules(response.data);
       }
-      console.log("Schedule response:", response);
     } catch (error) {
       console.error("Error fetching schedule:", error);
       message.error("Không thể tải lịch làm việc");
@@ -124,8 +123,6 @@ const ManageSchedule: React.FC = () => {
   };
 
   const handleOk = async () => {
-    console.log("Selected Employees:", selectedEmployees);
-
     const checkInTime = selectedShift === "morning" ? "00:00:00" : "00:00:00";
     const checkOutTime = selectedShift === "morning" ? "00:00:00" : "00:00:00";
     const selectedDateStr = selectedDateSchedule?.format("YYYY-MM-DD");
