@@ -178,7 +178,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         appointmentData?.id,
         totalAmount - discountAmount,
         selectedRewards,
-        appointmentDetails
+        appointmentDetails.map((ad: { id: number }) => ad.id)
       );
       if (response?.data?.shortLink) {
         window.open(response.data.shortLink, "_blank");

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, DatePicker, Skeleton, Tabs } from "antd";
+import { Button, DatePicker, message, Skeleton, Tabs } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
@@ -22,6 +22,7 @@ import { useBranch } from "../../../hooks/branchContext";
 import dayjs from "dayjs";
 import AppointmentDetailModal from "../components/modal/AppointmentDetailModal";
 import InvoiceModal from "../components/modal/InvoiceModal";
+import { io } from "socket.io-client";
 
 const AppointmentPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -67,12 +68,33 @@ const AppointmentPage: React.FC = () => {
   const [visibleInvoiceModal, setVisibleInvoiceModal] =
     useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [refreshPage, setRefreshPage] = useState(false);
+
+  useEffect(() => {
+    const socket = io("http://localhost:3000");
+    // // Nhận tin nhắn từ server
+    socket.on("notify-payment", (response) => {
+      console.log("Socket : ", response);
+      if (response.message === "success") {
+        message.success("Thanh toán thành công");
+        console.log("Thanh toán thành công");
+
+        setRefreshPage((pre) => !pre);
+      } else {
+        message.error("Thanh toán thất bại");
+      }
+    });
+    return () => {
+      socket.off("notify-payment");
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (branchId) {
       fetchServicesAndAppointments();
     }
-  }, [branchId, visibleModal]);
+  }, [branchId, visibleModal, refreshPage]);
 
   const fetchServicesAndAppointments = async () => {
     setLoading(true);
@@ -432,7 +454,7 @@ const AppointmentPage: React.FC = () => {
           );
 
           updatedAppointment.serviceName = service ? service.name : "";
-          updatedAppointment.productName = product? product.name : "";
+          updatedAppointment.productName = product ? product.name : "";
           updatedAppointment.bedName = bed ? bed.name : "";
           updatedAppointment.employeeName = employee ? employee.fullName : "";
 
