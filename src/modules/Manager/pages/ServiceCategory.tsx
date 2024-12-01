@@ -96,6 +96,8 @@ const ServiceCategoryPage: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      width: "100px",
+      align: "center" as "center",
       sorter: (a, b) => a.id - b.id,
     },
     {
@@ -113,6 +115,8 @@ const ServiceCategoryPage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
+      width: "200px",
+      align: "center" as "center",
       render: (_: string, record: Service) => (
         <div>
           {record.isNew ? (
@@ -128,13 +132,6 @@ const ServiceCategoryPage: React.FC = () => {
             <div>
               <Button type="link" onClick={() => handleEditService(record)}>
                 <BiEdit />
-              </Button>
-              <Button
-                type="link"
-                danger
-                onClick={() => handleDeleteServiceCategory(record.id)}
-              >
-                <MdDeleteForever />
               </Button>
             </div>
           )}
@@ -191,6 +188,7 @@ const ServiceCategoryPage: React.FC = () => {
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
           tableName="Service"
+          haveImport={false}
         />
       )}
     </div>

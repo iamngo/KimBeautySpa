@@ -100,16 +100,6 @@ const ServicePage: React.FC = () => {
     }
   };
 
-  const getStatusTag = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return <Tag color="success">Hoạt động</Tag>;
-      case 'inactive':
-        return <Tag color="error">Ngừng hoạt động</Tag>;
-      default:
-        return <Tag color="default">{status}</Tag>;
-    }
-  };
 
   const handleStatusChange = async (checked: boolean, record: any) => {
     try {
@@ -133,6 +123,8 @@ const ServicePage: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      width: "100px",
+      align: "center" as "center",
       sorter: (a: Service, b: Service) => a.id - b.id,
     },
     {
@@ -145,6 +137,8 @@ const ServicePage: React.FC = () => {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
+      width: "100px",
+      align: "center" as "center",
       render: (image: string) => (
         <img
           src={image}
@@ -168,12 +162,16 @@ const ServicePage: React.FC = () => {
       title: "Thời gian",
       dataIndex: "duration",
       key: "duration",
+      width: "150px",
+      align: "center" as "center",
       sorter: (a: Service, b: Service) => a.duration - b.duration,
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: "150px",
+      align: "center" as "center",
       render: (status: string, record: any) => (
         <Switch
           checked={status === 'active'}
@@ -187,6 +185,8 @@ const ServicePage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
+      width: "200px",
+      align: "center" as "center",
       render: (text: string, record: Service) => (
         <div>
           {record.isNew ? (
