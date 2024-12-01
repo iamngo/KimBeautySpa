@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, DatePicker, message, Skeleton, Tabs } from "antd";
+import { Button, DatePicker, message, Skeleton, Tabs, Tag } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
@@ -35,12 +35,15 @@ const AppointmentPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
+    "id",
+    "status",
     "dateTime",
     "customerName",
     "payment",
     "actions",
   ]);
   const [selectedDetailColumns, setSelectedDetailColumns] = useState([
+    "time",
     "status",
     "category",
     "serviceName",
@@ -212,7 +215,7 @@ const AppointmentPage: React.FC = () => {
   const handleDetailColumnChange = (value: string[]) => {
     setSelectedDetailColumns(
       value.includes("all")
-        ? [
+        ? ["time",
             "status",
             "category",
             "serviceName",
@@ -251,10 +254,7 @@ const AppointmentPage: React.FC = () => {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
+            
           })
           .replace(",", "");
       },
@@ -267,6 +267,39 @@ const AppointmentPage: React.FC = () => {
       key: "customerName",
       sorter: (a: Appointment, b: Appointment) =>
         a.customerName?.localeCompare(b.customerName),
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => {
+        let color;
+        let displayText;
+
+        switch (status) {
+          case 'paid':
+            color = 'green';
+            displayText = 'Đã thanh toán';
+            break;
+          case 'unpaid':
+            color = 'volcano';
+            displayText = 'Chưa thanh toán';
+            break;
+          case 'canceled':
+            color = 'red';
+            displayText = 'Đã hủy';
+            break;
+          default:
+            color = 'default';
+            displayText = status; // Hiển thị trạng thái gốc nếu không khớp
+        }
+
+        return (
+          <Tag color={color}>
+            {displayText}
+          </Tag>
+        );
+      },
     },
     {
       title: "Thanh Toán",
@@ -288,14 +321,13 @@ const AppointmentPage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
+      width: "150px",
+      align: "center" as "center",
       render: (text: string, record: Employee) => (
         <div>
           <div>
             <Button type="link" onClick={() => handleEditEmployee(record)}>
               <BiEdit />
-            </Button>
-            <Button type="link" danger>
-              <MdDeleteForever />
             </Button>
           </div>
         </div>
@@ -308,6 +340,52 @@ const AppointmentPage: React.FC = () => {
       dataIndex: "id",
       key: "id",
       sorter: (a: Appointment, b: Appointment) => a.id - b.id,
+    },
+    {
+      title: "Thời gian",
+      dataIndex: "time",
+      key: "time",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => {
+        let color;
+        let displayText;
+
+        switch (status) {
+          case 'confirmed':
+            color = 'blue';
+            displayText = 'Đã xác nhận';
+            break;
+          case 'implement':
+            color = 'orange';
+            displayText = 'Đang thực hiện';
+            break;
+          case 'finished':
+            color = 'green';
+            displayText = 'Hoàn thành';
+            break;
+          case 'canceled':
+            color = 'red';
+            displayText = 'Đã hủy';
+            break;
+          case 'paid':
+            color = 'success';
+            displayText = 'Đã thanh toán';
+            break;
+          default:
+            color = 'default';
+            displayText = status; // Hiển thị trạng thái gốc nếu không khớp
+        }
+
+        return (
+          <Tag color={color}>
+            {displayText}
+          </Tag>
+        );
+      },
     },
     {
       title: "Tên dịch vụ/sản phẩm",
@@ -327,6 +405,12 @@ const AppointmentPage: React.FC = () => {
       dataIndex: "expense",
       key: "expense",
       sorter: (a: Appointment, b: Appointment) => a.expense - b.expense,
+      render: (expense: number) => {
+        return expense.toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        });
+      },
     },
     {
       title: "Nhân viên",
@@ -343,39 +427,39 @@ const AppointmentPage: React.FC = () => {
         a.bedName?.localeCompare(b.bedName),
     },
     {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        switch (status) {
-          case "confirmed":
-            return "Đã xác nhận";
-          case "implement":
-            return "Đang thực hiện";
-          case "finished":
-            return "Hoàn thành";
-          case "canceled":
-            return "Đã hủy";
-          default:
-            return status;
-        }
-      },
-      sorter: (a: Appointment, b: Appointment) =>
-        a.status.localeCompare(b.status),
-    },
-    {
       title: "Phân loại",
       dataIndex: "category",
       key: "category",
       render: (category: string) => {
-        return category === "services" ? "Dịch vụ" : "Sản phẩm";
+        let color;
+        let displayText;
+
+        switch (category) {
+          case 'services':
+            color = 'red';
+            displayText = 'Dịch vụ';
+            break;
+          case 'products':
+            color = 'blue';
+            displayText = 'Sản phẩm';
+            break;
+          default:
+            color = 'default';
+            displayText = category; // Hiển thị phân loại gốc nếu không khớp
+        }
+
+        return (
+          <Tag color={color}>
+            {displayText}
+          </Tag>
+        );
       },
-      sorter: (a: Appointment, b: Appointment) =>
-        a.category.localeCompare(b.category),
     },
     {
       title: "Hành động",
       key: "actions",
+      width: "150px",
+      align: "center" as "center",
       render: (text: string, record: Appointment) => (
         <div>
           <div>
@@ -384,9 +468,6 @@ const AppointmentPage: React.FC = () => {
               onClick={() => handleEditAppointmentDetail(record)}
             >
               <BiEdit />
-            </Button>
-            <Button type="link" danger>
-              <MdDeleteForever />
             </Button>
           </div>
         </div>
@@ -487,6 +568,7 @@ const AppointmentPage: React.FC = () => {
         setVisible={setVisibleModalDetail}
         mode={mode}
         appointmentData={dataEdit}
+        appointment={selectedAppointment}
         appointmentId={selectedAppointment?.id}
         onSuccess={handleRefreshDetail}
       />
