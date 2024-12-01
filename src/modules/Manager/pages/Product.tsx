@@ -228,6 +228,7 @@ const ProductPage: React.FC = () => {
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
           tableName="Product"
+          haveImport={false}
         />
       )}
     </div>

@@ -100,35 +100,7 @@ const CustomerPage: React.FC = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
-    confirm({
-      title: 'Xác nhận xóa',
-      icon: <ExclamationCircleFilled />,
-      content: 'Bạn có chắc chắn muốn xóa khách hàng này không?',
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      async onOk() {
-        try {
-          const response = await deleteCustomer(token, id);
-          console.log(response);
-          
-          if (response.data) {
-            message.success('Xóa khách hàng thành công');
-            fetchCustomers(); // Refresh lại danh sách
-          } else {
-            message.error('Xóa khách hàng thất bại');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          message.error('Đã có lỗi xảy ra khi xóa khách hàng');
-        }
-      },
-      onCancel() {
-        console.log('Cancel');
-      },
-    });
-  };
+  
 
   const columns = [
     {
@@ -200,9 +172,7 @@ const CustomerPage: React.FC = () => {
               <Button type="link" onClick={() => handleEditCustomer(record)}>
                 <BiEdit />
               </Button>
-              <Button type="link" danger onClick={() => handleDelete(record.id)}>
-                <MdDeleteForever />
-              </Button>
+              
             </div>
           )}
         </div>
