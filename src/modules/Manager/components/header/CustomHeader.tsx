@@ -42,7 +42,8 @@ const CustomHeader: React.FC = () => {
       setUserId(decodedPayload.id);
       if (
         decodedPayload.role === "admin" ||
-        decodedPayload.role === "manager"
+        decodedPayload.role === "manager" ||
+        decodedPayload.role === "employee"
       ) {
         const getEmployee = async () => {
           const response = await getInfoEmpByAccountId(

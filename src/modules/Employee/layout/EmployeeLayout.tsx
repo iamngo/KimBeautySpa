@@ -3,10 +3,11 @@ import { Layout, Menu } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import {
   FaCalendarAlt,
+  FaChartBar,
   FaMoneyBillWave,
 } from "react-icons/fa";
 import "../styles.scss";
-import { EMPLOYEE_PATH, EMPLOYEE_SALARY, EMPLOYEE_SCHEDULE } from "../../../routes";
+import { EMPLOYEE_PATH, EMPLOYEE_SALARY, EMPLOYEE_SCHEDULE, EMPLOYEE_STATISTICS } from "../../../routes";
 import CustomHeader from "../../Manager/components/header/CustomHeader";
 
 
@@ -40,13 +41,15 @@ const EmployeeLayout: React.FC = () => {
             <span>Lịch làm việc</span>
           </Menu.Item>
 
-          {/* Xem lương */}
+          
+
+          {/* Thống kê */}
           <Menu.Item
-            key="2"
-            onClick={() => handleMenuClick("2", EMPLOYEE_SALARY)}
+            key="3"
+            onClick={() => handleMenuClick("3", EMPLOYEE_STATISTICS)}
           >
-            <FaMoneyBillWave />
-            <span>Xem lương</span>
+            <FaChartBar />
+            <span>Thống kê</span>
           </Menu.Item>
         </Menu>
       </Sider>

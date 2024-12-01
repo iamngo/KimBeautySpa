@@ -1011,3 +1011,21 @@ export const getScheduleByDateAndEmployeeId = async (
     throw error;
   }
 };
+
+export const getEmployeeStatistics = async (
+  id: number,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  if (!id || !branchId || !month || !year) return;
+  try {
+    const response = await axios.get(`${API_URL}/${EMPLOYEE}/statistic/${id}`, {
+      params: { branchId: branchId, month: month, year: year },
+    });
+    return response?.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

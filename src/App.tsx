@@ -15,6 +15,7 @@ import {
   EMPLOYEE_SCHEDULE,
   EMPLOYEE_SALARY,
   PRODUCTS,
+  EMPLOYEE_STATISTICS,
 } from "./routes";
 import Authenticate from "./modules/Authenticate/pages/auth";
 import ManagerLayout from "./modules/Manager/pages/ManagerLayout";
@@ -59,6 +60,7 @@ import EmployeeLayout from "./modules/Employee/layout/EmployeeLayout";
 import SchedulePage from "./modules/Employee/pages/Schedule";
 import SalaryPage from "./modules/Employee/pages/Salary";
 import Products from "./modules/Customer/pages/Products";
+import EmployeeStatisticsPage from "./modules/Employee/pages/EmployeeStatisticsPage";
 
 const App: React.FC = () => {
   return (
@@ -95,6 +97,7 @@ const App: React.FC = () => {
       <Route path={EMPLOYEE_PATH} element={<EmployeeLayout />}>
         <Route path={EMPLOYEE_SCHEDULE} element={<SchedulePage />} />
         <Route path={EMPLOYEE_SALARY} element={<SalaryPage />} />
+        <Route path={EMPLOYEE_STATISTICS} element={<EmployeeStatisticsPage />} />
       </Route>
     </Routes>
   );
