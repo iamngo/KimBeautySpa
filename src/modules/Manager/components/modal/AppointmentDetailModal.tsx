@@ -10,16 +10,19 @@ import {
   getEmployeeByDateTime,
   getPricesByForeignKeyId,
   getServiceByCategory,
+  getWorkingTimeByServiceIdAndDate,
   updateStatusAppointmentDetail,
 } from "../../../../services/api";
 import { useBranch } from "../../../../hooks/branchContext";
 import { Appointment } from "../../types";
+import moment from "moment";
 
 interface UpdateAppointmentModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   mode: string;
   appointmentData?: Appointment | null;
+  appointment?: Appointment | null;
   appointmentId: number;
   onSuccess?: () => void;
 }
@@ -29,6 +32,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   setVisible,
   mode,
   appointmentData,
+  appointment,
   appointmentId,
   onSuccess,
 }) => {
@@ -56,6 +60,9 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
     .toString()
     .padStart(2, "0")}:00:00`;
   const token = localStorage.getItem("accessToken");
+  const [listTime, setListTime] = useState(null);
+  const [time, setTime] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<moment.Moment>(moment());
 
   useEffect(() => {
     getServiceCategory();
@@ -81,6 +88,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
       getBedByServiceAndDate();
     }
   }, [room, dateTimeString]);
+
   useEffect(() => {
     if (
       selectedCategory === "products" ||
@@ -91,18 +99,36 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   }, [selectedCategory, mode]);
 
   useEffect(() => {
-    getEmployees();
-  }, [visible, dateTimeString, selectedServiceId]);
+    if (room?.roomId) {
+      getEmployees();
+    getTimeByServiceIdAndDate();
+    }
+  }, [room, selectedServiceId]);
+
+  useEffect(() => {
+      getEmployees();
+    
+  }, [time, selectedServiceId]);
+
 
   const getEmployees = async () => {
     const response = await getEmployeeByDateTime(
       Number(branchId),
-      dateTimeString
+      `${appointment?.dateTime} ${time}:00`
     );
     const filteredEmployees = response?.data?.filter(
       (emp) => emp.role === "employee"
     );
     setEmployees(filteredEmployees);
+  };
+
+  const getTimeByServiceIdAndDate = async () => {
+    const response = await getWorkingTimeByServiceIdAndDate(
+      room?.roomId,
+      appointment?.dateTime,
+      branchId
+    );
+    setListTime(response?.data);    
   };
 
   const fetchProduct = async () => {
@@ -143,6 +169,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
         category: values.category,
         status: values.status,
         foreignKeyId: foreignKeyId,
+        time: values.time ? `${values.time}:00`: moment().format('HH:mm:ss'),
         expense: expense,
         ...(values.category === "services" && {
           bedId: values.bedId,
@@ -152,6 +179,8 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
 
       if (mode === MODE.ADD) {
         const response = await createAppointmentDetail(token, appointmentData);
+        console.log(response);
+
         if (response.data) {
           message.success("Thêm chi tiết thành công!");
           onSuccess?.();
@@ -347,6 +376,8 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
                       </Select>
                     </Form.Item>
                   </Col>
+
+                 
                 </Row>
 
                 {/* Dòng 4: Giường và Nhân viên */}
@@ -354,7 +385,37 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
                   (mode === MODE.EDIT &&
                     appointmentData?.category === "services")) && (
                   <Row gutter={16}>
-                    <Col span={12}>
+                     <Col span={6}>
+                    <Form.Item
+                      label="Chọn giờ:"
+                      name="time"
+                      rules={[
+                        { required: true, message: "Vui lòng chọn thời gian" },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Chọn thời gian"
+                        onChange={(value) => setTime(value)}
+                      >
+                        {listTime &&
+                          listTime?.map(
+                            (timeSlot: {
+                              id: number;
+                              time: string;
+                              status: string;
+                            }) => (
+                              <Select.Option
+                                key={timeSlot.id}
+                                value={timeSlot.time}
+                              >
+                                {timeSlot.time}
+                              </Select.Option>
+                            )
+                          )}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                    <Col span={6}>
                       <Form.Item
                         name="bedId"
                         label="Giường"
@@ -414,6 +475,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
                     Đang thực hiện
                   </Select.Option>
                   <Select.Option value="finished">Hoàn thành</Select.Option>
+                  <Select.Option value="paid">Đã thanh toán</Select.Option>
                   <Select.Option value="canceled">Đã hủy</Select.Option>
                 </Select>
               </Form.Item>

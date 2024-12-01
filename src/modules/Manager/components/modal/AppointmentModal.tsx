@@ -28,8 +28,8 @@ import {
   getServiceByCategory,
   getWorkingTimeByServiceIdAndDate,
   registerAppointment,
+  updateStatusAppointment,
 } from "../../../../services/api";
-import { useBranch } from "../../../../hooks/branchContext";
 
 interface AppointmentModalProps {
   visible: boolean;
@@ -70,8 +70,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     null
   );
   const [serviceCategory, setServiceCategory] = useState<any[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
-  const [branch, setBranch] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [listTime, setListTime] = useState(null);
   const [time, setTime] = useState(null);
@@ -116,15 +114,15 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   useEffect(() => {
     getTimeByServiceIdAndDate();
     getEmployees();
-  }, [selectedBranch, selectedDate, selectedServiceId]);
+  }, [selectedDate, selectedServiceId]);
 
   useEffect(() => {
     getBedByServiceAndDate();
-  }, [selectedBranch, selectedDate, selectedServiceId, time, listTime]);
+  }, [selectedDate, selectedServiceId, time, listTime]);
 
   useEffect(() => {
     getEmployees();
-  }, [selectedBranch, selectedDate, selectedServiceId, time]);
+  }, [selectedDate, selectedServiceId, time]);
 
   useEffect(() => {
     fetchCategoryById();
@@ -141,6 +139,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     );
 
     setEmployees(response?.data);
+    console.log(`${selectedDate} ${time}:00`);
+    
   };
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
@@ -240,7 +240,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     if (mode === MODE.ADD) {
       try {
         const appointment = {
-          dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
+          dateTime: `${values.date.format("YYYY-MM-DD")}`,
+          time: `${values.time}:00`,
           status: "confirmed",
           category: "services",
           foreignKeyId: selectedServiceId,
@@ -254,8 +255,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           expense: expense,
         };
         const response = await registerAppointment(appointment);
-        console.log(response);
-
         if (response?.data !== null) {
           message.success("Đăng ký thành công!");
           setVisible(!visible);
@@ -267,7 +266,18 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       }
     }
     if (mode === MODE.EDIT) {
-      console.log(values);
+      const response = await updateStatusAppointment(token, appointment?.id, {
+        status: values.status,
+      });
+      console.log(response);
+      
+      if(response.data){
+        message.success('Cập nhật trạng thái thành công!');
+        setVisible(!visible);
+
+      } else {
+        message.error('Cập nhật trạng thái thất bại');
+      }
     }
   };
 
@@ -279,6 +289,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       title={mode === MODE.ADD ? "Thêm lịch hẹn" : "Cập nhật lịch hẹn"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
+      {mode === MODE.ADD ? 
+      <>
         <Row gutter={16}>
           <Col span={4}>
             <Form.Item label="ID" name="id">
@@ -287,23 +299,17 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
           </Col>
           <Col span={10}>
             <Form.Item label="Trạng thái" name="status">
-              <Select
+            <Select
                 placeholder="Chọn trạng thái"
                 disabled={mode === MODE.ADD ? true : false}
               >
-                <Select.Option key={1} value={"confirmed"}>
-                  Đã xác nhận
+                <Select.Option key={1} value={"unpaid"}>
+                  Chưa thanh toán
                 </Select.Option>
-                <Select.Option key={2} value={"implement"}>
-                  Đang thực hiện
-                </Select.Option>
-                <Select.Option key={3} value={"finished"}>
-                  Hoàn thành
-                </Select.Option>
-                <Select.Option key={4} value={"paid"}>
+                <Select.Option key={2} value={"paid"}>
                   Đã thanh toán
                 </Select.Option>
-                <Select.Option key={5} value={"cancelled"}>
+                <Select.Option key={3} value={"canceled"}>
                   Đã hủy
                 </Select.Option>
               </Select>
@@ -479,7 +485,22 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
               </Select>
             </Form.Item>
           </Col>
-        </Row>
+        </Row></>: <Form.Item label="Trạng thái" name="status">
+              <Select
+                placeholder="Chọn trạng thái"
+                disabled={mode === MODE.ADD ? true : false}
+              >
+                <Select.Option key={1} value={"unpaid"}>
+                  Chưa thanh toán
+                </Select.Option>
+                <Select.Option key={2} value={"paid"}>
+                  Đã thanh toán
+                </Select.Option>
+                <Select.Option key={3} value={"canceled"}>
+                  Đã hủy
+                </Select.Option>
+              </Select>
+            </Form.Item>}
 
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">

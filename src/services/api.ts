@@ -139,6 +139,8 @@ export const getEmployeeByDateTime = async (
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
     params: { branchId, dateTime },
   });
+  console.log(response.data);
+
   return response?.data;
 };
 
@@ -720,15 +722,6 @@ export const deleteSchedule = async (token: string | null, id: number) => {
   return response?.data;
 };
 
-export const updateStatusAppointment = async (id: number) => {
-  const response = await axios.put(`${API_URL}/${APPOINTMENT}/status/${id}`, {
-    params: {
-      status: "performing",
-    },
-  });
-  return response?.data;
-};
-
 export const updateStatusAppointmentDetail = async (
   token: string | null,
   id: number,
@@ -1030,18 +1023,23 @@ export const getEmployeeStatistics = async (
   }
 };
 
-export const updateStatusEmployee = async (token: string | null, id: number, status: string) => {
+export const updateStatusEmployee = async (
+  token: string | null,
+  id: number,
+  status: string
+) => {
   if (!token || !id || !status) return;
   const response = await axios.post(
-    `${API_URL}/${EMPLOYEE}/update-status`, null,
+    `${API_URL}/${EMPLOYEE}/update-status`,
+    null,
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: {
         id: id,
-        status: status
-      }
+        status: status,
+      },
     }
   );
   return response?.data;
@@ -1057,39 +1055,64 @@ export const deleteCustomer = async (token: string | null, id: number) => {
   return response?.data;
 };
 
-
-export const updateStatusService = async (token: string | null, id: number, status: string) => {
+export const updateStatusService = async (
+  token: string | null,
+  id: number,
+  status: string
+) => {
   if (!token || !id || !status) return;
   const response = await axios.post(
-    `${API_URL}/${SERVICE}/update-status`, null,
+    `${API_URL}/${SERVICE}/update-status`,
+    null,
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: {
         id: id,
-        status: status
-      }
+        status: status,
+      },
     }
   );
   return response?.data;
 };
 
-
-export const updateStatusProduct = async (token: string | null, id: number, status: string) => {
+export const updateStatusProduct = async (
+  token: string | null,
+  id: number,
+  status: string
+) => {
   if (!token || !id || !status) return;
   const response = await axios.post(
-    `${API_URL}/${PRODUCT}/update-status`, null,
+    `${API_URL}/${PRODUCT}/update-status`,
+    null,
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: {
         id: id,
-        status: status
-      }
+        status: status,
+      },
     }
   );
   return response?.data;
 };
 
+export const updateStatusAppointment = async (
+  token: string | null,
+  id: number,
+  status: string
+) => {
+  if (!token || !id || !status) return;
+  const response = await axios.put(
+    `${API_URL}/${APPOINTMENT}/${id}/status`,
+    status,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
