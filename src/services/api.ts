@@ -781,12 +781,17 @@ export const paymentMomo = async (
 export const paymentCash = async (
   token: string | null,
   appointmentId: number,
-  data
+  voucherId: Array<number> = [],
+  appointmentDetails: Array<number> = []
 ) => {
-  if (!token || !appointmentId || !data) return;
-  const response = await axios.put(
-    `${API_URL}/${APPOINTMENT}/${appointmentId}`,
-    data,
+  if (!token || !appointmentId || !appointmentDetails) return;
+  const response = await axios.post(
+    `${API_URL}/${APPOINTMENT}/receive-notify/momo`,
+    {
+      orderId: `${appointmentId}_:_${appointmentDetails.join(
+        "_"
+      )}_:_${voucherId.join("_")}`,
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`,

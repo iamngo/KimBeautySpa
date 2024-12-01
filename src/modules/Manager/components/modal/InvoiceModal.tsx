@@ -204,9 +204,14 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         customerId: appointmentData?.customerId,
         dateTime: moment(appointmentData?.dateTime).format("YYYY-MM-DD"),
       };
-      const response = await paymentCash(token, appointmentData?.id, data);
+      const response = await paymentCash(
+        token,
+        appointmentData?.id,
+        selectedRewards,
+        appointmentDetails?.map((ad: { id: number }) => ad.id)
+      );
       if (response.data) {
-        message.success("Thanh toán thành công!");
+        // message.success("Thanh toán thành công!");
         onPaymentSuccess();
         onClose();
       } else {
