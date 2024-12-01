@@ -100,6 +100,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
 
   return (
     <Modal
+    centered
       open={visible}
       onCancel={handleCancel}
       footer={null}

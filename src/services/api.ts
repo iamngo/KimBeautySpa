@@ -1030,9 +1030,26 @@ export const getEmployeeStatistics = async (
   }
 };
 
-export const updateStatusEmployee = async (token: string | null, employee) => {
-  if (!token || !employee) return;
-  const response = await axios.post(`${API_URL}/${EMPLOYEE}/update-status`, employee, {
+export const updateStatusEmployee = async (token: string | null, id: number, status: string) => {
+  if (!token || !id || !status) return;
+  const response = await axios.post(
+    `${API_URL}/${EMPLOYEE}/update-status`, null,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        id: id,
+        status: status
+      }
+    }
+  );
+  return response?.data;
+};
+
+export const deleteCustomer = async (token: string | null, id: number) => {
+  if (!token || !id) return;
+  const response = await axios.delete(`${API_URL}/${CUSTOMER}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

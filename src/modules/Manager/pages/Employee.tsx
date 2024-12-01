@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, message, Skeleton, Modal } from "antd";
+import { Button, message, Skeleton, Modal, Tag } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
@@ -23,7 +23,7 @@ const EmployeePage: React.FC = () => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
   const [selectedColumns, setSelectedColumns] = useState([
     "fullName",
     "dob",
@@ -44,11 +44,18 @@ const EmployeePage: React.FC = () => {
   }, [storedEmployees, visibleModal]);
 
   const fetchEmployees = async () => {
-    setLoading(true);
-    const response = await getAllEmployee(token, branchId, 1, 100);
-    setEmployees(response?.data);
-    console.log(response?.data);
-    setLoading(false);
+    try {
+      const response = await getAllEmployee(token, branchId, 1, 100);
+      if (response.data) {
+        const activeEmployees = response.data.filter((emp: any) => emp.status === 'active');
+        setEmployees(activeEmployees);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      message.error('Đã có lỗi xảy ra khi tải danh sách nhân viên');
+      setLoading(false);
+    }
   };
 
   const handleSearchChange = (value: string) => {
@@ -118,13 +125,8 @@ const EmployeePage: React.FC = () => {
       cancelText: 'Hủy',
       async onOk() {
         try {
-          const data = {
-            id: employee.id,
-            status: 'inactive'
-          }
-          const response = await updateStatusEmployee(token, data);
-          console.log(response);
-          if (response.status === true) {
+          const response = await updateStatusEmployee(token, employee.id, 'inactive');
+          if (response.data) {
             message.success('Xóa nhân viên thành công');
             fetchEmployees(); 
           } else {
@@ -139,6 +141,19 @@ const EmployeePage: React.FC = () => {
         console.log('Cancel');
       },
     });
+  };
+
+  const getRoleName = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case 'employee':
+        return <Tag color="blue">Nhân viên</Tag>;
+      case 'manager':
+        return <Tag color="green">Quản lý</Tag>;
+      case 'admin':
+        return <Tag color="red">Quản trị viên</Tag>;
+      default:
+        return <Tag color="default">{role}</Tag>;
+    }
   };
 
   const columns = [
@@ -188,7 +203,12 @@ const EmployeePage: React.FC = () => {
       ),
     },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Vai trò", dataIndex: "role", key: "role" },
+    {
+      title: 'Vai trò',
+      dataIndex: 'role',
+      key: 'role',
+      render: (role: string) => getRoleName(role),
+    },
     { title: "Trạng thái", dataIndex: "status", key: "status" },
     { title: "WageID", dataIndex: "wageId", key: "wageId" },
     {
