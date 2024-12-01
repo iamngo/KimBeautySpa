@@ -1029,3 +1029,13 @@ export const getEmployeeStatistics = async (
     throw error;
   }
 };
+
+export const updateStatusEmployee = async (token: string | null, employee) => {
+  if (!token || !employee) return;
+  const response = await axios.post(`${API_URL}/${EMPLOYEE}/update-status`, employee, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};

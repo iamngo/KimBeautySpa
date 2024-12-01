@@ -35,7 +35,7 @@ const EmployeeStatisticsPage: React.FC = () => {
 
   const fetchStatistics = async (date: moment.Moment) => {
     try {
-      const month = date.month() + 1; // moment months are 0-11
+      const month = date.month() + 1; 
       const year = date.year();
 
       const response = await getEmployeeStatistics(

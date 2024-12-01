@@ -147,6 +147,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
 
   return (
     <Modal
+    centered
       open={visible}
       onCancel={handleCancel}
       footer={null}
