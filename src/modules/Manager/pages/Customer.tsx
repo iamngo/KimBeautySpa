@@ -1,15 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, Skeleton, Modal, message } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllCustomer } from "../../../services/api";
+import { deleteCustomer, getAllCustomer } from "../../../services/api";
 import { Customer } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import CustomerModal from "../components/modal/CustomerModal";
 import { MODE } from "../../../utils/constants";
+import { ExclamationCircleFilled } from '@ant-design/icons';
+
+const { confirm } = Modal;
 
 const CustomerPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -97,6 +100,8 @@ const CustomerPage: React.FC = () => {
     }
   };
 
+  
+
   const columns = [
     {
       title: "ID",
@@ -167,9 +172,7 @@ const CustomerPage: React.FC = () => {
               <Button type="link" onClick={() => handleEditCustomer(record)}>
                 <BiEdit />
               </Button>
-              <Button type="link" danger>
-                <MdDeleteForever />
-              </Button>
+              
             </div>
           )}
         </div>
@@ -224,6 +227,7 @@ const CustomerPage: React.FC = () => {
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
           tableName="Customer"
+          haveImport={false}
         />
       )}
     </div>

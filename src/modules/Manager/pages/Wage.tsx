@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton, message } from "antd";
+import { Button, Skeleton, message, Tag } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
@@ -111,6 +111,19 @@ const WagePage: React.FC<IProps> = () => {
     }
   };
 
+  const getRoleTag = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case 'employee':
+        return <Tag color="blue">Nhân viên</Tag>;
+      case 'manager':
+        return <Tag color="green">Quản lý</Tag>;
+      case 'admin':
+        return <Tag color="red">Quản trị viên </Tag>;
+      default:
+        return <Tag color="default">{role}</Tag>;
+    }
+  };
+
   const columns = [
     {
       title: "ID",
@@ -141,7 +154,7 @@ const WagePage: React.FC<IProps> = () => {
       title: "Vai trò",
       dataIndex: "role",
       key: "role",
-      render: (role: string) => getRoleName(role),
+      render: (role: string) => getRoleTag(role),
       sorter: (a: IWage, b: IWage) => a.role.localeCompare(b.role),
     },
     {

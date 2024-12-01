@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, Skeleton, Tag, Switch, message } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllService, getAllServiceCategory } from "../../../services/api";
+import { getAllService, getAllServiceCategory, updateStatusService } from "../../../services/api";
 import { Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
@@ -100,11 +100,31 @@ const ServicePage: React.FC = () => {
     }
   };
 
+
+  const handleStatusChange = async (checked: boolean, record: any) => {
+    try {
+      const newStatus = checked ? 'active' : 'inactive';
+      const response = await updateStatusService(token, record.id, newStatus);
+      if (response.data) {
+        message.success(`${checked ? 'Kích hoạt' : 'Vô hiệu hóa'} dịch vụ thành công`);
+        fetchServices(); // Refresh lại danh sách
+      } else {
+        message.error('Cập nhật trạng thái thất bại');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      message.error('Đã có lỗi xảy ra khi cập nhật trạng thái');
+    }
+  };
+
+
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      width: "100px",
+      align: "center" as "center",
       sorter: (a: Service, b: Service) => a.id - b.id,
     },
     {
@@ -117,6 +137,8 @@ const ServicePage: React.FC = () => {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
+      width: "100px",
+      align: "center" as "center",
       render: (image: string) => (
         <img
           src={image}
@@ -140,17 +162,31 @@ const ServicePage: React.FC = () => {
       title: "Thời gian",
       dataIndex: "duration",
       key: "duration",
+      width: "150px",
+      align: "center" as "center",
       sorter: (a: Service, b: Service) => a.duration - b.duration,
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      sorter: (a: Service, b: Service) => a.status.localeCompare(b.status),
+      width: "150px",
+      align: "center" as "center",
+      render: (status: string, record: any) => (
+        <Switch
+          checked={status === 'active'}
+          onChange={(checked) => handleStatusChange(checked, record)}
+          checkedChildren="Hoạt động"
+          unCheckedChildren="Ngừng"
+          loading={loading}
+        />
+      ),
     },
     {
       title: "Hành động",
       key: "actions",
+      width: "200px",
+      align: "center" as "center",
       render: (text: string, record: Service) => (
         <div>
           {record.isNew ? (
@@ -170,9 +206,6 @@ const ServicePage: React.FC = () => {
             <div>
               <Button type="link" onClick={() => handleEditService(record)}>
                 <BiEdit />
-              </Button>
-              <Button type="link" danger>
-                <MdDeleteForever />
               </Button>
             </div>
           )}
@@ -228,6 +261,7 @@ const ServicePage: React.FC = () => {
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
           tableName="Service"
+          haveImport={false}
         />
       )}
     </div>

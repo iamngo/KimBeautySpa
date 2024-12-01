@@ -1,17 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, Skeleton, Switch, message } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllProduct, getAllServiceCategory } from "../../../services/api";
+import { getAllProduct, getAllServiceCategory, updateStatusProduct } from "../../../services/api";
 import { Event, Product } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
-import EventModal from "../components/modal/EventModal";
 import { MODE } from "../../../utils/constants";
 import { useBranch } from "../../../hooks/branchContext";
-import moment from "moment";
 import ProductModal from "../components/modal/ProductModal";
 
 const ProductPage: React.FC = () => {
@@ -35,6 +33,7 @@ const ProductPage: React.FC = () => {
   const { branchId, setBranchId } = useBranch();
   const [serviceCategories, setServiceCategories] = useState<any[]>([]);
   const [refreshPage, setRefreshPage] = useState<boolean>(false);
+  const [categories, setCategories] = useState<[]>([]);
 
   useEffect(() => {
     fetchObjects();
@@ -44,10 +43,16 @@ const ProductPage: React.FC = () => {
       setServiceCategories([...response.data]);
     };
     getApiAllServiceCategory();
+    fetchCategory();
   }, [refreshPage]);
 
   const toggleRefresh = () => {
     setRefreshPage((prev) => !prev); // Correct usage
+  };
+
+  const fetchCategory = async () => {
+    const response = await getAllServiceCategory(1,200);
+    setCategories(response?.data);
   };
 
   const fetchObjects = async () => {
@@ -101,11 +106,29 @@ const ProductPage: React.FC = () => {
     }
   };
 
+  const handleStatusChange = async (checked: boolean, record: any) => {
+    try {
+      const newStatus = checked ? 'active' : 'inactive';
+      const response = await updateStatusProduct(token, record.id, newStatus);
+      if (response.data) {
+        message.success(`${checked ? 'Kích hoạt' : 'Vô hiệu hóa'} sản phẩm thành công`);
+        fetchObjects(); // Refresh lại danh sách
+      } else {
+        message.error('Cập nhật trạng thái thất bại');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      message.error('Đã có lỗi xảy ra khi cập nhật trạng thái');
+    }
+  };
+
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      width: "100px",
+      align: "center" as "center",
       sorter: (a: Product, b: Product) => a.id - b.id,
     },
     {
@@ -118,11 +141,24 @@ const ProductPage: React.FC = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: "150px",
+      align: "center" as "center",
+      render: (status: string, record: any) => (
+        <Switch
+          checked={status === 'active'}
+          onChange={(checked) => handleStatusChange(checked, record)}
+          checkedChildren="Hoạt động"
+          unCheckedChildren="Ngừng"
+          loading={loading}
+        />
+      ),
     },
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
+      width: "150px",
+      align: "center" as "center",
       render: (image: string) => (
         <img
           src={image}
@@ -132,15 +168,21 @@ const ProductPage: React.FC = () => {
       ),
     },
     {
-      title: "Loại",
+      title: "Phân loại",
       dataIndex: "serviceCategoryId",
       key: "serviceCategoryId",
+      render: (serviceCategoryId: number) => {
+        const category = categories.find((cat) => cat.id === serviceCategoryId);
+        return category ? category.name : "Không xác định";
+      },
       sorter: (a: Product, b: Product) =>
         a.serviceCategoryId - b.serviceCategoryId,
     },
     {
       title: "Hành động",
       key: "actions",
+      width: "200px",
+      align: "center" as "center",
       render: (text: string, record: Event) => (
         <div>
           {record.isNew ? (
@@ -160,9 +202,6 @@ const ProductPage: React.FC = () => {
             <div>
               <Button type="link" onClick={() => handleEditObject(record)}>
                 <BiEdit />
-              </Button>
-              <Button type="link" danger>
-                <MdDeleteForever />
               </Button>
             </div>
           )}
@@ -228,6 +267,7 @@ const ProductPage: React.FC = () => {
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
           tableName="Product"
+          haveImport={false}
         />
       )}
     </div>

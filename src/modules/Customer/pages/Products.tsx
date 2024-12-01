@@ -2,10 +2,9 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Input, Pagination } from "antd";
 import "../styles.scss";
 import CustomCard from "../components/card/Card";
-import { getAllProductWithPrice, getInfoByAccountId, getInfoEmpByAccountId } from "../../../services/api";
+import { getAllProductWithPrice, getInfoByAccountId } from "../../../services/api";
 import ChatboxAI from "../components/chatbox/ChatboxAI";
 import { ChatboxAIRef } from "../components/chatbox/ChatboxAI";
-import { useBranch } from "../../../hooks/branchContext";
 import OrderForm from "../components/modal/OrderForm";
 
 const { Search } = Input;

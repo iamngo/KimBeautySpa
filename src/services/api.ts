@@ -992,3 +992,104 @@ export const getProductById = async (id: number) => {
     throw error;
   }
 };
+
+export const getScheduleByDateAndEmployeeId = async (
+  id: number,
+  date: string
+) => {
+  if (!id || !date) return;
+  try {
+    const response = await axios.get(
+      `${API_URL}/${SCHEDULE}/date/week/employee/${id}`,
+      {
+        params: { date },
+      }
+    );
+    return response?.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const getEmployeeStatistics = async (
+  id: number,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  if (!id || !branchId || !month || !year) return;
+  try {
+    const response = await axios.get(`${API_URL}/${EMPLOYEE}/statistic/${id}`, {
+      params: { branchId: branchId, month: month, year: year },
+    });
+    return response?.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const updateStatusEmployee = async (token: string | null, id: number, status: string) => {
+  if (!token || !id || !status) return;
+  const response = await axios.post(
+    `${API_URL}/${EMPLOYEE}/update-status`, null,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        id: id,
+        status: status
+      }
+    }
+  );
+  return response?.data;
+};
+
+export const deleteCustomer = async (token: string | null, id: number) => {
+  if (!token || !id) return;
+  const response = await axios.delete(`${API_URL}/${CUSTOMER}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
+
+export const updateStatusService = async (token: string | null, id: number, status: string) => {
+  if (!token || !id || !status) return;
+  const response = await axios.post(
+    `${API_URL}/${SERVICE}/update-status`, null,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        id: id,
+        status: status
+      }
+    }
+  );
+  return response?.data;
+};
+
+
+export const updateStatusProduct = async (token: string | null, id: number, status: string) => {
+  if (!token || !id || !status) return;
+  const response = await axios.post(
+    `${API_URL}/${PRODUCT}/update-status`, null,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        id: id,
+        status: status
+      }
+    }
+  );
+  return response?.data;
+};
+

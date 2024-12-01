@@ -2,7 +2,11 @@ import React, { useEffect, useState, useMemo } from "react";
 import { DatePicker } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { getAllSchedule, getScheduleByDate } from "../../../services/api";
+import {
+  getAllSchedule,
+  getScheduleByDate,
+  getScheduleByDateAndEmployeeId,
+} from "../../../services/api";
 import "../styles.scss";
 
 interface ISchedule {
@@ -64,15 +68,17 @@ const Schedule: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if(selectedDate){
+    if (selectedDate) {
       fetchSchedules(selectedDate.format("YYYY-MM-DD"));
     }
   }, [selectedDate]);
 
   const fetchSchedules = async (date: string) => {
     try {
-      const response = await getScheduleByDate(date);
+      const response = await getScheduleByDateAndEmployeeId(employeeId, date);
       setSchedules(response.data);
+      console.log(date);
+      
     } catch (error) {
       console.error("Error fetching schedules:", error);
     }
@@ -91,8 +97,8 @@ const Schedule: React.FC = () => {
           />
         </div>
         <div className="current-time">
-          <div className="time">{currentTime.format('HH:mm:ss')}</div>
-          <div className="date">{currentTime.format('DD/MM/YYYY')}</div>
+          <div className="time">{currentTime.format("HH:mm:ss")}</div>
+          <div className="date">{currentTime.format("DD/MM/YYYY")}</div>
         </div>
       </div>
       <div className="schedule">
@@ -113,7 +119,9 @@ const Schedule: React.FC = () => {
                   return (
                     <div
                       key={shift.time}
-                      className={`shiftEmployee ${hasShift ? 'has-shift' : 'no-shift'}`}
+                      className={`shiftEmployee ${
+                        hasShift ? "has-shift" : "no-shift"
+                      }`}
                     >
                       <p>{shift.label}</p>
                       <p>{shift.time}</p>

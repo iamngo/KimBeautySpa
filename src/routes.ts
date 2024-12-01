@@ -14,7 +14,9 @@ export const MY_SERVICES = "my-services";
 export const EMPLOYEE_PATH = "/employee";
 export const EMPLOYEE_SCHEDULE = "schedule";
 export const EMPLOYEE_SALARY = "salary";
+export const EMPLOYEE_STATISTICS = "statistics";
 export const employeeRoutes = {
   schedule: EMPLOYEE_PATH + EMPLOYEE_SCHEDULE,
   salary: EMPLOYEE_PATH + EMPLOYEE_SALARY,
+  statistics: EMPLOYEE_PATH + EMPLOYEE_STATISTICS,
 };
