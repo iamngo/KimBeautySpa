@@ -62,6 +62,7 @@ export interface Service {
   serviceCategoryId: number;
   status: string;
   duration: number;
+  isNew: boolean;
 }
 
 export interface Appointment {
