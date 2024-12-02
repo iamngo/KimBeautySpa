@@ -106,6 +106,8 @@ Bạn có thể đặt lịch ngay hoặc tìm hiểu thêm thông tin chi tiế
                   })
                 }
                 onConsultClick={() => handleConsultClick(service)}
+                price={service?.price}
+                specialPrice={Number(service?.finalPrice)}
               />
             ))}
           </div>

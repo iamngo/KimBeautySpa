@@ -130,7 +130,7 @@ Bạn có thể đặt hàng ngay hoặc tìm hiểu thêm thông tin chi tiết
                 title={service?.name}
                 imageUrl={service?.image}
                 price={service?.price}
-                specialPrice={service?.specialPrice}
+                specialPrice={Number(service?.finalPrice)}
                 onOrderClick={() => handleOrderClick(service)}
                 onConsultClick={() => handleConsultClick(service)}
               />

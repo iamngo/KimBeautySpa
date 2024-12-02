@@ -203,7 +203,9 @@ const ManageSchedule: React.FC = () => {
           />
         </div>
         <div className="week-navigation">
-          <button onClick={() => setSelectedDate(selectedDate?.subtract(1, "week"))}>
+          <button
+            onClick={() => setSelectedDate(selectedDate?.subtract(1, "week"))}
+          >
             Tuần trước
           </button>
           <span>Tuần {selectedDate?.week()}</span>
@@ -242,7 +244,14 @@ const ManageSchedule: React.FC = () => {
                           {employees?.map((employee) => {
                             if (filteredSchedule.employeeId === employee.id) {
                               return (
-                                <div key={employee.id}>{employee.fullName}</div>
+                                <div key={employee.id}>
+                                  {employee.fullName}{" "}
+                                  {employee.role === "manager"
+                                    ? "(QL)"
+                                    : employee.role === "admin"
+                                    ? "(AD)"
+                                    : ""}
+                                </div>
                               );
                             }
                           })}
