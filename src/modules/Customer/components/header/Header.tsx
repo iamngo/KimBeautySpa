@@ -75,7 +75,6 @@ const HeaderHomepage: React.FC = () => {
           setEmployee(response?.data);
           setBranchId(response?.data?.branchId);
           console.log(response?.data);
-          
         };
         getEmployee();
       }
@@ -129,11 +128,15 @@ const HeaderHomepage: React.FC = () => {
       <Menu.Item key="gifts" icon={<FaGift />}>
         Tích điểm - Quà tặng
       </Menu.Item>
-      {employee?.role === "employee" ? (
+      {employee?.role === "employee" ||
+      employee?.role === "admin" ||
+      employee?.role === "manager" ? (
         <Menu.Item key="schedule" icon={<AiFillSchedule />}>
           Xem lịch làm
         </Menu.Item>
-      ):''}
+      ) : (
+        ""
+      )}
       {employee?.role === "admin" || employee?.role === "manager" ? (
         <Menu.Item key="manage" icon={<GrSystem />}>
           Quản lý hệ thống
