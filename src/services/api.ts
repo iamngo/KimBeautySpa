@@ -175,6 +175,22 @@ export const getAppointmentDetailById = async (
   return response?.data;
 };
 
+export const getApiAppointmentByAccountId = async (
+  token: string | null,
+  accountId: number
+) => {
+  if (!token || !accountId) return;
+  const response = await axios.get(
+    `${API_URL}/${APPOINTMENT}/details/account/${accountId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
 export const getRevenueOfServiceByDate = async (
   token: string | null,
   branchId: number,
@@ -289,6 +305,8 @@ export const getAppointmentByCustomerId = async (
       },
     }
   );
+  console.log(response?.data);
+
   return response?.data;
 };
 

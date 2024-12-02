@@ -4,6 +4,7 @@ import "../styles.scss";
 import TabPane from "antd/es/tabs/TabPane";
 import {
   cancelBookAppointment,
+  getApiAppointmentByAccountId,
   getAppointmentByCustomerId,
   getAppointmentDetailById,
   getBranchById,
@@ -28,85 +29,95 @@ const MyServicePlanPage: React.FC = () => {
   const location = useLocation();
   const token = localStorage.getItem("accessToken");
   const [appointment, setAppointment] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
 
   useEffect(() => {
     fetchAppointment();
   }, [location.state.userId]);
 
   const fetchAppointment = async () => {
-    try {
-      const customer = await getInfoByAccountId(token, location.state.userId);
-      if (!customer.data) {
-        setAppointment([]);
-        return;
-      }
-      const response = await getAppointmentByCustomerId(
-        token,
-        customer.data.id
-      );
-      if (!response.data || response.data.length === 0) {
-        setAppointment([]);
-        return;
-      }
-      const appointmentsWithDetails = await Promise.all(
-        response.data.map(async (appointment) => {
-          try {
-            const appointmentDetails = await getAppointmentDetailById(
-              token,
-              appointment.id
-            );
-            if (
-              !appointmentDetails.data ||
-              appointmentDetails.data.length === 0
-            )
-              return null;
-
-            const detailsWithInfo = await Promise.all(
-              appointmentDetails.data.map(async (detail) => {
-                const [branch, employee, prices, service, product] =
-                  await Promise.all([
-                    getBranchById(token, appointment.branchId),
-                    getEmployeeById(token, detail.employeeId),
-                    getPricesByForeignKeyId(detail.foreignKeyId),
-                    getServiceById(detail.foreignKeyId),
-                    getProductById(detail.foreignKeyId),
-                  ]);
-
-                return {
-                  ...detail,
-                  branch: branch.data,
-                  employee: employee?.data,
-                  prices: prices.data[0],
-                  service: service?.data,
-                  dateTime: appointment.dateTime,
-                  product: product?.data,
-                };
-              })
-            );
-
-            return detailsWithInfo;
-          } catch (error) {
-            console.error("Lỗi khi xử lý chi tiết lịch hẹn:", error);
-            return null;
-          }
-        })
-      );
-      const flattenedAppointments = appointmentsWithDetails
-        .flat()
-        .filter((item) => item !== null);
-      setAppointment(flattenedAppointments);
-      console.log(flattenedAppointments);
-    } catch (error) {
-      console.error("Lỗi khi lấy lịch hẹn:", error);
-      message.error("Không thể tải lịch hẹn, vui lòng thử lại sau!");
-    }
+    const response = await getApiAppointmentByAccountId(
+      token,
+      location.state.userId
+    );
+    setAppointments(response?.data);
+    console.log(response);
   };
+
+  // const fetchAppointment = async () => {
+  //   try {
+  //     const customer = await getInfoByAccountId(token, location.state.userId);
+  //     if (!customer.data) {
+  //       setAppointment([]);
+  //       return;
+  //     }
+  //     const response = await getAppointmentByCustomerId(
+  //       token,
+  //       customer.data.id
+  //     );
+  //     if (!response.data || response.data.length === 0) {
+  //       setAppointment([]);
+  //       return;
+  //     }
+  //     const appointmentsWithDetails = await Promise.all(
+  //       response.data.map(async (appointment) => {
+  //         try {
+  //           const appointmentDetails = await getAppointmentDetailById(
+  //             token,
+  //             appointment.id
+  //           );
+  //           if (
+  //             !appointmentDetails.data ||
+  //             appointmentDetails.data.length === 0
+  //           )
+  //             return null;
+
+  //           const detailsWithInfo = await Promise.all(
+  //             appointmentDetails.data.map(async (detail) => {
+  //               const [branch, employee, prices, service, product] =
+  //                 await Promise.all([
+  //                   getBranchById(token, appointment.branchId),
+  //                   getEmployeeById(token, detail.employeeId),
+  //                   getPricesByForeignKeyId(detail.foreignKeyId),
+  //                   getServiceById(detail.foreignKeyId),
+  //                   getProductById(detail.foreignKeyId),
+  //                 ]);
+
+  //               return {
+  //                 ...detail,
+  //                 branch: branch.data,
+  //                 employee: employee?.data,
+  //                 prices: prices.data[0],
+  //                 service: service?.data,
+  //                 dateTime: appointment.dateTime,
+  //                 product: product?.data,
+  //               };
+  //             })
+  //           );
+
+  //           return detailsWithInfo;
+  //         } catch (error) {
+  //           console.error("Lỗi khi xử lý chi tiết lịch hẹn:", error);
+  //           return null;
+  //         }
+  //       })
+  //     );
+  //     const flattenedAppointments = appointmentsWithDetails
+  //       .flat()
+  //       .filter((item) => item !== null);
+  //     setAppointment(flattenedAppointments);
+  //     console.log(flattenedAppointments);
+  //   } catch (error) {
+  //     console.error("Lỗi khi lấy lịch hẹn:", error);
+  //     message.error("Không thể tải lịch hẹn, vui lòng thử lại sau!");
+  //   }
+  // };
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
   };
 
-  const filteredAppointment = appointment?.filter(
+  const filteredAppointment = appointments?.filter(
     (service) => service.status === activeTab
   );
 
@@ -157,7 +168,7 @@ const MyServicePlanPage: React.FC = () => {
             placeholder="Tìm kiếm..."
             value={searchValue}
             onChange={handleSearchChange}
-            style={{opacity:0}}
+            style={{ opacity: 0 }}
           />
         </div>
       </div>
@@ -181,11 +192,7 @@ const MyServicePlanPage: React.FC = () => {
                       ) : (
                         <ShoppingOutlined className="type-icon product" />
                       )}
-                      <span className="item-name">
-                        {item.service?.name ||
-                          item.product?.name ||
-                          "Không xác định"}
-                      </span>
+                      <span className="item-name">{item?.name}</span>
                     </div>
                     <div className="actions">
                       {item.status === "confirmed" && (
@@ -209,49 +216,52 @@ const MyServicePlanPage: React.FC = () => {
               >
                 <div
                   className={`info-card ${
-                    item.service ? "service-card" : "product-card"
+                    item.category === "services"
+                      ? "service-card"
+                      : "product-card"
                   }`}
                 >
                   <img
-                    src={item.service?.image || item.product?.image}
-                    alt={item.service?.name || item.product?.name}
+                    src={item?.image}
+                    alt={item?.name}
                     className="item-image"
                   />
                   <div className="info-section">
                     <div className="type-badge">
-                      {item.service ? "Dịch vụ" : "Sản phẩm"}
+                      {item.category === "services" ? "Dịch vụ" : "Sản phẩm"}
                     </div>
                     <p>
                       <strong>
-                        {item.service ? "Tên dịch vụ:" : "Tên sản phẩm:"}
+                        {item.category === "services"
+                          ? "Tên dịch vụ:"
+                          : "Tên sản phẩm:"}
                       </strong>{" "}
-                      {item.service?.name || item.product?.name}
+                      {item?.name}
                     </p>
                     <p>
-                      <strong>Chi nhánh:</strong>{" "}
-                      {`${item.branch?.name} - ${item.branch?.address}`}
+                      <strong>Chi nhánh:</strong> {`${item?.branch}`}
                     </p>
                     <p>
                       <strong>Thời gian:</strong>{" "}
                       <span className="datetime">
-                        {formatDateTime(item.dateTime)}
+                        {`${item?.dateTime.slice(0, 10)} ${item?.time}`}
                       </span>
                     </p>
-                    {item.service && (
+                    {item?.category === "services" && (
                       <p>
-                        <strong>Nhân viên:</strong> {item.employee?.fullName}
+                        <strong>Nhân viên:</strong> {item?.employee}
                       </p>
                     )}
                     <p className="price-section">
                       <strong>Giá tiền:</strong>{" "}
-                      <s className="original-price">
-                        {item.prices?.price?.toLocaleString("vi-VN", {
+                      {/* <s className="original-price">
+                        {item?.expense.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
-                      </s>
+                      </s> */}
                       <span className="special-price">
-                        {item.prices?.specialPrice?.toLocaleString("vi-VN", {
+                        {item?.expense.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
