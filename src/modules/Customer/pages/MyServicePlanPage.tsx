@@ -142,7 +142,7 @@ const MyServicePlanPage: React.FC = () => {
       currentDate.setDate(currentDate.getDate() + 2)
     );
 
-    if (new Date(date) > twoDaysLater) {
+    if (new Date(date) <= currentDate) {
       const response = await updateStatusAppointmentDetail(
         token,
         id,

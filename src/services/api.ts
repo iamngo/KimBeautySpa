@@ -747,11 +747,13 @@ export const deleteSchedule = async (token: string | null, id: number) => {
 export const updateStatusAppointmentDetail = async (
   token: string | null,
   id: number,
-  status: object
+  status: string
 ) => {
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT_DETAIL}/${id}/status`,
-    status,
+    {
+      status,
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`,
