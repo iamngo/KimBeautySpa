@@ -1,4 +1,3 @@
-import { SCHEDULE } from "./../utils/constants";
 import axios from "axios";
 import {
   ACCOUNT,
@@ -46,7 +45,7 @@ export const checkAccountByPhone = async (phone: string) => {
   return response?.data;
 };
 
-export const register = async (data: { account: any; customer: any }) => {
+export const register = async (data: { account: object; customer: object }) => {
   if (!data) return;
   const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data);
   return response?.data;
@@ -96,6 +95,8 @@ export const getBranchById = async (token: string | null, id: number) => {
 };
 
 export const getAllServiceCategory = async (page: number, limit: number) => {
+  console.log(`${API_URL}/${SERVICE_CATEGORY}?page=${page}&limit=${limit}`);
+
   if (!page || !limit) return;
   const response = await axios.get(`${API_URL}/${SERVICE_CATEGORY}`, {
     params: { page, limit },
@@ -269,7 +270,7 @@ export const getCategoryServiceById = async (
   return response?.data;
 };
 
-export const registerAppointment = async (data: any) => {
+export const registerAppointment = async (data: object) => {
   if (!data) return;
   const response = await axios.post(`${API_URL}/${APPOINTMENT}`, data);
   return response?.data;
@@ -366,7 +367,7 @@ export const getAllVoucher = async (page: number, limit: number) => {
   return response?.data;
 };
 
-export const giftExchange = async (token: string | null, data: any) => {
+export const giftExchange = async (token: string | null, data: object) => {
   if (!token || !data) return;
   const response = await axios.post(`${API_URL}/${CUSTOMER_GIFT}`, data, {
     headers: {
@@ -395,7 +396,7 @@ export const getPointByCustomerId = async (
 export const updatePointOfCustomer = async (
   token: string | null,
   id: number,
-  data: any
+  data: object
 ) => {
   if (!token || !id || !data) return;
   const response = await axios.put(`${API_URL}/${CUSTOMER_POINT}/${id}`, data, {
@@ -645,7 +646,7 @@ export const getAllRoom = async (page: number, limit: number) => {
 
 export const createServiceCategory = async (
   token: string | null,
-  serviceCategory: any
+  serviceCategory: object
 ) => {
   const response = await axios.post(
     `${API_URL}/${SERVICE_CATEGORY}`,
@@ -661,7 +662,7 @@ export const createServiceCategory = async (
 
 export const updateServiceCategory = async (
   token: string | null,
-  serviceCategory: any,
+  serviceCategory: object,
   id: number
 ) => {
   const response = await axios.put(
@@ -703,7 +704,10 @@ export const getAllSchedule = async (
   return response?.data;
 };
 
-export const createSchedule = async (token: string | null, schedule) => {
+export const createSchedule = async (
+  token: string | null,
+  schedule: object
+) => {
   if (!token) return;
   const response = await axios.post(`${API_URL}/${SCHEDULE}`, schedule, {
     headers: {
@@ -725,7 +729,7 @@ export const deleteSchedule = async (token: string | null, id: number) => {
 export const updateStatusAppointmentDetail = async (
   token: string | null,
   id: number,
-  status
+  status: object
 ) => {
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT_DETAIL}/${id}/status`,
@@ -796,7 +800,7 @@ export const paymentCash = async (
 
 export const createAppointmentDetail = async (
   token: string | null,
-  appointmentDetail
+  appointmentDetail: object
 ) => {
   if (!token) return;
   const response = await axios.post(
@@ -814,7 +818,7 @@ export const createAppointmentDetail = async (
 export const updateAppointmentDetail = async (
   token: string | null,
   id: number,
-  data
+  data: object
 ) => {
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT_DETAIL}/${id}`,
@@ -831,7 +835,7 @@ export const updateAppointmentDetail = async (
 export const updateSchedule = async (
   token: string | null,
   id: number,
-  data
+  data: object
 ) => {
   const response = await axios.put(`${API_URL}/${SCHEDULE}/${id}`, data, {
     headers: {
@@ -859,7 +863,7 @@ export const getAllWage = async (
   return response?.data;
 };
 
-export const createWage = async (token: string | null, wage) => {
+export const createWage = async (token: string | null, wage: object) => {
   if (!token) return;
   const response = await axios.post(`${API_URL}/${WAGE}`, wage, {
     headers: {
@@ -871,7 +875,7 @@ export const createWage = async (token: string | null, wage) => {
 
 export const updateWage = async (
   token: string | null,
-  wage,
+  wage: object,
   wageId: number
 ) => {
   if (!token) return;
@@ -893,7 +897,7 @@ export const deleteWage = async (token: string | null, wageId: number) => {
   return response?.data;
 };
 
-export const createVoucher = async (token: string | null, voucher) => {
+export const createVoucher = async (token: string | null, voucher: object) => {
   if (!token) return;
   const response = await axios.post(`${API_URL}/${VOUCHER}`, voucher, {
     headers: {
@@ -905,7 +909,7 @@ export const createVoucher = async (token: string | null, voucher) => {
 
 export const updateVoucher = async (
   token: string | null,
-  voucher,
+  voucher: object,
   voucherId: number
 ) => {
   if (!token) return;
@@ -934,7 +938,7 @@ export const deleteVoucher = async (
   return response?.data;
 };
 
-export const createGift = async (token: string | null, gift) => {
+export const createGift = async (token: string | null, gift: object) => {
   if (!token) return;
   const response = await axios.post(`${API_URL}/${GIFT}`, gift, {
     headers: {
@@ -946,7 +950,7 @@ export const createGift = async (token: string | null, gift) => {
 
 export const updateGift = async (
   token: string | null,
-  gift,
+  gift: object,
   giftId: number
 ) => {
   if (!token) return;

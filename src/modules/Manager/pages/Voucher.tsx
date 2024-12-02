@@ -26,7 +26,7 @@ const VoucherPage: React.FC<IProps> = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    'id',
+    "id",
     "discount",
     "minimumOrder",
     "maximumDiscount",
@@ -38,6 +38,10 @@ const VoucherPage: React.FC<IProps> = () => {
 
   const token = localStorage.getItem("accessToken") || "";
   const { branchId } = useBranch();
+
+  //LOG
+  console.log(branchId, searchText);
+  //LOG
 
   useEffect(() => {
     fetchVouchers();
@@ -76,7 +80,16 @@ const VoucherPage: React.FC<IProps> = () => {
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
-        ? ["id", "discount", "minimumOrder", "maximumDiscount", "expiryDate", "point", "image", "actions"]
+        ? [
+            "id",
+            "discount",
+            "minimumOrder",
+            "maximumDiscount",
+            "expiryDate",
+            "point",
+            "image",
+            "actions",
+          ]
         : value
     );
   };
@@ -84,20 +97,20 @@ const VoucherPage: React.FC<IProps> = () => {
   const handleDeleteVoucher = async (voucher: IVoucher) => {
     try {
       AntModal.confirm({
-        title: 'Xác nhận xóa',
+        title: "Xác nhận xóa",
         content: `Bạn có chắc chắn muốn xóa voucher này?`,
-        okText: 'Xóa',
-        okType: 'danger',
-        cancelText: 'Hủy',
+        okText: "Xóa",
+        okType: "danger",
+        cancelText: "Hủy",
         async onOk() {
           setLoading(true);
           await deleteVoucher(token, voucher.id);
-          message.success('Xóa voucher thành công');
+          message.success("Xóa voucher thành công");
           fetchVouchers();
         },
       });
     } catch (error) {
-      message.error('Có lỗi xảy ra khi xóa voucher');
+      message.error("Có lỗi xảy ra khi xóa voucher");
     }
   };
 
@@ -119,10 +132,10 @@ const VoucherPage: React.FC<IProps> = () => {
       title: "Đơn tối thiểu",
       dataIndex: "minimumOrder",
       key: "minimumOrder",
-      render: (minimumOrder: number) => 
-        new Intl.NumberFormat('vi-VN', { 
-          style: 'currency', 
-          currency: 'VND' 
+      render: (minimumOrder: number) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
         }).format(minimumOrder),
       sorter: (a: IVoucher, b: IVoucher) => a.minimumOrder - b.minimumOrder,
     },
@@ -130,19 +143,20 @@ const VoucherPage: React.FC<IProps> = () => {
       title: "Giảm tối đa",
       dataIndex: "maximumDiscount",
       key: "maximumDiscount",
-      render: (maximumDiscount: number) => 
-        new Intl.NumberFormat('vi-VN', { 
-          style: 'currency', 
-          currency: 'VND' 
+      render: (maximumDiscount: number) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
         }).format(maximumDiscount),
-      sorter: (a: IVoucher, b: IVoucher) => a.maximumDiscount - b.maximumDiscount,
+      sorter: (a: IVoucher, b: IVoucher) =>
+        a.maximumDiscount - b.maximumDiscount,
     },
     {
       title: "Ngày hết hạn",
       dataIndex: "expiryDate",
       key: "expiryDate",
-      render: (date: string) => dayjs(date).format('DD/MM/YYYY'),
-      sorter: (a: IVoucher, b: IVoucher) => 
+      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
+      sorter: (a: IVoucher, b: IVoucher) =>
         dayjs(a.expiryDate).unix() - dayjs(b.expiryDate).unix(),
     },
     {
@@ -159,7 +173,12 @@ const VoucherPage: React.FC<IProps> = () => {
         <img
           src={image}
           alt="Voucher"
-          style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "8px" }}
+          style={{
+            width: "50px",
+            height: "50px",
+            objectFit: "cover",
+            borderRadius: "8px",
+          }}
         />
       ),
     },
@@ -171,9 +190,9 @@ const VoucherPage: React.FC<IProps> = () => {
           <Button type="link" onClick={() => handleEditVoucher(record)}>
             <BiEdit />
           </Button>
-          <Button 
-            type="link" 
-            danger 
+          <Button
+            type="link"
+            danger
             onClick={() => handleDeleteVoucher(record)}
           >
             <MdDeleteForever />
@@ -210,7 +229,7 @@ const VoucherPage: React.FC<IProps> = () => {
           onChange={(e) => handleSearchChange(e.target.value)}
           className="ant-input-search"
           size="large"
-          style={{width: '600px'}}
+          style={{ width: "600px" }}
         />
         <Button
           className="btn-add"
@@ -239,4 +258,4 @@ const VoucherPage: React.FC<IProps> = () => {
   );
 };
 
-export default VoucherPage; 
+export default VoucherPage;

@@ -18,12 +18,12 @@ interface IProps {}
 
 const getRoleName = (role: string): string => {
   switch (role) {
-    case 'manager':
-      return 'Quản lý';
-    case 'employee':
-      return 'Nhân viên';
-    case 'admin':
-      return 'Quản trị viên';
+    case "manager":
+      return "Quản lý";
+    case "employee":
+      return "Nhân viên";
+    case "admin":
+      return "Quản trị viên";
     default:
       return role;
   }
@@ -48,6 +48,9 @@ const WagePage: React.FC<IProps> = () => {
 
   const token = localStorage.getItem("accessToken") || "";
   const { branchId } = useBranch();
+  //LOG
+  console.log(branchId, searchText);
+  //LOG
 
   useEffect(() => {
     fetchWages();
@@ -94,30 +97,36 @@ const WagePage: React.FC<IProps> = () => {
   const handleDeleteWage = async (wage: IWage) => {
     try {
       AntModal.confirm({
-        title: 'Xác nhận xóa',
-        content: `Bạn có chắc chắn muốn xóa mức lương của ${getRoleName(wage.role)}?`,
-        okText: 'Xóa',
-        okType: 'danger',
-        cancelText: 'Hủy',
+        title: "Xác nhận xóa",
+        content: `Bạn có chắc chắn muốn xóa mức lương của ${getRoleName(
+          wage.role
+        )}?`,
+        okText: "Xóa",
+        okType: "danger",
+        cancelText: "Hủy",
         async onOk() {
           setLoading(true);
           await deleteWage(token, wage.id);
-          message.success('Xóa mức lương thành công');
+          message.success("Xóa mức lương thành công");
           fetchWages();
         },
       });
     } catch (error) {
-      message.error('Có lỗi xảy ra khi xóa mức lương');
+      message.error("Có lỗi xảy ra khi xóa mức lương");
+      // //LOG
+      // const err = error as Error;
+      // console.log(err.message);
+      // //LOG
     }
   };
 
   const getRoleTag = (role: string) => {
     switch (role?.toLowerCase()) {
-      case 'employee':
+      case "employee":
         return <Tag color="blue">Nhân viên</Tag>;
-      case 'manager':
+      case "manager":
         return <Tag color="green">Quản lý</Tag>;
-      case 'admin':
+      case "admin":
         return <Tag color="red">Quản trị viên </Tag>;
       default:
         return <Tag color="default">{role}</Tag>;
@@ -135,10 +144,10 @@ const WagePage: React.FC<IProps> = () => {
       title: "Mức lương theo giờ",
       dataIndex: "hourlyRate",
       key: "hourlyRate",
-      render: (hourlyRate: number) => 
-        new Intl.NumberFormat('vi-VN', { 
-          style: 'currency', 
-          currency: 'VND' 
+      render: (hourlyRate: number) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
         }).format(hourlyRate),
       sorter: (a: IWage, b: IWage) => a.hourlyRate - b.hourlyRate,
     },
@@ -146,8 +155,8 @@ const WagePage: React.FC<IProps> = () => {
       title: "Ngày hiệu lực",
       dataIndex: "effectiveDate",
       key: "effectiveDate",
-      render: (date: string) => dayjs(date).format('DD/MM/YYYY'),
-      sorter: (a: IWage, b: IWage) => 
+      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
+      sorter: (a: IWage, b: IWage) =>
         dayjs(a.effectiveDate).unix() - dayjs(b.effectiveDate).unix(),
     },
     {
@@ -165,11 +174,7 @@ const WagePage: React.FC<IProps> = () => {
           <Button type="link" onClick={() => handleEditWage(record)}>
             <BiEdit />
           </Button>
-          <Button 
-            type="link" 
-            danger 
-            onClick={() => handleDeleteWage(record)}
-          >
+          <Button type="link" danger onClick={() => handleDeleteWage(record)}>
             <MdDeleteForever />
           </Button>
         </div>

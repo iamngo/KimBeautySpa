@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, message, Skeleton } from "antd";
+import { Button, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
 import {
-  deleteServiceCategory,
+  // deleteServiceCategory,
   getAllRoom,
   getAllServiceCategory,
 } from "../../../services/api";
@@ -13,7 +13,7 @@ import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
-import ServiceModal from "../components/modal/ServiceModal";
+// import ServiceModal from "../components/modal/ServiceModal";
 import ServiceCategoryModal from "../components/modal/ServiceCategory";
 
 const ServiceCategoryPage: React.FC = () => {
@@ -34,6 +34,8 @@ const ServiceCategoryPage: React.FC = () => {
   ]);
   const token = localStorage.getItem("accessToken") || "";
 
+  console.log(searchText, rooms, token);
+
   useEffect(() => {
     fetchCategory();
   }, [visibleModal]);
@@ -46,7 +48,7 @@ const ServiceCategoryPage: React.FC = () => {
     const response = await getAllServiceCategory(1, 100);
     const serviceCategoryDetail = response?.data?.map((serviceCategory) => {
       const room = responseRoom.data.find(
-        (room) => room.id === serviceCategory.roomId
+        (room: { id: number }) => room.id === serviceCategory.roomId
       );
       return {
         ...serviceCategory,
@@ -81,15 +83,15 @@ const ServiceCategoryPage: React.FC = () => {
     );
   };
 
-  const handleDeleteServiceCategory = async (id: number) => {
-    const response = await deleteServiceCategory(token, id);
-    if (response?.data !== null) {
-      message.success("Xóa thành công!");
-      fetchCategory();
-    } else {
-      message.error("Xóa thất bại");
-    }
-  };
+  // const handleDeleteServiceCategory = async (id: number) => {
+  //   const response = await deleteServiceCategory(token, id);
+  //   if (response?.data !== null) {
+  //     message.success("Xóa thành công!");
+  //     fetchCategory();
+  //   } else {
+  //     message.error("Xóa thất bại");
+  //   }
+  // };
 
   const columns = [
     {
@@ -98,19 +100,21 @@ const ServiceCategoryPage: React.FC = () => {
       key: "id",
       width: "100px",
       align: "center" as "center",
-      sorter: (a, b) => a.id - b.id,
+      sorter: (a: { id: number }, b: { id: number }) => a.id - b.id,
     },
     {
       title: "Tên phân loại dịch vụ",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: (a: { name: string }, b: { name: string }) =>
+        a.name.localeCompare(b.name),
     },
     {
       title: "Phòng",
       dataIndex: "roomName", // Hiển thị roomName thay vì roomId
       key: "roomId",
-      sorter: (a, b) => (a.roomName || "").localeCompare(b.roomName || ""),
+      sorter: (a: { roomName: string }, b: { roomName: string }) =>
+        (a.roomName || "").localeCompare(b.roomName || ""),
     },
     {
       title: "Hành động",

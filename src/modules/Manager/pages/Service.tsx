@@ -3,7 +3,11 @@ import { Button, Skeleton, Tag, Switch, message } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllService, getAllServiceCategory, updateStatusService } from "../../../services/api";
+import {
+  getAllService,
+  getAllServiceCategory,
+  updateStatusService,
+} from "../../../services/api";
 import { Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
@@ -100,23 +104,23 @@ const ServicePage: React.FC = () => {
     }
   };
 
-
   const handleStatusChange = async (checked: boolean, record: any) => {
     try {
-      const newStatus = checked ? 'active' : 'inactive';
+      const newStatus = checked ? "active" : "inactive";
       const response = await updateStatusService(token, record.id, newStatus);
       if (response.data) {
-        message.success(`${checked ? 'Kích hoạt' : 'Vô hiệu hóa'} dịch vụ thành công`);
+        message.success(
+          `${checked ? "Kích hoạt" : "Vô hiệu hóa"} dịch vụ thành công`
+        );
         fetchServices(); // Refresh lại danh sách
       } else {
-        message.error('Cập nhật trạng thái thất bại');
+        message.error("Cập nhật trạng thái thất bại");
       }
     } catch (error) {
-      console.error('Error:', error);
-      message.error('Đã có lỗi xảy ra khi cập nhật trạng thái');
+      console.error("Error:", error);
+      message.error("Đã có lỗi xảy ra khi cập nhật trạng thái");
     }
   };
-
 
   const columns = [
     {
@@ -152,7 +156,9 @@ const ServicePage: React.FC = () => {
       dataIndex: "serviceCategoryId",
       key: "serviceCategoryId",
       render: (serviceCategoryId: number) => {
-        const category = categories.find((cat) => cat.id === serviceCategoryId);
+        const category = categories.find(
+          (cat: { id: number }) => cat.id === serviceCategoryId
+        );
         return category ? category.name : "Không xác định";
       },
       sorter: (a: Service, b: Service) =>
@@ -172,9 +178,9 @@ const ServicePage: React.FC = () => {
       key: "status",
       width: "150px",
       align: "center" as "center",
-      render: (status: string, record: any) => (
+      render: (status: string, record: object) => (
         <Switch
-          checked={status === 'active'}
+          checked={status === "active"}
           onChange={(checked) => handleStatusChange(checked, record)}
           checkedChildren="Hoạt động"
           unCheckedChildren="Ngừng"
@@ -187,7 +193,7 @@ const ServicePage: React.FC = () => {
       key: "actions",
       width: "200px",
       align: "center" as "center",
-      render: (text: string, record: Service) => (
+      render: (_: string, record: Service) => (
         <div>
           {record.isNew ? (
             <div>
