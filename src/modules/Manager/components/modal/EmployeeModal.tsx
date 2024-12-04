@@ -20,7 +20,9 @@ import {
   createEmployee,
   getWagesByRole,
   registerEmployee,
+  updateEmployee,
 } from "../../../../services/api";
+import { useBranch } from "../../../../hooks/branchContext";
 
 interface EmployeeModalProps {
   visible: boolean;
@@ -53,6 +55,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
   const [fileList, setFileList] = useState<any[]>([]);
   const token = localStorage.getItem("accessToken");
   const [wageId, setWageId] = useState(0);
+  const { branchId, setBranchId } = useBranch();
 
   useEffect(() => {
     if (visible) {
@@ -119,6 +122,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
           status: values.status,
           image: "image.png",
           wageId: wageId,
+          branchId: branchId,
         };
         const dataToSend = {
           account: account,
@@ -130,7 +134,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         );
         formData.append("data", JSON.stringify(dataToSend));
         const response = await registerEmployee(formData);
-        console.log(response);
 
         if (response?.data !== null) {
           message.success("Đăng ký thành công!");
@@ -142,12 +145,47 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
     }
     if (mode === MODE.EDIT) {
       console.log(values);
+      try {
+        const formData = new FormData();
+        const employee = {
+          id: Number(values.id),
+          fullName: values.fullName,
+          gender: values.gender,
+          dob: values.dob.format("YYYY-MM-DD"),
+          phone: values.phone,
+          email: values.email,
+          address: values.address,
+          role: values.role,
+          status: values.status,
+          image: "image.png",
+          wageId: values.wageId,
+          branchId: branchId,
+          accountId: Number(values.accountId),
+        };
+        formData.append(
+          "file",
+          fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+        );
+        formData.append("data", JSON.stringify(employee));
+        const response = await updateEmployee(
+          Number(values.id),
+          formData,
+          token
+        );
+
+        if (response?.data !== null) {
+          message.success("Đăng ký thành công!");
+          setVisible(!visible);
+        }
+      } catch (error) {
+        console.log("Validation failed:", error);
+      }
     }
   };
 
   return (
     <Modal
-    centered
+      centered
       open={visible}
       onCancel={handleCancel}
       footer={null}

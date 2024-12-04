@@ -53,6 +53,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     null
   );
   const [idBonus, setIdBonus] = useState(0);
+  const [expense, setExpense] = useState(0);
 
   useEffect(() => {
     getInfoCustomer();
@@ -203,7 +204,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
         status: "confirmed",
         category: "services",
-        foreignKeyId: values.service,
+        foreignKeyId: Number(values.service.split("-")[0]),
         employeeId: values.staff,
         customerId: customer?.id,
         branchId: values.branch,
@@ -211,6 +212,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         bonusId: idBonus,
         fullName: values.fullName,
         phone: values.phone,
+        expense: expense,
       };
 
       console.log(
@@ -267,11 +269,12 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
           <Select
             placeholder="Chọn dịch vụ"
             onChange={(value) => {
-              setSelectedServiceId(value);
+              setSelectedServiceId(Number(value.split("-")[0]));
+              setExpense(Number(value.split("-")[1]));
               const categoryId = Object.keys(servicesByCategory).find(
                 (categoryId) =>
                   servicesByCategory[categoryId].some(
-                    (service) => service.id === value
+                    (service) => service.id === Number(value.split("-")[0])
                   )
               );
               setSelectedCategoryId(Number(categoryId)); // Lưu ID của category
@@ -281,7 +284,10 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
             {serviceCategory?.map((category) => (
               <Select.OptGroup key={category.id} label={category.name}>
                 {servicesByCategory[category.id]?.map((service) => (
-                  <Select.Option key={service.id} value={service.id}>
+                  <Select.Option
+                    key={service.id}
+                    value={`${service.id}-${service.specialPrice}`}
+                  >
                     {service.name} -{" "}
                     {service.specialPrice.toLocaleString("vi-VN", {
                       style: "currency",
