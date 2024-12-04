@@ -11,7 +11,7 @@ import { BiEdit } from "react-icons/bi";
 import { MODE } from "../../../utils/constants";
 import EmployeeModal from "../components/modal/EmployeeModal";
 import { useBranch } from "../../../hooks/branchContext";
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 const { confirm } = Modal;
 
@@ -46,14 +46,16 @@ const EmployeePage: React.FC = () => {
   const fetchEmployees = async () => {
     try {
       const response = await getAllEmployee(token, branchId, 1, 100);
-      if (response.data) {
-        const activeEmployees = response.data.filter((emp: any) => emp.status === 'active');
+      if (response?.data) {
+        const activeEmployees = response.data.filter(
+          (emp: any) => emp.status === "active"
+        );
         setEmployees(activeEmployees);
         setLoading(false);
       }
     } catch (error) {
-      console.error('Error:', error);
-      message.error('Đã có lỗi xảy ra khi tải danh sách nhân viên');
+      console.error("Error:", error);
+      message.error("Đã có lỗi xảy ra khi tải danh sách nhân viên");
       setLoading(false);
     }
   };
@@ -114,42 +116,45 @@ const EmployeePage: React.FC = () => {
     }
   };
 
-
   const handleDeleteEmployee = (employee: Employee) => {
     confirm({
-      title: 'Xác nhận xóa',
+      title: "Xác nhận xóa",
       icon: <ExclamationCircleFilled />,
-      content: 'Bạn có chắc chắn muốn xóa nhân viên này không?',
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
+      content: "Bạn có chắc chắn muốn xóa nhân viên này không?",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
       async onOk() {
         try {
-          const response = await updateStatusEmployee(token, employee.id, 'inactive');
+          const response = await updateStatusEmployee(
+            token,
+            employee.id,
+            "inactive"
+          );
           if (response.data) {
-            message.success('Xóa nhân viên thành công');
-            fetchEmployees(); 
+            message.success("Xóa nhân viên thành công");
+            fetchEmployees();
           } else {
-            message.error('Xóa nhân viên thất bại');
+            message.error("Xóa nhân viên thất bại");
           }
         } catch (error) {
-          console.error('Error:', error);
-          message.error('Đã có lỗi xảy ra khi xóa nhân viên');
+          console.error("Error:", error);
+          message.error("Đã có lỗi xảy ra khi xóa nhân viên");
         }
       },
       onCancel() {
-        console.log('Cancel');
+        console.log("Cancel");
       },
     });
   };
 
   const getRoleName = (role: string) => {
     switch (role?.toLowerCase()) {
-      case 'employee':
+      case "employee":
         return <Tag color="blue">Nhân viên</Tag>;
-      case 'manager':
+      case "manager":
         return <Tag color="green">Quản lý</Tag>;
-      case 'admin':
+      case "admin":
         return <Tag color="red">Quản trị viên</Tag>;
       default:
         return <Tag color="default">{role}</Tag>;
@@ -204,9 +209,9 @@ const EmployeePage: React.FC = () => {
     },
     { title: "Email", dataIndex: "email", key: "email" },
     {
-      title: 'Vai trò',
-      dataIndex: 'role',
-      key: 'role',
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
       render: (role: string) => getRoleName(role),
     },
     { title: "Trạng thái", dataIndex: "status", key: "status" },
@@ -234,7 +239,11 @@ const EmployeePage: React.FC = () => {
               <Button type="link" onClick={() => handleEditEmployee(record)}>
                 <BiEdit />
               </Button>
-              <Button type="link" danger onClick={() => handleDeleteEmployee(record)}>
+              <Button
+                type="link"
+                danger
+                onClick={() => handleDeleteEmployee(record)}
+              >
                 <MdDeleteForever />
               </Button>
             </div>

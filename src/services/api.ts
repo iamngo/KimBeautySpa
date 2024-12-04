@@ -237,7 +237,7 @@ export const getExpenseByMonthYear = async (
 ) => {
   if (!branchId || !month || !year) return;
   const response = await axios.get(
-    `${API_URL}/${INTERNAL_EXPENSE}/expense/${branchId}`,
+    `${API_URL}/${PRODUCT}/revenues/${branchId}`,
     {
       // headers: {
       //   Authorization: `Bearer ${token}`,
@@ -567,6 +567,20 @@ export const registerEmployee = async (data: FormData) => {
   const response = await axios.post(`${API_URL}/${ACCOUNT}/register`, data, {
     headers: {
       "Content-Type": "multipart/form-data",
+    },
+  });
+  return response?.data;
+};
+
+export const updateEmployee = async (
+  id: number,
+  data: FormData,
+  token: string | null
+) => {
+  const response = await axios.put(`${API_URL}/${EMPLOYEE}/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
     },
   });
   return response?.data;

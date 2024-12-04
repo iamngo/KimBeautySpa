@@ -9,6 +9,8 @@ import {
   getScheduleByDate,
 } from "../../../services/api";
 import dayjs, { Dayjs } from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { useBranch } from "../../../hooks/branchContext";
 
 interface Schedule {
@@ -34,6 +36,7 @@ const ManageSchedule: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
   const { branchId, setBranchId } = useBranch();
+  const [deleteEmployees, setDeleteEmployees] = useState<number[]>([]);
 
   const shifts = [
     { shifts: "morning", time: "7h - 15h", label: "Ca sáng" },
@@ -73,6 +76,8 @@ const ManageSchedule: React.FC = () => {
     try {
       const response = await getAllEmployee(token, branchId, 1, 1000);
       if (response && response.data) {
+        console.log(response.data);
+
         setEmployees(response.data);
       }
       console.log("Employee response:", response?.data);
@@ -111,6 +116,8 @@ const ManageSchedule: React.FC = () => {
       const employeeIds = schedulesForShift.flatMap(
         (schedule) => schedule.employeeId
       );
+      console.log(Array.from(new Set(employeeIds)));
+
       setSelectedEmployees(Array.from(new Set(employeeIds)));
       setSelectedDateSchedule(day);
       setSelectedShift(shift);
@@ -122,6 +129,13 @@ const ManageSchedule: React.FC = () => {
     }
   };
 
+  const formatDate = (date: string) => {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const dateVN = dayjs.utc(date).tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD");
+    return dateVN;
+  };
+
   const handleOk = async () => {
     const checkInTime = selectedShift === "morning" ? "00:00:00" : "00:00:00";
     const checkOutTime = selectedShift === "morning" ? "00:00:00" : "00:00:00";
@@ -130,7 +144,7 @@ const ManageSchedule: React.FC = () => {
     for (const employeeId of selectedEmployees) {
       const existingSchedule = filteredSchedules.find(
         (schedule) =>
-          schedule.date === selectedDateStr &&
+          formatDate(schedule.date) === selectedDateStr &&
           schedule.shift === selectedShift &&
           schedule.employeeId === employeeId
       );
@@ -167,11 +181,10 @@ const ManageSchedule: React.FC = () => {
     // Xóa lịch làm của những nhân viên không có trong selectedEmployees
     const schedulesToDelete = schedules.filter(
       (schedule) =>
-        schedule.date === selectedDateStr &&
+        formatDate(schedule.date) === selectedDateStr &&
         schedule.shift === selectedShift &&
-        !selectedEmployees.includes(schedule.employeeId)
+        deleteEmployees.includes(schedule.employeeId)
     );
-
     for (const schedule of schedulesToDelete) {
       try {
         await deleteSchedule(token, schedule.id); // Thực hiện xóa lịch làm
@@ -285,6 +298,7 @@ const ManageSchedule: React.FC = () => {
                     if (e.target.checked) {
                       return [...prev, employee.id];
                     } else {
+                      deleteEmployees.push(employee.id);
                       return prev.filter((id) => id !== employee.id);
                     }
                   } else {

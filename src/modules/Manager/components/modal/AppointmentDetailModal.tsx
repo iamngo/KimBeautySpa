@@ -101,15 +101,13 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   useEffect(() => {
     if (room?.roomId) {
       getEmployees();
-    getTimeByServiceIdAndDate();
+      getTimeByServiceIdAndDate();
     }
   }, [room, selectedServiceId]);
 
   useEffect(() => {
-      getEmployees();
-    
+    getEmployees();
   }, [time, selectedServiceId]);
-
 
   const getEmployees = async () => {
     const response = await getEmployeeByDateTime(
@@ -128,7 +126,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
       appointment?.dateTime,
       branchId
     );
-    setListTime(response?.data);    
+    setListTime(response?.data);
   };
 
   const fetchProduct = async () => {
@@ -169,7 +167,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
         category: values.category,
         status: values.status,
         foreignKeyId: foreignKeyId,
-        time: values.time ? `${values.time}:00`: moment().format('HH:mm:ss'),
+        time: values.time ? `${values.time}:00` : moment().format("HH:mm:ss"),
         expense: expense,
         ...(values.category === "services" && {
           bedId: values.bedId,
@@ -376,8 +374,6 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
                       </Select>
                     </Form.Item>
                   </Col>
-
-                 
                 </Row>
 
                 {/* Dòng 4: Giường và Nhân viên */}
@@ -385,36 +381,39 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
                   (mode === MODE.EDIT &&
                     appointmentData?.category === "services")) && (
                   <Row gutter={16}>
-                     <Col span={6}>
-                    <Form.Item
-                      label="Chọn giờ:"
-                      name="time"
-                      rules={[
-                        { required: true, message: "Vui lòng chọn thời gian" },
-                      ]}
-                    >
-                      <Select
-                        placeholder="Chọn thời gian"
-                        onChange={(value) => setTime(value)}
+                    <Col span={6}>
+                      <Form.Item
+                        label="Chọn giờ:"
+                        name="time"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn thời gian",
+                          },
+                        ]}
                       >
-                        {listTime &&
-                          listTime?.map(
-                            (timeSlot: {
-                              id: number;
-                              time: string;
-                              status: string;
-                            }) => (
-                              <Select.Option
-                                key={timeSlot.id}
-                                value={timeSlot.time}
-                              >
-                                {timeSlot.time}
-                              </Select.Option>
-                            )
-                          )}
-                      </Select>
-                    </Form.Item>
-                  </Col>
+                        <Select
+                          placeholder="Chọn thời gian"
+                          onChange={(value) => setTime(value)}
+                        >
+                          {listTime &&
+                            listTime?.map(
+                              (timeSlot: {
+                                id: number;
+                                time: string;
+                                status: string;
+                              }) => (
+                                <Select.Option
+                                  key={timeSlot.id}
+                                  value={timeSlot.time}
+                                >
+                                  {timeSlot.time}
+                                </Select.Option>
+                              )
+                            )}
+                        </Select>
+                      </Form.Item>
+                    </Col>
                     <Col span={6}>
                       <Form.Item
                         name="bedId"
