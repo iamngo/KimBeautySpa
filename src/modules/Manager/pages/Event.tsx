@@ -22,6 +22,7 @@ const EventPage: React.FC = () => {
     "name",
     "startDate",
     "expiryDate",
+    "discount",
     "image",
     "actions",
   ]);
@@ -71,7 +72,15 @@ const EventPage: React.FC = () => {
   const handleColumnChange = (value: string[]) => {
     setSelectedColumns(
       value.includes("all")
-        ? ["id", "name", "startDate", "expiryDate", "image", "actions"]
+        ? [
+            "id",
+            "name",
+            "startDate",
+            "expiryDate",
+            "discount",
+            "image",
+            "actions",
+          ]
         : value
     );
   };
@@ -130,6 +139,12 @@ const EventPage: React.FC = () => {
           })
           .replace(",", "");
       },
+    },
+    {
+      title: "Chiết khấu",
+      dataIndex: "discount",
+      key: "discount",
+      render: (text: number) => <span>{text > 0 ? `${text}%` : ""}</span>,
     },
     {
       title: "Hình ảnh",
