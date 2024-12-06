@@ -174,8 +174,11 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         );
 
         if (response?.data !== null) {
-          message.success("Đăng ký thành công!");
+          message.success("Cập nhật thành công!");
           setVisible(!visible);
+        }else{
+          message.error('Cập nhật thất bại!');
+          console.log(response.error);
         }
       } catch (error) {
         console.log("Validation failed:", error);

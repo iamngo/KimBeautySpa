@@ -9,6 +9,7 @@ import {
   Upload,
   Row,
   Col,
+  message,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { Service } from "../../types";
@@ -44,10 +45,21 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       fetchCategory();
       if (mode === MODE.ADD) {
         form.resetFields();
+        form.setFieldsValue({ status: "active" });
       } else if (mode === MODE.EDIT && service) {
         const formattedService = {
           ...service,
         };
+        if(service.image){
+          setFileList([
+            {
+              uid: "-1",
+              name: "Ảnh dịch vụ",
+              status: "done",
+              url: service.image,
+            },
+          ]);
+        }
         form.setFieldsValue(formattedService);
       }
     }
@@ -77,12 +89,19 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             name: values.name,
             duration: Number(values.duration),
             status: values.status,
-            image: values.image,
+            image: values.image ? values.image : null,
             serviceCategoryId: Number(values.serviceCategoryId),
           })
         );
         const response = await createService(token, formData);
         console.log(response);
+        if (response.data) {
+          message.success("Thêm dịch vụ thành công!");
+          setVisible(false);
+        } else {
+          message.error("Lỗi thêm dịch vụ!");
+          console.log(response.error);
+        }
       } catch (error) {
         console.log("Validation failed:", error);
       }
@@ -106,6 +125,13 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         );
         const response = await updateService(token, values.id, formData);
         console.log(response);
+        if (response.data) {
+          message.success("Cập nhật dịch vụ thành công!");
+          setVisible(false);
+        } else {
+          message.error("Lỗi cập nhật!");
+          console.log(response.error);
+        }
       } catch (error) {
         console.log("Validation failed:", error);
       }
@@ -122,7 +148,11 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item label="Ảnh" name="image">
+            <Form.Item
+              label="Ảnh"
+              name="image"
+              rules={[{ required: true, message: "Vui lòng chọn ảnh dịch vụ" }]}
+            >
               <Upload
                 listType="picture-card"
                 fileList={fileList}

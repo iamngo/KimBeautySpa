@@ -1159,3 +1159,16 @@ export const updateStatusAppointment = async (
   );
   return response?.data;
 };
+
+export const getScheduleByDateForTimekeeping = async (date: string) => {
+  if (!date) return;
+  try {
+    const response = await axios.get(
+      `${API_URL}/${SCHEDULE}/time-keeping/${date}`
+    );
+    return response?.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
