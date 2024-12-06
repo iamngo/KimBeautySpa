@@ -39,7 +39,6 @@ const ProductPage: React.FC = () => {
     fetchObjects();
     const getApiAllServiceCategory = async () => {
       const response = await getAllServiceCategory(1, 100);
-      console.log(response.data);
       setServiceCategories([...response.data]);
     };
     getApiAllServiceCategory();
@@ -76,7 +75,6 @@ const ProductPage: React.FC = () => {
   };
 
   const filteredObjects = useMemo(() => {
-    console.log(serviceCategories.find((sc) => sc.id === 1)?.name);
 
     return objects?.filter((object: Product) =>
       object.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
