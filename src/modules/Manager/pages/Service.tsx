@@ -39,7 +39,7 @@ const ServicePage: React.FC = () => {
   useEffect(() => {
     fetchServices();
     fetchCategory();
-  }, []);
+  }, [visibleModal]);
 
   const fetchServices = async () => {
     setLoading(true);
