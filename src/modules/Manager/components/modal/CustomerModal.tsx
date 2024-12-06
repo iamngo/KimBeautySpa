@@ -16,7 +16,7 @@ import { Customer } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
 import moment from "moment";
-import { registerCustomer } from "../../../../services/api";
+import { registerCustomer, updateInfoCustomer } from "../../../../services/api";
 
 interface CustomerModalProps {
   visible: boolean;
@@ -33,6 +33,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
 }) => {
   const [form] = Form.useForm<FormInstance>();
   const [fileList, setFileList] = useState<any[]>([]);
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     if (visible) {
@@ -44,6 +45,16 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
           ...customer,
           dob: customer.dob ? moment(customer.dob) : null,
         };
+        if (customer.image) {
+          setFileList([
+            {
+              uid: "-1",
+              name: "Ảnh khách hàng",
+              status: "done",
+              url: customer.image,
+            },
+          ]);
+        }
         form.setFieldsValue(formattedCustomer);
       }
     }
@@ -95,6 +106,36 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
     }
     if (mode === MODE.EDIT) {
       console.log(values);
+      try {
+        const formData = new FormData();
+        const customer= {
+          id: values.id,
+          fullName: values.fullName,
+          gender: values.gender,
+          dob: values.dob.format("YYYY-MM-DD"),
+          phone: values.phone,
+          email: values.email ? values.email : null,
+          address: values.address,
+          image: "image.png",
+          accountId: values.accountId,
+        };
+        formData.append(
+          "file",
+          fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+        );
+        formData.append("data", JSON.stringify(customer));
+        const response = await updateInfoCustomer(token, formData, values.id);
+        if (response?.data !== null) {
+          message.success("Cập nhật thành công!");
+          setVisible(!visible);
+        }else{
+          message.error('Cập nhật thất bại!');
+          console.log(response.error);
+        }
+      } catch (error) {
+        console.log(error);
+        
+      }
     }
   };
 
