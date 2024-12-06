@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, message, Modal, Skeleton } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
-import { getAllEvent } from "../../../services/api";
+import { deleteEvent, getAllEvent } from "../../../services/api";
 import { Event } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
@@ -32,7 +32,6 @@ const EventPage: React.FC = () => {
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [mode, setMode] = useState("");
   const [dataEdit, setDataEdit] = useState<Event>();
-  const { branchId, setBranchId } = useBranch();
   const [refreshPage, setRefreshPage] = useState<boolean>(false);
 
   useEffect(() => {
@@ -85,23 +84,13 @@ const EventPage: React.FC = () => {
     );
   };
 
-  const handleDeleteEventFromLocalStorage = (name: string) => {
-    const storedEvents = localStorage.getItem("importedDataEvent");
-    if (storedEvents) {
-      const eventsArray = JSON.parse(storedEvents);
-      const updatedEvents = eventsArray.filter(
-        (event: Event) => event.name !== name
-      );
-      localStorage.setItem("importedDataEvent", JSON.stringify(updatedEvents));
-      setEvents(updatedEvents);
-    }
-  };
-
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      width: "100px",
+      align: "center" as "center",
       sorter: (a: Event, b: Event) => a.id - b.id,
     },
     {
@@ -161,33 +150,46 @@ const EventPage: React.FC = () => {
     {
       title: "Hành động",
       key: "actions",
+      width: "200px",
+      align: "center",
       render: (text: string, record: Event) => (
         <div>
-          {record.isNew ? (
-            <div>
-              <Button type="link" onClick={() => handleEditEvent(record)}>
-                <TiPlusOutline />
-              </Button>
-              <Button type="link" danger>
-                <MdDeleteForever
-                  onClick={() => handleDeleteEventFromLocalStorage(record.name)}
-                />
-              </Button>
-            </div>
-          ) : (
-            <div>
-              <Button type="link" onClick={() => handleEditEvent(record)}>
-                <BiEdit />
-              </Button>
-              <Button type="link" danger>
-                <MdDeleteForever />
-              </Button>
-            </div>
-          )}
+          <div>
+            <Button type="link" onClick={() => handleEditEvent(record)}>
+              <BiEdit />
+            </Button>
+            <Button type="link" danger>
+              <MdDeleteForever onClick={() => handleDeleteEvent(record.id)} />
+            </Button>
+          </div>
         </div>
       ),
     },
   ];
+
+  const handleDeleteEvent = (eventId: number) => {
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn xóa sự kiện này?",
+      okText: "Có",
+      okType: "danger",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          const response = await deleteEvent(token, eventId);
+          if (response?.data) {
+            message.success("Xóa sự kiện thành công!");
+            fetchEvents();
+          } else {
+            message.error("Xóa sự kiện thất bại!");
+          }
+        } catch (error) {
+          console.error("Error deleting event:", error);
+          message.error("Đã có lỗi xảy ra khi xóa sự kiện!");
+        }
+      },
+    });
+  };
 
   const handleAddEvent = () => {
     setVisibleModal(true);
@@ -245,6 +247,7 @@ const EventPage: React.FC = () => {
           selectedColumns={selectedColumns}
           onColumnChange={handleColumnChange}
           tableName="Event"
+          haveImport={false}
         />
       )}
     </div>

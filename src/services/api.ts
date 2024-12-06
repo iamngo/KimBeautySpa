@@ -1172,3 +1172,13 @@ export const getScheduleByDateForTimekeeping = async (date: string) => {
     throw error;
   }
 };
+
+export const deleteEvent = async (token: string | null, id: number) => {
+  if (!token || !id) return;
+  const response = await axios.delete(`${API_URL}/${EVENT}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
