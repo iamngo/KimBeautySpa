@@ -11,6 +11,7 @@ export interface Event {
   startDate: string;
   expiryDate: string;
   image: string;
+  discount: number;
 }
 
 export interface ServiceCategory {

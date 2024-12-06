@@ -230,27 +230,30 @@ const HeaderHomepage: React.FC = () => {
 
         <Button onClick={handleRegisterClick}>Đặt lịch ngay</Button>
         {userId !== null ? (
-          <Dropdown
-            overlay={avatarMenu}
-            trigger={["hover"]}
-            visible={menuVisible}
-            onVisibleChange={(flag) => setMenuVisible(flag)}
-          >
-            <Avatar
-              size="large"
-              src={customer ? customer.image : employee?.image}
-              icon={
-                customer?.image || employee?.image ? undefined : (
-                  <UserOutlined />
-                )
-              }
-              style={{
-                cursor: "pointer",
-                border: "1px solid black",
-                background: "white",
-              }}
-            />
-          </Dropdown>
+        <>
+          <div style={{color:'#000', margin:'0 -80px 0 0px'}}>Xin chào! {customer ? customer.fullName : employee?.fullName}</div>
+            <Dropdown
+              overlay={avatarMenu}
+              trigger={["hover"]}
+              visible={menuVisible}
+              onVisibleChange={(flag) => setMenuVisible(flag)}
+            >
+              <Avatar
+                size="large"
+                src={customer ? customer.image : employee?.image}
+                icon={
+                  customer?.image || employee?.image ? undefined : (
+                    <UserOutlined />
+                  )
+                }
+                style={{
+                  cursor: "pointer",
+                  border: "1px solid black",
+                  background: "white",
+                }}
+              />
+            </Dropdown>
+        </>
         ) : (
           <div style={{ color: "var(--primaryColor)" }}>
             <Button
