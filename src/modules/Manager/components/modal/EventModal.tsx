@@ -1,11 +1,13 @@
 import {
   Button,
+  Col,
   DatePicker,
   Form,
   FormInstance,
   Input,
   message,
   Modal,
+  Row,
   Select,
   Upload,
 } from "antd";
@@ -113,12 +115,13 @@ const EventModal: React.FC<EventModalProps> = ({
         expiryDate: `${values.expiryDate.format("YYYY-MM-DD")}`,
         discount: Number(values.discount),
         image: values.image,
+        discount: Number(values.discount),
       })
     );
     if (mode === MODE.ADD) {
       try {
         const response = await createEvent(token, formData);
-        console.log(response.data);
+        console.log(response);
         if (response?.data !== null) {
           message.success("Thêm thành công!");
           setVisible(!visible);
@@ -156,62 +159,85 @@ const EventModal: React.FC<EventModalProps> = ({
       title={mode === MODE.ADD ? "Thêm sự kiện" : "Cập nhật sự kiện"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
-        <Form.Item
-          label="ID:"
-          name="id"
-          style={{
-            display: "none",
-          }}
-        >
-          <Input placeholder="Nhập ID sự kiện" />
-        </Form.Item>
-        <Form.Item
-          label="Tên sự kiện:"
-          name="name"
-          rules={[{ required: true, message: "Vui lòng nhập tên sự kiện" }]}
-        >
-          <Input placeholder="Nhập tên sự kiện" />
-        </Form.Item>
-        <Form.Item
-          label="Ngày bắt đầu:"
-          name="startDate"
-          rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu" }]}
-        >
-          <DatePicker
-            style={{ width: "100%" }}
-            onChange={handleStartDateChange}
-            disabledDate={disabledDate}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Ngày hết hạn:"
-          name="expiryDate"
-          rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc" }]}
-        >
-          <DatePicker
-            style={{ width: "100%" }}
-            onChange={handleExpiryDateChange}
-            disabledDate={disabledDate}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Chiết khấu:"
-          name="discount"
-          rules={[{ required: true, message: "Vui lòng nhập chiết khấu" }]}
-        >
-          <Input type="number" placeholder="Nhập chiết khấu" />
-        </Form.Item>
-        <Form.Item label="Ảnh" name="image">
-          <Upload
-            listType="picture-card"
-            fileList={fileList}
-            onChange={({ fileList }) => setFileList(fileList)}
-            beforeUpload={() => false}
-            maxCount={1}
-          >
-            <div>Upload</div>
-          </Upload>
-        </Form.Item>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="ID:" name="id">
+              <Input placeholder="ID sự kiện" disabled />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Ảnh"
+              name="image"
+              rules={[{ required: true, message: "Vui lòng thêm ảnh sự kiện" }]}
+            >
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                onChange={({ fileList }) => setFileList(fileList)}
+                beforeUpload={() => false}
+                maxCount={1}
+              >
+                <div>Upload</div>
+              </Upload>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={16}>
+            <Form.Item
+              label="Tên sự kiện:"
+              name="name"
+              rules={[{ required: true, message: "Vui lòng nhập tên sự kiện" }]}
+            >
+              <Input placeholder="Nhập tên sự kiện" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Giảm giá (%):"
+              name="discount"
+              rules={[
+                { required: true, message: "Vui lòng nhập phần trăm giảm giá" },
+              ]}
+            >
+              <Input placeholder="Nhập % giảm giá" type="number" />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Ngày bắt đầu:"
+              name="startDate"
+              rules={[
+                { required: true, message: "Vui lòng chọn ngày bắt đầu" },
+              ]}
+            >
+              <DatePicker
+                style={{ width: "100%" }}
+                onChange={handleStartDateChange}
+                disabledDate={disabledDate}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Ngày hết hạn:"
+              name="expiryDate"
+              rules={[
+                { required: true, message: "Vui lòng chọn ngày kết thúc" },
+              ]}
+            >
+              <DatePicker
+                style={{ width: "100%" }}
+                onChange={handleExpiryDateChange}
+                disabledDate={disabledDate}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">
             Xác nhận

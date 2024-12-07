@@ -5,10 +5,13 @@ import dayjs from "dayjs";
 import {
   getAllEmployee,
   getAllSchedule,
+  getScheduleByDate,
+  getScheduleByDateForTimekeeping,
   updateSchedule,
 } from "../../../services/api";
 import { useBranch } from "../../../hooks/branchContext";
 import { Employee } from "../types";
+import moment from "moment";
 
 interface Schedule {
   id: number;
@@ -45,15 +48,14 @@ const AttendanceChecking: React.FC = () => {
       setLoading(true);
       const selectedDateStr = selectedDate.format("YYYY-MM-DD");
 
-      const response = await getAllSchedule(token, 1, 100);
-
+      const response = await getScheduleByDateForTimekeeping(selectedDateStr);
+      console.log(response.data);
+      
       if (response?.data) {
-        const filteredSchedules = response.data.filter(
-          (schedule: Schedule) => schedule.date === selectedDateStr
-        );
-
+       
+        
         setAttendanceRecords(
-          filteredSchedules.map((schedule: Schedule) => {
+          response?.data.map((schedule: Schedule) => {
             const employee = employees.find(
               (emp) => emp.id === schedule.employeeId
             );
@@ -110,9 +112,9 @@ const AttendanceChecking: React.FC = () => {
 
   const handleCheckIn = async (record: Schedule) => {
     try {
-      setLoading(true);
+      setLoading(true);      
       const response = await updateSchedule(token, record.id, {
-        date: record.date,
+        date: dayjs().format("YYYY-MM-DD"),
         checkOutTime: "00:00:00",
         day: record.date,
         checkInTime: dayjs().format("HH:mm:ss"),
@@ -137,7 +139,7 @@ const AttendanceChecking: React.FC = () => {
     try {
       setLoading(true);
       const response = await updateSchedule(token, record.id, {
-        date: record.date,
+        date: dayjs().format("YYYY-MM-DD"),
         checkInTime: record.checkInTime,
         day: record.date,
         checkOutTime: dayjs().format("HH:mm:ss"),
@@ -145,10 +147,10 @@ const AttendanceChecking: React.FC = () => {
         employeeId: record.employeeId,
       });
       if (response.data) {
-        message.success("Đã check-in thành công!");
+        message.success("Đã check-out thành công!");
         fetchTodaySchedules();
       } else {
-        message.error("Lỗi check-in!");
+        message.error("Lỗi check-out!");
       }
     } catch (error) {
       console.error("Error during check-out:", error);
@@ -166,9 +168,7 @@ const AttendanceChecking: React.FC = () => {
       return <Tag color="success">Đầy đủ</Tag>;
     }
 
-    if (!record.checkInTime && currentTime.isAfter(shiftEndTime)) {
-      return <Tag color="error">Thiếu check-in</Tag>;
-    }
+    
 
     if (
       record.checkInTime &&
@@ -219,9 +219,10 @@ const AttendanceChecking: React.FC = () => {
       title: "Hành động",
       key: "action",
       render: (_, record) => {
+        const isToday = moment().isSame(moment(record.date), 'day');
         if (record.checkInTime === "00:00:00" || !record.checkInTime) {
           return (
-            <Button type="primary" onClick={() => handleCheckIn(record)}>
+            <Button type="primary" onClick={() => handleCheckIn(record)} disabled={!isToday} style={{opacity: isToday? 1: 0.5}}>
               Check-in
             </Button>
           );
@@ -229,7 +230,7 @@ const AttendanceChecking: React.FC = () => {
 
         if (record.checkOutTime === "00:00:00" || !record.checkOutTime) {
           return (
-            <Button onClick={() => handleCheckOut(record)}>Check-out</Button>
+            <Button type="primary" onClick={() => handleCheckOut(record)}>Check-out</Button>
           );
         }
 

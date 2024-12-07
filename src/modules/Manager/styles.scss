@@ -107,6 +107,58 @@ body {
   }
 }
 
+.dashboard{
+  margin: 10px;
+  .dashboard-header{
+    display: flex;
+  flex-direction: column;
+  padding: 10px;
+    .header-container{
+      background: rgb(255, 245, 244);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      .btn-export {
+        display: flex;
+        gap: 10px; // Khoảng cách giữa các nút
+      
+        button {
+          padding: 10px 20px; // Khoảng cách bên trong nút
+          border: none; // Không có viền
+          border-radius: 5px; // Bo tròn góc
+          font-size: 16px; // Kích thước chữ
+          font-weight: bold; // Đậm chữ
+          cursor: pointer; // Con trỏ khi hover
+          transition: background-color 0.3s ease, transform 0.2s ease; // Hiệu ứng chuyển tiếp
+      
+          &.export-excel {
+            background-color: #4CAF50; // Màu nền cho nút xuất Excel
+            color: white; // Màu chữ
+      
+            &:hover {
+              background-color: #45a049; // Màu nền khi hover (màu xanh đậm hơn)
+              transform: translateY(-2px); // Di chuyển lên một chút khi hover
+            }
+          }
+      
+          &.export-pdf {
+            background-color: #ff3e3b; // Màu nền cho nút xuất PDF
+            color: white; // Màu chữ
+      
+            &:hover {
+              background-color: #db2121; // Màu nền khi hover (màu đỏ đậm hơn)
+              transform: translateY(-2px); // Di chuyển lên một chút khi hover
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .manage-account {
   display: flex;
   flex-direction: column;
