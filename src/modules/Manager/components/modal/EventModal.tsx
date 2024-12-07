@@ -237,7 +237,6 @@ const EventModal: React.FC<EventModalProps> = ({
             </Form.Item>
           </Col>
         </Row>
-
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">
             Xác nhận
