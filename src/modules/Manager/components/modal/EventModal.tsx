@@ -113,6 +113,7 @@ const EventModal: React.FC<EventModalProps> = ({
         name: values.name,
         startDate: `${values.startDate.format("YYYY-MM-DD")}`,
         expiryDate: `${values.expiryDate.format("YYYY-MM-DD")}`,
+        discount: Number(values.discount),
         image: values.image,
         discount: Number(values.discount),
       })
@@ -229,7 +230,6 @@ const EventModal: React.FC<EventModalProps> = ({
             </Form.Item>
           </Col>
        </Row>
-        
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">
             Xác nhận

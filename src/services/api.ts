@@ -792,7 +792,9 @@ export const paymentMomo = async (
   appointmentId: number,
   amount: number,
   voucherId: Array<number> = [],
-  appointmentDetails: Array<number> = []
+  appointmentDetails: Array<number> = [],
+  customerId: number,
+  bonusId: number
 ) => {
   if (!token || !appointmentId || !appointmentDetails) return;
   const response = await axios.get(`${API_URL}/${APPOINTMENT}/payments/momo`, {
@@ -804,6 +806,8 @@ export const paymentMomo = async (
       amount: amount,
       voucherId,
       appointmentDetails,
+      customerId,
+      bonusId,
     },
   });
   return response?.data;
@@ -813,7 +817,10 @@ export const paymentCash = async (
   token: string | null,
   appointmentId: number,
   voucherId: Array<number> = [],
-  appointmentDetails: Array<number> = []
+  appointmentDetails: Array<number> = [],
+  customerId: number,
+  amount: number,
+  bonusId: number
 ) => {
   if (!token || !appointmentId || !appointmentDetails) return;
   const response = await axios.post(
@@ -821,7 +828,7 @@ export const paymentCash = async (
     {
       orderId: `${appointmentId}_:_${appointmentDetails.join(
         "_"
-      )}_:_${voucherId.join("_")}`,
+      )}_:_${voucherId.join("_")}_:_${customerId}_:_${amount}_:_${bonusId}`,
     },
     {
       headers: {
