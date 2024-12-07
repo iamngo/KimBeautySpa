@@ -99,6 +99,7 @@ const CustomHeader: React.FC = () => {
         </Select>
       </div>
       <div className="actions">
+        <div style={{color:'#000'}}>Xin chào! {employee?.fullName}</div>
         <Dropdown
           overlay={avatarMenu}
           trigger={["hover"]}
