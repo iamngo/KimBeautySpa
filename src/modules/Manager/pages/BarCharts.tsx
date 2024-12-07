@@ -28,40 +28,6 @@ export default function BarCharts({ datas }) {
   const [color, setColor] = useState("blue");
 
   const showModal = (data, color) => {
-    // if (data.category === "service") {
-    //   setData([
-    //     {
-    //       title: "revenue",
-    //       value: Number(data.revenue),
-    //     },
-    //     {
-    //       title: "quantities",
-    //       value: Number(data.quantities),
-    //     },
-    //   ]);
-    // } else if (data.category === "product") {
-    //   setData([
-    //     {
-    //       title: "revenue",
-    //       value: Number(data.revenue),
-    //     },
-    //     {
-    //       title: "quantities",
-    //       value: Number(data.quantities),
-    //     },
-    //   ]);
-    // } else {
-    //   setData([
-    //     {
-    //       title: "salary",
-    //       value: Number(data.salary),
-    //     },
-    //     {
-    //       title: "commissions",
-    //       value: Number(data.commissions),
-    //     },
-    //   ]);
-    // }
     setIsModalOpen(true);
     setData(data);
     setColor(color);
@@ -204,14 +170,13 @@ export default function BarCharts({ datas }) {
           fill="#8884d8"
           shape={<TriangleBar />}
           label={{ position: "top" }}
-          // onClick={() => console.log("Hello")}
+          onClick={() => console.log("Hello")}
         >
           {datas?.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
               fill={colors[index % 20]}
               onClick={() => showModal(entry, colors[index % 20])}
-              // onClick={() => console.log(entry)}
             />
           ))}
         </Bar>

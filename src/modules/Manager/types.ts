@@ -10,6 +10,7 @@ export interface Event {
   name: string;
   startDate: string;
   expiryDate: string;
+  discount: number;
   image: string;
 }
 

@@ -111,6 +111,7 @@ const EventModal: React.FC<EventModalProps> = ({
         name: values.name,
         startDate: `${values.startDate.format("YYYY-MM-DD")}`,
         expiryDate: `${values.expiryDate.format("YYYY-MM-DD")}`,
+        discount: Number(values.discount),
         image: values.image,
       })
     );
@@ -192,6 +193,13 @@ const EventModal: React.FC<EventModalProps> = ({
             onChange={handleExpiryDateChange}
             disabledDate={disabledDate}
           />
+        </Form.Item>
+        <Form.Item
+          label="Chiết khấu:"
+          name="discount"
+          rules={[{ required: true, message: "Vui lòng nhập chiết khấu" }]}
+        >
+          <Input type="number" placeholder="Nhập chiết khấu" />
         </Form.Item>
         <Form.Item label="Ảnh" name="image">
           <Upload

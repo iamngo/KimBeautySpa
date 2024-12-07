@@ -179,9 +179,9 @@ const EventPage: React.FC = () => {
               <Button type="link" onClick={() => handleEditEvent(record)}>
                 <BiEdit />
               </Button>
-              <Button type="link" danger>
+              {/* <Button type="link" danger>
                 <MdDeleteForever />
-              </Button>
+              </Button> */}
             </div>
           )}
         </div>

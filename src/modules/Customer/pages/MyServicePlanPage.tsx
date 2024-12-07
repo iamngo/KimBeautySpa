@@ -177,6 +177,7 @@ const MyServicePlanPage: React.FC = () => {
           <TabPane tab="Đã đặt hẹn" key="confirmed" />
           <TabPane tab="Đang thực hiện" key="implement" />
           <TabPane tab="Đã hoàn thành" key="finished" />
+          <TabPane tab="Đã thanh toán" key="paid" />
           <TabPane tab="Đã hủy" key="canceled" />
         </Tabs>
 

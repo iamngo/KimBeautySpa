@@ -175,10 +175,12 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     try {
       const response = await paymentMomo(
         token,
-        appointmentData?.id,
-        totalAmount - discountAmount,
+        Number(appointmentData?.id),
+        Number(totalAmount - discountAmount),
         selectedRewards,
-        appointmentDetails.map((ad: { id: number }) => ad.id)
+        appointmentDetails.map((ad: { id: number }) => ad.id),
+        Number(appointmentData?.customerId),
+        Number(appointmentData?.bonusId)
       );
       if (response?.data?.shortLink) {
         window.open(response.data.shortLink, "_blank");
@@ -206,9 +208,12 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       };
       const response = await paymentCash(
         token,
-        appointmentData?.id,
+        Number(appointmentData?.id),
         selectedRewards,
-        appointmentDetails?.map((ad: { id: number }) => ad.id)
+        appointmentDetails?.map((ad: { id: number }) => ad.id),
+        Number(appointmentData?.customerId),
+        Number(totalAmount - discountAmount),
+        Number(appointmentData?.bonusId)
       );
       if (response.data) {
         // message.success("Thanh toán thành công!");
