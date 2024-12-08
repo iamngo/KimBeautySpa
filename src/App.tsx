@@ -37,7 +37,9 @@ import {
   EVENT,
   GIFT,
   MANAGE_SCHEDULE,
+  PRICES,
   PRODUCT,
+  ROOM,
   SERVICE,
   SERVICE_CATEGORY,
   VOUCHER,
@@ -61,6 +63,8 @@ import SchedulePage from "./modules/Employee/pages/Schedule";
 import SalaryPage from "./modules/Employee/pages/Salary";
 import Products from "./modules/Customer/pages/Products";
 import EmployeeStatisticsPage from "./modules/Employee/pages/EmployeeStatisticsPage";
+import RoomManagement from "./modules/Manager/pages/RoomManagement";
+import PriceManagement from "./modules/Manager/pages/PriceManagement";
 
 const App: React.FC = () => {
   return (
@@ -92,6 +96,7 @@ const App: React.FC = () => {
         <Route path={WAGE} element={<WagePage />} />
         <Route path={VOUCHER} element={<VoucherPage />} />
         <Route path={GIFT} element={<GiftPage />} />
+        <Route path={ROOM} element={<RoomManagement />} />
       </Route>
 
       <Route path={EMPLOYEE_PATH} element={<EmployeeLayout />}>

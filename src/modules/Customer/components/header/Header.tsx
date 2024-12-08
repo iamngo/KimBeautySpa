@@ -122,12 +122,22 @@ const HeaderHomepage: React.FC = () => {
 
   const avatarMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="services" icon={<FaSpa />}>
-        Dịch vụ - Liệu trình của bạn
-      </Menu.Item>
-      <Menu.Item key="gifts" icon={<FaGift />}>
-        Tích điểm - Quà tặng
-      </Menu.Item>
+     {customer &&  
+    <>
+       <Menu.Item key="services" icon={<FaSpa />}>
+          Dịch vụ - Liệu trình của bạn
+        </Menu.Item>
+        <Menu.Item key="gifts" icon={<FaGift />}>
+          Tích điểm - Quà tặng
+        </Menu.Item>
+    </>}
+    {employee?.role === "admin" || employee?.role === "manager" ? (
+        <Menu.Item key="manage" icon={<GrSystem />}>
+          Quản lý hệ thống
+        </Menu.Item>
+      ) : (
+        ""
+      )}
       {employee?.role === "employee" ||
       employee?.role === "admin" ||
       employee?.role === "manager" ? (
@@ -137,13 +147,7 @@ const HeaderHomepage: React.FC = () => {
       ) : (
         ""
       )}
-      {employee?.role === "admin" || employee?.role === "manager" ? (
-        <Menu.Item key="manage" icon={<GrSystem />}>
-          Quản lý hệ thống
-        </Menu.Item>
-      ) : (
-        ""
-      )}
+      
       <Menu.Item key="profile" icon={<UserOutlined />}>
         Cập nhật thông tin
       </Menu.Item>

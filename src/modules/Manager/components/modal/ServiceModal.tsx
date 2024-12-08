@@ -4,8 +4,6 @@ import {
   Input,
   Modal,
   Select,
-  DatePicker,
-  Radio,
   Upload,
   Row,
   Col,
@@ -15,19 +13,30 @@ import React, { useEffect, useState } from "react";
 import { Service } from "../../types";
 import { MODE } from "../../../../utils/constants";
 import type { FormInstance } from "antd";
-import moment, { duration } from "moment";
 import {
+  createPrice,
   createService,
+  getAllEvent,
   getAllServiceCategory,
+  updatePrice,
   updateService,
 } from "../../../../services/api";
+import moment from "moment";
 
 interface ServiceModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   mode: string;
-  service?: Service;
+  service?: Service & {
+    originalPrice?: number;
+    price?: number;
+    specialPrice?: number;
+    commission?: number;
+    status?: string;
+    eventId?: string;
+  };
 }
+const { Option } = Select;
 
 const ServiceModal: React.FC<ServiceModalProps> = ({
   visible,
@@ -38,19 +47,32 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   const [form] = Form.useForm<FormInstance>();
   const [fileList, setFileList] = useState<any[]>([]);
   const [categories, setCategories] = useState<[]>([]);
+  const [event, setEvent] = useState<[]>([]);
   const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     if (visible) {
       fetchCategory();
+      fetchEvent();
       if (mode === MODE.ADD) {
         form.resetFields();
-        form.setFieldsValue({ status: "active" });
+        form.setFieldsValue({
+          status: "active",
+          price: 0,
+          specialPrice: 0,
+          commission: 0,
+          originalPrice: 0,
+        });
       } else if (mode === MODE.EDIT && service) {
         const formattedService = {
           ...service,
+          originalPrice: service?.originalPrice,
+          price: service?.price,
+          specialPrice: service?.specialPrice,
+          commission: service?.commission,
+          eventId: service?.eventId || null,
         };
-        if(service.image){
+        if (service.image) {
           setFileList([
             {
               uid: "-1",
@@ -70,12 +92,22 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     setCategories(response?.data);
   };
 
+  const fetchEvent = async () => {
+    try {
+      const response = await getAllEvent();
+      setEvent(response?.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy sự kiện:", error);
+      message.error("Lỗi khi lấy sự kiện!");
+    }
+  };
+
   const handleCancel = () => {
     form.resetFields();
     setVisible(false);
   };
 
-  const onFinish = async (values: Service) => {
+  const onFinish = async (values) => {
     if (mode === MODE.ADD) {
       try {
         const formData = new FormData();
@@ -94,19 +126,35 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
           })
         );
         const response = await createService(token, formData);
-        console.log(response);
         if (response.data) {
-          message.success("Thêm dịch vụ thành công!");
-          setVisible(false);
-        } else {
-          message.error("Lỗi thêm dịch vụ!");
-          console.log(response.error);
+          const priceService = {
+            originalPrice: 0,
+            price: Number(values.price),
+            specialPrice: Number(values.specialPrice),
+            commission: Number(values.commission),
+            applicableDate: moment().format("YYYY-MM-DD"),
+            type: "service",
+            status: "active",
+            foreignKeyId: response.data.id,
+            eventId: values.eventId ? Number(values.eventId) : null,
+          };
+          const responsePrice = await createPrice(token, priceService);
+          console.log(responsePrice);
+          if (responsePrice.data) {
+            message.success("Thêm dịch vụ thành công!");
+            setVisible(false);
+          } else {
+            message.error("Lỗi thêm dịch vụ!");
+            console.log(response.error);
+          }
         }
       } catch (error) {
         console.log("Validation failed:", error);
       }
     }
     if (mode === MODE.EDIT) {
+      console.log('hihi');
+      
       try {
         const formData = new FormData();
         formData.append(
@@ -125,12 +173,28 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         );
         const response = await updateService(token, values.id, formData);
         console.log(response);
+        
         if (response.data) {
-          message.success("Cập nhật dịch vụ thành công!");
-          setVisible(false);
-        } else {
-          message.error("Lỗi cập nhật!");
-          console.log(response.error);
+          const priceService = {
+            originalPrice: 0,
+            price: Number(values.price),
+            specialPrice: Number(values.specialPrice),
+            commission: Number(values.commission),
+            applicableDate: moment().format("YYYY-MM-DD"),
+            type: "service",
+            status: "active",
+            foreignKeyId: values.id,
+            eventId: values.eventId ? Number(values.eventId) : null,
+          };
+          const responsePrice = await updatePrice(token, priceService, service.priceId);
+          console.log(responsePrice);
+          if (responsePrice.data) {
+            message.success("Cập nhật dịch vụ thành công!");
+            setVisible(false);
+          } else {
+            message.error("Lỗi cập nhật dịch vụ!");
+            console.log(response.error);
+          }
         }
       } catch (error) {
         console.log("Validation failed:", error);
@@ -140,6 +204,8 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
 
   return (
     <Modal
+      width={700}
+      centered
       open={visible}
       onCancel={handleCancel}
       footer={null}
@@ -230,6 +296,41 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             </Form.Item>
           </Col>
         </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Giá Bán"
+              name="price"
+              rules={[{ required: true, message: "Vui lòng nhập giá bán!" }]}
+            >
+              <Input type="number" placeholder="Nhập giá bán" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Giá Khuyến Mãi" name="specialPrice">
+              <Input type="number" placeholder="Nhập giá khuyến mãi" />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Hoa Hồng" name="commission">
+              <Input type="number" placeholder="Nhập hoa hồng" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Sự Kiện" name="eventId">
+              <Select placeholder="Chọn sự kiện">
+                {event.map((event) => (
+                  <Option key={event.id} value={event.id}>
+                    {event.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">
             Xác nhận

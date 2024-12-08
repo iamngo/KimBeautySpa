@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Menu } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import {
@@ -30,6 +30,8 @@ import {
   EMPLOYEE,
   GIFT,
   MANAGE_SCHEDULE,
+  PRICES,
+  ROOM,
   SERVICE,
   SERVICE_CATEGORY,
   VOUCHER,
@@ -37,6 +39,8 @@ import {
 } from "../../../utils/constants";
 import { MdAccountBox } from "react-icons/md";
 import { FaGifts } from "react-icons/fa6";
+import { getInfoEmpByAccountId } from "../../../services/api";
+import { useBranch } from "../../../hooks/branchContext";
 
 const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -44,6 +48,35 @@ const { SubMenu } = Menu;
 const ManagerLayout: React.FC = () => {
   const navigate = useNavigate();
   const [selectedKey, setSelectedKey] = useState("1");
+  const token = localStorage.getItem("accessToken");
+  const { branchId, setBranchId } = useBranch();
+  const [userId, setUserId] = useState(null);
+  const [employee, setEmployee] = useState();
+
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken") || "";
+    if (accessToken !== "") {
+      const payload = accessToken.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payload));
+      setUserId(decodedPayload.id);
+      if (
+        decodedPayload.role === "admin" ||
+        decodedPayload.role === "manager" ||
+        decodedPayload.role === "employee"
+      ) {
+        const getEmployee = async () => {
+          const response = await getInfoEmpByAccountId(
+            token,
+            decodedPayload.id
+          );
+          setEmployee(response?.data);
+          setBranchId(response?.data?.branchId);
+        };
+        getEmployee();
+      }
+    }
+  }, [userId]);
 
   const handleMenuClick = (key: string, path: string) => {
     setSelectedKey(key);
@@ -152,20 +185,13 @@ const ManagerLayout: React.FC = () => {
               <FaClipboardList />
               <span>Loại dịch vụ</span>
             </Menu.Item>
-            {/* <Menu.Item
-              key="4-4"
-              onClick={() => handleMenuClick("4-4", "treatment-package")}
-            >
-              <FaBoxes />
-              <span>Gói điều trị</span>
-            </Menu.Item>
             <Menu.Item
-              key="4-5"
-              onClick={() => handleMenuClick("4-5", "treatment-service")}
+              key="4-4"
+              onClick={() => handleMenuClick("4-4", PRICES)}
             >
-              <FaClipboard />
-              <span>Dịch vụ điều trị</span>
-            </Menu.Item> */}
+              <FaClipboardList />
+              <span>Giá</span>
+            </Menu.Item>
           </SubMenu>
 
           {/* Quản lý Lịch Hẹn */}
@@ -179,42 +205,23 @@ const ManagerLayout: React.FC = () => {
             </Menu.Item>
 
           {/* Quản lý Cơ sở & Phòng */}
-          <SubMenu key="6" icon={<FaBuilding />} title="QL Cơ sở & Phòng">
+          {employee?.role === 'admin' && <SubMenu key="6" icon={<FaBuilding />} title="QL Cơ sở & Phòng">
            
-            <Menu.Item key="6-2" onClick={() => handleMenuClick("6-2", "room")}>
-              <FaDoorOpen />
-              <span>Phòng</span>
-            </Menu.Item>
-            <Menu.Item key="6-3" onClick={() => handleMenuClick("6-3", "bed")}>
-              <FaBed />
-              <span>Giường</span>
-            </Menu.Item>
-          </SubMenu>
+           <Menu.Item key="6-2" onClick={() => handleMenuClick("6-2", ROOM)}>
+             <FaDoorOpen />
+             <span>Quản lý Phòng</span>
+           </Menu.Item>
+         </SubMenu>}
 
           {/* Quản lý Sự Kiện */}
-          <SubMenu key="7" icon={<FaClipboard />} title="QL Sự Kiện">
             <Menu.Item
+            className="event"
               key="7-1"
               onClick={() => handleMenuClick("7-1", "events")}
             >
               <FaCalendarAlt />
-              <span>Sự kiện</span>
+              <span>QL Sự kiện</span>
             </Menu.Item>
-            <Menu.Item
-              key="7-2"
-              onClick={() => handleMenuClick("7-2", "detail-event")}
-            >
-              <FaClipboardList />
-              <span>Chi tiết sự kiện</span>
-            </Menu.Item>
-            <Menu.Item
-              key="7-3"
-              onClick={() => handleMenuClick("7-3", "prices")}
-            >
-              <FaMoneyBill />
-              <span>Giá</span>
-            </Menu.Item>
-          </SubMenu>
 
           {/* Quản lý Sản phẩm Sử dụng */}
           <SubMenu
