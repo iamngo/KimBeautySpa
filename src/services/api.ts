@@ -1189,3 +1189,71 @@ export const deleteEvent = async (token: string | null, id: number) => {
   });
   return response?.data;
 };
+
+export const getBedByRoomId = async (
+  token: string | null,
+  id: number,
+) => {
+  if (!token || !id) return;
+  const response = await axios.get(
+    `${API_URL}/${BED}/${ROOM}/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
+export const createRoom = async (
+  token: string | null,
+  room: object,
+) => {
+  if (!token || !room) return;
+  const response = await axios.post(
+    `${API_URL}/${ROOM}`,
+    room,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
+export const createBed = async (
+  token: string | null,
+  bed: object,
+) => {
+  if (!token || !bed) return;
+  const response = await axios.post(
+    `${API_URL}/${BED}`,
+    bed,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
+export const updateBed = async (
+  token: string | null,
+  bed: object,
+  id: number
+) => {
+  if (!token || !bed) return;
+  const response = await axios.put(
+    `${API_URL}/${BED}/${id}`,
+    bed,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};

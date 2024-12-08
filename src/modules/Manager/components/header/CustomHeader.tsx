@@ -90,6 +90,7 @@ const CustomHeader: React.FC = () => {
           onChange={handleBranchChange}
           style={{ width: "250px" }}
           suffixIcon={<FaCodeBranch />}
+          disabled={employee?.role === 'admin' ? false: true}
         >
           {branches?.map((branch) => (
             <Option key={branch.id} value={branch.id}>
