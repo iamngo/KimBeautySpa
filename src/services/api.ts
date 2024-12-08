@@ -1257,3 +1257,46 @@ export const updateBed = async (
   );
   return response?.data;
 };
+
+export const getAllPrice = async (page: number, limit: number) => {
+  if (!page || !limit) return;
+  const response = await axios.get(`${API_URL}/${PRICES}`, {
+    params: { page, limit },
+  });
+  return response?.data;
+};
+
+export const createPrice = async (
+  token: string | null,
+  data: object,
+) => {
+  if (!token || !data) return;
+  const response = await axios.post(
+    `${API_URL}/${PRICES}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
+
+export const updatePrice = async (
+  token: string | null,
+  data: object,
+  id: number
+) => {
+  if (!token || !data) return;
+  const response = await axios.put(
+    `${API_URL}/${PRICES}/${id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};

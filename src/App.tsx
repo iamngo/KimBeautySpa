@@ -37,6 +37,7 @@ import {
   EVENT,
   GIFT,
   MANAGE_SCHEDULE,
+  PRICES,
   PRODUCT,
   ROOM,
   SERVICE,
@@ -63,6 +64,7 @@ import SalaryPage from "./modules/Employee/pages/Salary";
 import Products from "./modules/Customer/pages/Products";
 import EmployeeStatisticsPage from "./modules/Employee/pages/EmployeeStatisticsPage";
 import RoomManagement from "./modules/Manager/pages/RoomManagement";
+import PriceManagement from "./modules/Manager/pages/PriceManagement";
 
 const App: React.FC = () => {
   return (

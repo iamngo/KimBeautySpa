@@ -30,6 +30,7 @@ import {
   EMPLOYEE,
   GIFT,
   MANAGE_SCHEDULE,
+  PRICES,
   ROOM,
   SERVICE,
   SERVICE_CATEGORY,
@@ -184,6 +185,13 @@ const ManagerLayout: React.FC = () => {
               <FaClipboardList />
               <span>Loại dịch vụ</span>
             </Menu.Item>
+            <Menu.Item
+              key="4-4"
+              onClick={() => handleMenuClick("4-4", PRICES)}
+            >
+              <FaClipboardList />
+              <span>Giá</span>
+            </Menu.Item>
           </SubMenu>
 
           {/* Quản lý Lịch Hẹn */}
@@ -203,36 +211,17 @@ const ManagerLayout: React.FC = () => {
              <FaDoorOpen />
              <span>Quản lý Phòng</span>
            </Menu.Item>
-           {/* <Menu.Item key="6-3" onClick={() => handleMenuClick("6-3", "bed")}>
-             <FaBed />
-             <span>Giường</span>
-           </Menu.Item> */}
          </SubMenu>}
 
           {/* Quản lý Sự Kiện */}
-          <SubMenu key="7" icon={<FaClipboard />} title="QL Sự Kiện">
             <Menu.Item
+            className="event"
               key="7-1"
               onClick={() => handleMenuClick("7-1", "events")}
             >
               <FaCalendarAlt />
-              <span>Sự kiện</span>
+              <span>QL Sự kiện</span>
             </Menu.Item>
-            <Menu.Item
-              key="7-2"
-              onClick={() => handleMenuClick("7-2", "detail-event")}
-            >
-              <FaClipboardList />
-              <span>Chi tiết sự kiện</span>
-            </Menu.Item>
-            <Menu.Item
-              key="7-3"
-              onClick={() => handleMenuClick("7-3", "prices")}
-            >
-              <FaMoneyBill />
-              <span>Giá</span>
-            </Menu.Item>
-          </SubMenu>
 
           {/* Quản lý Sản phẩm Sử dụng */}
           <SubMenu
