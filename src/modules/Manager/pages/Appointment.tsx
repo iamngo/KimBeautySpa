@@ -16,7 +16,7 @@ import { Appointment, Customer, Employee, Product, Service } from "../types";
 import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
-import { MODE } from "../../../utils/constants";
+import { API_URL, MODE } from "../../../utils/constants";
 import AppointmentModal from "../components/modal/AppointmentModal";
 import { useBranch } from "../../../hooks/branchContext";
 import dayjs from "dayjs";
@@ -74,7 +74,7 @@ const AppointmentPage: React.FC = () => {
   const [refreshPage, setRefreshPage] = useState(false);
 
   useEffect(() => {
-    const socket = io("http://localhost:3000");
+    const socket = io(API_URL);
     // // Nhận tin nhắn từ server
     socket.on("notify-payment", (response) => {
       console.log("Socket : ", response);
@@ -96,6 +96,7 @@ const AppointmentPage: React.FC = () => {
   useEffect(() => {
     if (branchId) {
       fetchServicesAndAppointments();
+      handleRowClick(selectedAppointment);
     }
   }, [branchId, visibleModal, refreshPage]);
 
@@ -215,7 +216,8 @@ const AppointmentPage: React.FC = () => {
   const handleDetailColumnChange = (value: string[]) => {
     setSelectedDetailColumns(
       value.includes("all")
-        ? ["time",
+        ? [
+            "time",
             "status",
             "category",
             "serviceName",
@@ -254,7 +256,6 @@ const AppointmentPage: React.FC = () => {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
-            
           })
           .replace(",", "");
       },
@@ -269,36 +270,32 @@ const AppointmentPage: React.FC = () => {
         a.customerName?.localeCompare(b.customerName),
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
       render: (status: string) => {
         let color;
         let displayText;
 
         switch (status) {
-          case 'paid':
-            color = 'green';
-            displayText = 'Đã thanh toán';
+          case "paid":
+            color = "green";
+            displayText = "Đã thanh toán";
             break;
-          case 'unpaid':
-            color = 'volcano';
-            displayText = 'Chưa thanh toán';
+          case "unpaid":
+            color = "volcano";
+            displayText = "Chưa thanh toán";
             break;
-          case 'canceled':
-            color = 'red';
-            displayText = 'Đã hủy';
+          case "canceled":
+            color = "red";
+            displayText = "Đã hủy";
             break;
           default:
-            color = 'default';
+            color = "default";
             displayText = status; // Hiển thị trạng thái gốc nếu không khớp
         }
 
-        return (
-          <Tag color={color}>
-            {displayText}
-          </Tag>
-        );
+        return <Tag color={color}>{displayText}</Tag>;
       },
     },
     {
@@ -355,36 +352,32 @@ const AppointmentPage: React.FC = () => {
         let displayText;
 
         switch (status) {
-          case 'confirmed':
-            color = 'blue';
-            displayText = 'Đã xác nhận';
+          case "confirmed":
+            color = "blue";
+            displayText = "Đã xác nhận";
             break;
-          case 'implement':
-            color = 'orange';
-            displayText = 'Đang thực hiện';
+          case "implement":
+            color = "orange";
+            displayText = "Đang thực hiện";
             break;
-          case 'finished':
-            color = 'green';
-            displayText = 'Hoàn thành';
+          case "finished":
+            color = "green";
+            displayText = "Hoàn thành";
             break;
-          case 'canceled':
-            color = 'red';
-            displayText = 'Đã hủy';
+          case "canceled":
+            color = "red";
+            displayText = "Đã hủy";
             break;
-          case 'paid':
-            color = 'success';
-            displayText = 'Đã thanh toán';
+          case "paid":
+            color = "success";
+            displayText = "Đã thanh toán";
             break;
           default:
-            color = 'default';
+            color = "default";
             displayText = status; // Hiển thị trạng thái gốc nếu không khớp
         }
 
-        return (
-          <Tag color={color}>
-            {displayText}
-          </Tag>
-        );
+        return <Tag color={color}>{displayText}</Tag>;
       },
     },
     {
@@ -406,9 +399,9 @@ const AppointmentPage: React.FC = () => {
       key: "expense",
       sorter: (a: Appointment, b: Appointment) => a.expense - b.expense,
       render: (expense: number) => {
-        return expense.toLocaleString('vi-VN', {
-          style: 'currency',
-          currency: 'VND',
+        return expense.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
         });
       },
     },
@@ -435,24 +428,20 @@ const AppointmentPage: React.FC = () => {
         let displayText;
 
         switch (category) {
-          case 'services':
-            color = 'red';
-            displayText = 'Dịch vụ';
+          case "services":
+            color = "red";
+            displayText = "Dịch vụ";
             break;
-          case 'products':
-            color = 'blue';
-            displayText = 'Sản phẩm';
+          case "products":
+            color = "blue";
+            displayText = "Sản phẩm";
             break;
           default:
-            color = 'default';
+            color = "default";
             displayText = category; // Hiển thị phân loại gốc nếu không khớp
         }
 
-        return (
-          <Tag color={color}>
-            {displayText}
-          </Tag>
-        );
+        return <Tag color={color}>{displayText}</Tag>;
       },
     },
     {
@@ -549,6 +538,7 @@ const AppointmentPage: React.FC = () => {
       setLoadingDetails(false);
     }
   };
+
   const handleRefreshDetail = () => {
     if (selectedRecord) {
       handleRowClick(selectedRecord);

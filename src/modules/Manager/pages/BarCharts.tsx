@@ -1,5 +1,5 @@
 import { Modal, Tag } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid } from "recharts";
 import PieCharts from "./PieCharts";
 
@@ -26,6 +26,13 @@ export default function BarCharts({ datas }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [color, setColor] = useState("blue");
+  const [max, setMax] = useState(
+    Math.max(...datas.map((dt) => Number(dt.revenue)))
+  );
+
+  useEffect(() => {
+    setMax(Math.max(...datas.map((dt) => Number(dt.revenue))));
+  }, [JSON.stringify(datas)]);
 
   const showModal = (data, color) => {
     setIsModalOpen(true);
@@ -156,7 +163,7 @@ export default function BarCharts({ datas }) {
         height={500}
         data={datas}
         margin={{
-          top: 50,
+          top: 30,
           right: 30,
           left: 20,
           bottom: 5,
@@ -164,7 +171,7 @@ export default function BarCharts({ datas }) {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" width={200} />
-        <YAxis />
+        <YAxis dataKey={"revenue"} type="number" domain={[0, max]} />
         <Bar
           dataKey="revenue"
           fill="#8884d8"

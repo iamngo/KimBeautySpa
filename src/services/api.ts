@@ -95,8 +95,6 @@ export const getBranchById = async (token: string | null, id: number) => {
 };
 
 export const getAllServiceCategory = async (page: number, limit: number) => {
-  console.log(`${API_URL}/${SERVICE_CATEGORY}?page=${page}&limit=${limit}`);
-
   if (!page || !limit) return;
   const response = await axios.get(`${API_URL}/${SERVICE_CATEGORY}`, {
     params: { page, limit },
@@ -140,8 +138,6 @@ export const getEmployeeByDateTime = async (
   const response = await axios.get(`${API_URL}/${EMPLOYEE}/appointments`, {
     params: { branchId, dateTime },
   });
-  console.log(response.data);
-
   return response?.data;
 };
 
@@ -305,8 +301,6 @@ export const getAppointmentByCustomerId = async (
       },
     }
   );
-  console.log(response?.data);
-
   return response?.data;
 };
 
