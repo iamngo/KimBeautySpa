@@ -17,7 +17,6 @@ import {
   getAppointmentDetailById,
   getCustomerById,
   getGiftByCustomerId,
-  getInfoByAccountId,
   getVoucherById,
   getGiftById,
   paymentMomo,
@@ -54,7 +53,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const token = localStorage.getItem("accessToken");
   const [customer, setCustomer] = useState();
   const [form] = Form.useForm();
-  const [appointmentDetails, setAppointmentDetails] = useState();
+  const [appointmentDetails, setAppointmentDetails] = useState([]);
   const [gifts, setGifts] = useState();
   const [selectedRewards, setSelectedRewards] = useState<string[]>([]);
 
@@ -142,7 +141,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         })
     );
     setAppointmentDetails(appointmentDetails);
-    console.log(appointmentDetails);
   };
 
   const calculateTotal = () => {
@@ -292,9 +290,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <Col span={12}>
                 <Form.Item label="Giờ thực hiện" style={{ marginBottom: 12 }}>
                   <Text strong>
-                    {appointmentData?.dateTime
-                      ? moment(appointmentData.dateTime).format("HH:mm")
-                      : ""}
+                    {appointmentDetails[0]?.time
+                      }
                   </Text>
                 </Form.Item>
               </Col>
