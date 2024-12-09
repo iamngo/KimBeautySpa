@@ -185,13 +185,6 @@ const ManagerLayout: React.FC = () => {
               <FaClipboardList />
               <span>Loại dịch vụ</span>
             </Menu.Item>
-            <Menu.Item
-              key="4-4"
-              onClick={() => handleMenuClick("4-4", PRICES)}
-            >
-              <FaClipboardList />
-              <span>Giá</span>
-            </Menu.Item>
           </SubMenu>
 
           {/* Quản lý Lịch Hẹn */}
