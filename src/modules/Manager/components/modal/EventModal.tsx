@@ -159,17 +159,18 @@ const EventModal: React.FC<EventModalProps> = ({
       title={mode === MODE.ADD ? "Thêm sự kiện" : "Cập nhật sự kiện"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
-       <Row gutter={16}>
+        <Row gutter={16}>
           <Col span={12}>
-            <Form.Item
-              label="ID:"
-              name="id"
-            >
-              <Input placeholder="ID sự kiện" disabled/>
+            <Form.Item label="ID:" name="id">
+              <Input placeholder="ID sự kiện" disabled />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Ảnh" name="image" rules={[{ required: true, message: "Vui lòng thêm ảnh sự kiện" }]}>
+            <Form.Item
+              label="Ảnh"
+              name="image"
+              rules={[{ required: true, message: "Vui lòng thêm ảnh sự kiện" }]}
+            >
               <Upload
                 listType="picture-card"
                 fileList={fileList}
@@ -181,8 +182,8 @@ const EventModal: React.FC<EventModalProps> = ({
               </Upload>
             </Form.Item>
           </Col>
-       </Row>
-      <Row gutter={16}>
+        </Row>
+        <Row gutter={16}>
           <Col span={16}>
             <Form.Item
               label="Tên sự kiện:"
@@ -196,18 +197,22 @@ const EventModal: React.FC<EventModalProps> = ({
             <Form.Item
               label="Giảm giá (%):"
               name="discount"
-              rules={[{ required: true, message: "Vui lòng nhập phần trăm giảm giá" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập phần trăm giảm giá" },
+              ]}
             >
-              <Input placeholder="Nhập % giảm giá" type="number"/>
+              <Input placeholder="Nhập % giảm giá" type="number" />
             </Form.Item>
           </Col>
-      </Row>
-       <Row gutter={16}>
+        </Row>
+        <Row gutter={16}>
           <Col span={12}>
             <Form.Item
               label="Ngày bắt đầu:"
               name="startDate"
-              rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn ngày bắt đầu" },
+              ]}
             >
               <DatePicker
                 style={{ width: "100%" }}
@@ -220,7 +225,9 @@ const EventModal: React.FC<EventModalProps> = ({
             <Form.Item
               label="Ngày hết hạn:"
               name="expiryDate"
-              rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc" }]}
+              rules={[
+                { required: true, message: "Vui lòng chọn ngày kết thúc" },
+              ]}
             >
               <DatePicker
                 style={{ width: "100%" }}
@@ -229,7 +236,7 @@ const EventModal: React.FC<EventModalProps> = ({
               />
             </Form.Item>
           </Col>
-       </Row>
+        </Row>
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">
             Xác nhận
