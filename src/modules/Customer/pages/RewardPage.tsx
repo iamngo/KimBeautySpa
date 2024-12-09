@@ -133,16 +133,19 @@ const RewardPage: React.FC = () => {
   const fetchGiftByCustomerId = async () => {
     try {
       const response = await getGiftByCustomerId(token, customer.id);
+      console.log(response);
+      
       const giftsWithDetails = await Promise.all(
-        response.data.map(async (gift) => {
-          if (gift.category === "gift") {
+        response?.data.map(async (gift) => {
+          if (gift.category === "gift" ) {
             const giftDetails = await getGiftById(gift.giftId);
 
             return {
               ...gift,
               name: giftDetails?.data.name,
             };
-          } else {
+          }
+          if (gift.category === "voucher") {
             const giftDetails = await getVoucherById(gift.giftId);
             console.log(giftDetails.data);
             return {
@@ -154,7 +157,6 @@ const RewardPage: React.FC = () => {
         })
       );
       setMyGifts(giftsWithDetails);
-      console.log(giftsWithDetails);
     } catch (error) {
       console.error("Error fetching gifts:", error);
     }
@@ -166,29 +168,29 @@ const RewardPage: React.FC = () => {
   const myGiftMenu = (
     <Menu>
       {Array.isArray(myGifts) && myGifts.length > 0 ? (
-        myGifts.map((gift) => (
-          <Menu.Item key={gift.id}>
-            {gift.category === "voucher" ? (
+        myGifts.filter(gift => gift.status !== 'used').map((gift) => (
+          <Menu.Item key={gift?.id} style={{ margin:'5px 2px', border: '1px dashed'}}>
+            {gift?.category === "voucher" ? (
               <div className="gift-item">
                 <div className="gift-info">
                   <p>
-                    <strong>Voucher giảm giá {gift.discount} %</strong>
+                    <strong>Voucher giảm giá {gift?.discount} %</strong>
                   </p>
                   <p>
                     Thời hạn sử dụng:{" "}
-                    {new Date(gift.expiryDate).toLocaleDateString()}
+                    {new Date(gift?.expiryDate).toLocaleDateString()}
                   </p>
                   <p className="gift-count">
-                    Số lượng: <span>{gift.quantity || 1}</span>
+                    Số lượng: <span>{gift?.quantity || 1}</span>
                   </p>
                 </div>
               </div>
             ) : (
               <div className="gift-item">
                 <div className="gift-info">
-                  <p><strong>Quà: {gift.name}</strong></p>
+                  <p><strong>Quà: {gift?.name}</strong></p>
                   <p className="gift-count">
-                    Số lượng: <span>{gift.quantity || 1}</span>
+                    Số lượng: <span>{gift?.quantity || 1}</span>
                   </p>
                 </div>
               </div>

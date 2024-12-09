@@ -126,7 +126,16 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
       appointment?.dateTime,
       branchId
     );
-    setListTime(response?.data);
+    const currentHour = moment().hour(); // Lấy giờ hiện tại
+    const currentMinute = moment().minute(); // Lấy phút hiện tại
+
+    // Lọc danh sách thời gian để chỉ lấy các giờ sau giờ hiện tại
+    const filteredListTime = response?.data.filter((timeSlot) => {
+      const [hour, minute] = timeSlot.time.split(':').map(Number);
+      return hour > currentHour || (hour === currentHour && minute > currentMinute);
+    });
+
+    setListTime(filteredListTime);
   };
 
   const fetchProduct = async () => {

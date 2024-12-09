@@ -331,7 +331,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         </Row>
 
         <Form.Item>
-          <Button htmlType="submit" block className="btn-custom">
+            <Button htmlType="submit" block className="btn-custom">
             Xác nhận
           </Button>
         </Form.Item>
