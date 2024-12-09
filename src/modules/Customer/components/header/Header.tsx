@@ -125,7 +125,7 @@ const HeaderHomepage: React.FC = () => {
      {customer &&  
     <>
        <Menu.Item key="services" icon={<FaSpa />}>
-          Dịch vụ - Liệu trình của bạn
+          Dịch vụ - Sản phẩm của bạn
         </Menu.Item>
         <Menu.Item key="gifts" icon={<FaGift />}>
           Tích điểm - Quà tặng
