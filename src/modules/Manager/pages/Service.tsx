@@ -298,7 +298,7 @@ const ServicePage: React.FC = () => {
         <Select
           placeholder="Chọn phân loại dịch vụ"
           onChange={handleCategoryChange}
-          style={{ width: "600px" }} // Thay đổi kích thước và khoảng cách
+          style={{ width: "600px" }}
         >
         <Option value="all">Tất cả</Option>
           {categories.map((category) => (

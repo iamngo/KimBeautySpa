@@ -56,6 +56,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       fetchEvent();
       if (mode === MODE.ADD) {
         form.resetFields();
+        setFileList([]);
         form.setFieldsValue({
           status: "active",
           price: 0,
@@ -153,8 +154,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       }
     }
     if (mode === MODE.EDIT) {
-      console.log('hihi');
-      
       try {
         const formData = new FormData();
         formData.append(
@@ -320,7 +319,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
           </Col>
           <Col span={12}>
             <Form.Item label="Sự Kiện" name="eventId">
-              <Select placeholder="Chọn sự kiện">
+              <Select placeholder="Chọn sự kiện" allowClear>
                 {event.map((event) => (
                   <Option key={event.id} value={event.id}>
                     {event.name}
