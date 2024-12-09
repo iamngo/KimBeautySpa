@@ -1151,7 +1151,7 @@ export const updateStatusAppointment = async (
   if (!token || !id || !status) return;
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT}/${id}/status`,
-    status,
+    {status: status},
     {
       headers: {
         Authorization: `Bearer ${token}`,

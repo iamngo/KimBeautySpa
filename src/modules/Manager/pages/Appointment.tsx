@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, DatePicker, message, Skeleton, Tabs, Tag } from "antd";
+import { Button, DatePicker, message, Skeleton, Tabs, Tag, Modal } from "antd";
 import { TiPlusOutline } from "react-icons/ti";
 import DataTable from "../components/table/DataTable";
 import "../styles.scss";
@@ -11,9 +11,9 @@ import {
   getAllProduct,
   getAllService,
   getAppointmentDetailById,
+  updateStatusAppointment,
 } from "../../../services/api";
 import { Appointment, Customer, Employee, Product, Service } from "../types";
-import { MdDeleteForever } from "react-icons/md";
 import Search from "antd/es/input/Search";
 import { BiEdit } from "react-icons/bi";
 import { API_URL, MODE } from "../../../utils/constants";
@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import AppointmentDetailModal from "../components/modal/AppointmentDetailModal";
 import InvoiceModal from "../components/modal/InvoiceModal";
 import { io } from "socket.io-client";
+import { MdFreeCancellation } from "react-icons/md";
 
 const AppointmentPage: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -323,8 +324,13 @@ const AppointmentPage: React.FC = () => {
       render: (text: string, record: Employee) => (
         <div>
           <div>
-            <Button type="link" onClick={() => handleEditEmployee(record)}>
-              <BiEdit />
+            <Button
+              type="link"
+              style={{ color: record.status === "unpaid" ? "red" :'' }}
+              onClick={() => handleCancelAppointment(record)}
+              disabled={record.status === "unpaid" ? false : true}
+            >
+              <MdFreeCancellation />
             </Button>
           </div>
         </div>
@@ -472,10 +478,22 @@ const AppointmentPage: React.FC = () => {
     setVisibleModalDetail(true);
     setMode(MODE.ADD);
   };
-  const handleEditEmployee = (appointment: Appointment) => {
-    setVisibleModal(true);
-    setMode(MODE.EDIT);
-    setDataEdit(appointment);
+  const handleCancelAppointment = (appointment: Appointment) => {
+    Modal.confirm({
+      title: "Xác nhận hủy lịch hẹn",
+      content: "Bạn có chắc chắn muốn hủy lịch hẹn này?",
+      okText: "Có",
+      cancelText: "Không",
+      onOk: async () => {
+        const response = await updateStatusAppointment(token, appointment.id, 'canceled');
+        if(response.data){
+          message.success('Hủy lịch hẹn thành công!');
+          fetchServicesAndAppointments();
+        } else {
+          message.error("Hủy lịch hẹn thất bại!");
+        }
+      },
+    });
   };
   const handleEditAppointmentDetail = (appointmentDetail) => {
     setVisibleModalDetail(true);
