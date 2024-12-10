@@ -58,7 +58,7 @@ const ManageSchedule: React.FC = () => {
       fetchSchedule(selectedDate.format("YYYY-MM-DD"));
     }
     fetchEmployee();
-  }, [isModalVisible, selectedDate]);
+  }, [isModalVisible, selectedDate, branchId]);
 
   const fetchSchedule = async (date: string) => {
     try {
