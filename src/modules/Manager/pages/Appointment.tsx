@@ -12,6 +12,7 @@ import {
   getAllService,
   getAppointmentDetailById,
   updateStatusAppointment,
+  updateStatusAppointmentDetailByAppointmentId,
 } from "../../../services/api";
 import { Appointment, Customer, Employee, Product, Service } from "../types";
 import Search from "antd/es/input/Search";
@@ -486,9 +487,13 @@ const AppointmentPage: React.FC = () => {
       cancelText: "Không",
       onOk: async () => {
         const response = await updateStatusAppointment(token, appointment.id, 'canceled');
-        if(response.data){
+        const responseDetail = await updateStatusAppointmentDetailByAppointmentId(token,"canceled", appointment.id);
+        console.log(responseDetail);
+        
+        if( response.data && responseDetail.data){
           message.success('Hủy lịch hẹn thành công!');
           fetchServicesAndAppointments();
+          handleRefreshDetail();
         } else {
           message.error("Hủy lịch hẹn thất bại!");
         }
