@@ -65,6 +65,8 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   const [selectedDate, setSelectedDate] = useState<moment.Moment>(moment());
 
   useEffect(() => {
+    console.log(appointment);
+    
     getServiceCategory();
     if (mode === MODE.ADD) {
       form.resetFields();
@@ -126,16 +128,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
       appointment?.dateTime,
       branchId
     );
-    const currentHour = moment().hour(); // Lấy giờ hiện tại
-    const currentMinute = moment().minute(); // Lấy phút hiện tại
-
-    // Lọc danh sách thời gian để chỉ lấy các giờ sau giờ hiện tại
-    const filteredListTime = response?.data.filter((timeSlot) => {
-      const [hour, minute] = timeSlot.time.split(':').map(Number);
-      return hour > currentHour || (hour === currentHour && minute > currentMinute);
-    });
-
-    setListTime(filteredListTime);
+    setListTime(response?.data);
   };
 
   const fetchProduct = async () => {

@@ -186,6 +186,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
         phone: customer.phone,
       });
     } else {
+      form.setFieldsValue({});
       form.resetFields();
     }
   }, [visible, customer, form]);
@@ -235,7 +236,7 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
   };
 
   return (
-    <Modal open={visible} onCancel={handleCancel} footer={null}>
+    <Modal open={visible} onCancel={handleCancel} footer={null} centered>
       {/* Thêm logo vào form */}
       <div className="logo-container">
         <img
