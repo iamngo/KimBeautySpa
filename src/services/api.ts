@@ -206,6 +206,84 @@ export const getRevenueOfServiceByDate = async (
   return response?.data;
 };
 
+export const getRevenueOfOutStandingServiceByDate = async (
+  token: string | null,
+  branchId: number,
+  date: string
+) => {
+  if (!branchId || !date) return;
+  const response = await axios.get(
+    `${API_URL}/${SERVICE}/statistic/out-standings`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { branchId, date },
+    }
+  );
+  return response?.data;
+};
+
+export const getStatisticAppointmentDetailByServiceId = async (
+  token: string | null,
+  serviceId: number,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  if (!serviceId || !branchId || !month || !year) return;
+  const response = await axios.get(
+    `${API_URL}/${APPOINTMENT_DETAIL}/statistic/service`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { serviceId, branchId, month, year },
+    }
+  );
+  return response?.data;
+};
+
+export const getStatisticAppointmentDetailByEmployeeId = async (
+  token: string | null,
+  employeeId: number,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  if (!employeeId || !branchId || !month || !year) return;
+  const response = await axios.get(
+    `${API_URL}/${APPOINTMENT_DETAIL}/statistic/employee`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { employeeId, branchId, month, year },
+    }
+  );
+  return response?.data;
+};
+
+export const getStatisticAppointmentDetailByProductId = async (
+  token: string | null,
+  productId: number,
+  branchId: number,
+  month: number,
+  year: number
+) => {
+  if (!productId || !branchId || !month || !year) return;
+  const response = await axios.get(
+    `${API_URL}/${APPOINTMENT_DETAIL}/statistic/product`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { productId, branchId, month, year },
+    }
+  );
+  return response?.data;
+};
+
 export const getSalaryOfEmployeeByMonthYear = async (
   token: string | null,
   branchId: number,
@@ -1151,7 +1229,7 @@ export const updateStatusAppointment = async (
   if (!token || !id || !status) return;
   const response = await axios.put(
     `${API_URL}/${APPOINTMENT}/${id}/status`,
-    {status: status},
+    { status: status },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -1184,53 +1262,33 @@ export const deleteEvent = async (token: string | null, id: number) => {
   return response?.data;
 };
 
-export const getBedByRoomId = async (
-  token: string | null,
-  id: number,
-) => {
+export const getBedByRoomId = async (token: string | null, id: number) => {
   if (!token || !id) return;
-  const response = await axios.get(
-    `${API_URL}/${BED}/${ROOM}/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.get(`${API_URL}/${BED}/${ROOM}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 
-export const createRoom = async (
-  token: string | null,
-  room: object,
-) => {
+export const createRoom = async (token: string | null, room: object) => {
   if (!token || !room) return;
-  const response = await axios.post(
-    `${API_URL}/${ROOM}`,
-    room,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.post(`${API_URL}/${ROOM}`, room, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 
-export const createBed = async (
-  token: string | null,
-  bed: object,
-) => {
+export const createBed = async (token: string | null, bed: object) => {
   if (!token || !bed) return;
-  const response = await axios.post(
-    `${API_URL}/${BED}`,
-    bed,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.post(`${API_URL}/${BED}`, bed, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 
@@ -1240,15 +1298,11 @@ export const updateBed = async (
   id: number
 ) => {
   if (!token || !bed) return;
-  const response = await axios.put(
-    `${API_URL}/${BED}/${id}`,
-    bed,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.put(`${API_URL}/${BED}/${id}`, bed, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 
@@ -1260,20 +1314,13 @@ export const getAllPrice = async (page: number, limit: number) => {
   return response?.data;
 };
 
-export const createPrice = async (
-  token: string | null,
-  data: object,
-) => {
+export const createPrice = async (token: string | null, data: object) => {
   if (!token || !data) return;
-  const response = await axios.post(
-    `${API_URL}/${PRICES}`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.post(`${API_URL}/${PRICES}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };
 
@@ -1283,14 +1330,10 @@ export const updatePrice = async (
   id: number
 ) => {
   if (!token || !data) return;
-  const response = await axios.put(
-    `${API_URL}/${PRICES}/${id}`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await axios.put(`${API_URL}/${PRICES}/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response?.data;
 };

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./statistic.scss";
 import {
   getExpenseByMonthYear,
+  getRevenueOfOutStandingServiceByDate,
   getRevenueOfServiceByDate,
   getSalaryOfEmployeeByMonthYear,
 } from "../../../services/api";
 import { useBranch } from "../../../hooks/branchContext";
 import BarCharts from "./BarCharts";
-import { DatePicker, Button, message } from "antd";
+import { DatePicker, Button, message, Tag } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -16,10 +17,14 @@ import "../../../../public/fonts/Roboto-Black-normal.js";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { GrDocumentPdf } from "react-icons/gr";
 import axios from "axios";
+import PieCharts from "./PieCharts.js";
 
 const Dashboard: React.FC = () => {
   const { branchId, setBranchId } = useBranch();
   const [services, setServices] = useState([]);
+  const [outStandingServices, setOutStandingServices] = useState([]);
+  const [informationOutStandingServices, setInformationOutStandingServices] =
+    useState([]);
   const [totalServices, setTotalServices] = useState(0);
   const [employees, setEmployees] = useState([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -47,6 +52,25 @@ const Dashboard: React.FC = () => {
           return {
             ...o,
             category: "service",
+          };
+        }),
+      ]);
+    };
+
+    const getApiRevenueOfOutStandingServiceByDate = async () => {
+      const response = await getRevenueOfOutStandingServiceByDate(
+        token,
+        branchId,
+        selectedDate.format("YYYY-MM-DD") + ""
+      );
+      const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+      setOutStandingServices([
+        ...response?.data?.map((o, index) => {
+          return {
+            ...o,
+            revenue: Number(o.revenue),
+            quantities: Number(o.quantities),
+            color: COLORS[index % COLORS.length],
           };
         }),
       ]);
@@ -97,6 +121,7 @@ const Dashboard: React.FC = () => {
     };
 
     getApiRevenueOfServiceByDate();
+    getApiRevenueOfOutStandingServiceByDate();
     getApiSalaryOfEmployeeByMonthYear();
     getApiExpenseByMonthYear();
   }, [branchId, selectedDate]);
@@ -542,17 +567,99 @@ const Dashboard: React.FC = () => {
       <div className="chart-section">
         <h2>Thống Kê Dịch Vụ</h2>
 
-        <BarCharts datas={services} />
+        <BarCharts
+          datas={services}
+          dateFormat={selectedDate?.format("YYYY-MM-DD").split("-")}
+        />
+      </div>
+
+      <div className="chart-section">
+        <h2>Thống Kê Dịch Vụ Nổi Bật</h2>
+
+        <div
+          className="container-chart"
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          <PieCharts data={outStandingServices} />
+          <div
+            className="information-chart"
+            style={{
+              width: "30%",
+            }}
+          >
+            {outStandingServices?.map((info) => (
+              <div
+                key={JSON.stringify(info)}
+                style={{
+                  border: `1px solid ${info.color}`,
+                  padding: "10px",
+                  margin: "10px",
+                  borderRadius: "10px",
+                }}
+              >
+                <div className="content">
+                  <Tag
+                    color={info.color}
+                    style={{
+                      width: "110px",
+                    }}
+                  >
+                    Tên dịch vụ :{" "}
+                  </Tag>
+                  <Tag color={info.color}>{info.name}</Tag>
+                </div>
+                <div className="content">
+                  <Tag
+                    color={info.color}
+                    style={{
+                      width: "110px",
+                    }}
+                  >
+                    Số lần thực hiện :{" "}
+                  </Tag>
+                  <Tag color={info.color}>{info.quantities}</Tag>
+                </div>
+                <div className="content">
+                  <Tag
+                    color={info.color}
+                    style={{
+                      width: "110px",
+                    }}
+                  >
+                    Doanh thu :{" "}
+                  </Tag>
+                  <Tag color={info.color}>
+                    {info.revenue.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </Tag>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="chart-section">
         <h2>Thống Kê Nhân Viên</h2>
-        <BarCharts datas={employees} />
+        <BarCharts
+          datas={employees}
+          dateFormat={selectedDate?.format("YYYY-MM-DD").split("-")}
+        />
       </div>
 
       <div className="chart-section">
         <h2>Thống Kê Sản Phẩm</h2>
-        <BarCharts datas={products} />
+        <BarCharts
+          datas={products}
+          dateFormat={selectedDate?.format("YYYY-MM-DD").split("-")}
+        />
       </div>
     </div>
   );

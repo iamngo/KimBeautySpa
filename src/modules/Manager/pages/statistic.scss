@@ -14,7 +14,8 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1); // Sử dụng cubic-bezier cho hiệu ứng mượt mà hơn
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+      box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1); // Sử dụng cubic-bezier cho hiệu ứng mượt mà hơn
 
     // Hiệu ứng bóng đổ
     &:hover {
@@ -26,9 +27,15 @@
     animation: slideIn 0.7s ease-in-out forwards; // Thay đổi thời gian và easing
 
     // Đặt độ trễ cho từng phần tử
-    &:nth-child(1) { animation-delay: 0.1s; }
-    &:nth-child(2) { animation-delay: 0.2s; }
-    &:nth-child(3) { animation-delay: 0.3s; }
+    &:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
 
     .title-statsitic-basic {
       font-size: 30px;
@@ -55,4 +62,8 @@
     transform: translateY(0); // Kết thúc ở vị trí ban đầu
     opacity: 1; // Kết thúc với độ mờ đầy đủ
   }
+}
+
+.chart-section {
+  margin: 20px 0px;
 }
