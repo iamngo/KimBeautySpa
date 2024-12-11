@@ -217,7 +217,7 @@ const ManagerLayout: React.FC = () => {
             </Menu.Item>
 
           {/* Quản lý Sản phẩm Sử dụng */}
-          <SubMenu
+          {/* <SubMenu
             key="8"
             icon={<FaShoppingCart />}
             title="QL Sản phẩm Sử dụng"
@@ -236,7 +236,7 @@ const ManagerLayout: React.FC = () => {
               <FaMoneyBill />
               <span>Chi phí nội bộ</span>
             </Menu.Item>
-          </SubMenu>
+          </SubMenu> */}
 
           <Menu.Item
             className="account"
