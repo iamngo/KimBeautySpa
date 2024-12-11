@@ -2,6 +2,12 @@ import { Modal, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid } from "recharts";
 import PieCharts from "./PieCharts";
+import {
+  getStatisticAppointmentDetailByEmployeeId,
+  getStatisticAppointmentDetailByProductId,
+  getStatisticAppointmentDetailByServiceId,
+} from "../../../services/api";
+import { useBranch } from "../../../hooks/branchContext";
 
 const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "red", "pink"];
 
@@ -22,13 +28,17 @@ const TriangleBar = (props) => {
   return <path d={getPath(x, y, width, height)} stroke="none" fill={fill} />;
 };
 
-export default function BarCharts({ datas }) {
+export default function BarCharts({ datas, dateFormat }) {
+  const token = localStorage.getItem("accessToken") || "";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [color, setColor] = useState("blue");
   const [max, setMax] = useState(
     Math.max(...datas.map((dt) => Number(dt.revenue)))
   );
+  const [modalContent, setModalContent] = useState(null);
+  const [informations, setInformations] = useState([]);
+  const { branchId, setBranchId } = useBranch();
 
   useEffect(() => {
     setMax(Math.max(...datas.map((dt) => Number(dt.revenue))));
@@ -42,10 +52,12 @@ export default function BarCharts({ datas }) {
 
   const handleOk = () => {
     setIsModalOpen(false);
+    setModalContent(null);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setModalContent(null);
   };
 
   const getRoleName = (role: string) => {
@@ -61,95 +73,524 @@ export default function BarCharts({ datas }) {
     }
   };
 
-  const renderDetails = (item) => {
+  useEffect(() => {
+    if (data) {
+      const fetchDetails = async () => {
+        const content = await renderDetails(data);
+        setModalContent(content);
+      };
+      fetchDetails();
+    }
+  }, [data]);
+
+  const generateRandomColors = (count: number) => {
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+      const randomColor = `#${Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, "0")}`;
+      colors.push(randomColor);
+    }
+    return colors;
+  };
+
+  const renderDetails = async (item) => {
     switch (item.category) {
-      case "service":
+      case "service": {
+        const response = await getStatisticAppointmentDetailByServiceId(
+          token,
+          item.id,
+          branchId,
+          dateFormat[1],
+          dateFormat[0]
+        );
+        const COLORS = generateRandomColors(response?.data?.length);
+        const datas = response?.data?.map((o, index: number) => {
+          return {
+            ...o,
+            quantities: Number(o.quantities),
+            color: COLORS[index % COLORS.length],
+          };
+        });
         return (
-          <div>
-            <p>
-              <b>Tên dịch vụ:</b>
-              <Tag color={color}>{item.name}</Tag>
-            </p>
-            <p>
-              <b>Doanh thu:</b>{" "}
-              <Tag color={color}>
-                {Number(item.revenue).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                border: `1px solid ${color}`,
+                padding: "10px",
+                margin: "10px",
+                borderRadius: "10px",
+              }}
+            >
+              <p>
+                <Tag
+                  color={color}
+                  style={{ width: "80px", marginRight: "16px" }}
+                >
+                  Tên dịch vụ:
+                </Tag>
+                <Tag color={color}>{item.name}</Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "80px" }}>
+                  Doanh thu:
+                </Tag>{" "}
+                <Tag color={color}>
+                  {Number(item.revenue).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Tag>
+              </p>
+              <p>
+                <Tag
+                  color={color}
+                  style={{ width: "80px", marginRight: "16px" }}
+                >
+                  Số lượng:
+                </Tag>
+                <Tag color={color}>{item.quantities}</Tag>
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <PieCharts data={datas} />
+              <div
+                className="information-chart"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {datas?.map((info) => {
+                  return (
+                    <div
+                      key={JSON.stringify(info)}
+                      style={{
+                        border: `1px solid ${info.color}`,
+                        padding: "10px",
+                        margin: "10px",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Ngày thực hiện :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {info.dateTime.slice(0, 10)}
+                        </Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Số lần thực hiện :{" "}
+                        </Tag>
+                        <Tag color={info.color}>{Number(info.quantities)}</Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Doanh thu :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {Number(info.revenue).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </Tag>
+                      </div>
+                    </div>
+                  );
                 })}
-              </Tag>
-            </p>
-            <p>
-              <b>Số lượng:</b>
-              <Tag color={color}>{item.quantities}</Tag>
-            </p>
+              </div>
+            </div>
           </div>
         );
+      }
 
-      case "employee":
+      case "employee": {
+        const response = await getStatisticAppointmentDetailByEmployeeId(
+          token,
+          item.id,
+          branchId,
+          dateFormat[1],
+          dateFormat[0]
+        );
+        const COLORS = generateRandomColors(response?.data?.length);
+        const datas = response?.data?.map((o, index: number) => {
+          return {
+            ...o,
+            quantities: Number(o.quantities),
+            color: COLORS[index % COLORS.length],
+          };
+        });
         return (
-          <div>
-            <p>
-              <b>Họ và tên:</b>
-              <Tag color={color}>{item.fullName}</Tag>
-            </p>
-            <p>
-              <b>Vai trò:</b> {getRoleName(item.role)}
-            </p>
-            <p>
-              <b>Giờ làm việc:</b>
-              <Tag color={color}>{item.hours} giờ</Tag>
-            </p>
-            <p>
-              <b>Lương:</b>{" "}
-              <Tag color={color}>
-                {Number(item.salary).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                border: `1px solid ${color}`,
+                padding: "10px",
+                margin: "10px",
+                borderRadius: "10px",
+              }}
+            >
+              <p>
+                <Tag
+                  color={color}
+                  style={{ width: "85px", marginRight: "16px" }}
+                >
+                  Họ và tên:
+                </Tag>
+                <Tag color={color}>{item.fullName}</Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "85px" }}>
+                  Vai trò:
+                </Tag>{" "}
+                {getRoleName(item.role)}
+              </p>
+              <p>
+                <Tag
+                  color={color}
+                  style={{ width: "85px", marginRight: "16px" }}
+                >
+                  Giờ làm việc:
+                </Tag>
+                <Tag color={color}>{item.hours} giờ</Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "85px" }}>
+                  Lương:
+                </Tag>{" "}
+                <Tag color={color}>
+                  {Number(item.salary).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "85px" }}>
+                  Hoa hồng:
+                </Tag>{" "}
+                <Tag color={color}>
+                  {Number(item.commissions).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "85px" }}>
+                  Doanh thu:
+                </Tag>{" "}
+                <Tag color={color}>
+                  {Number(item.revenue).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Tag>
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <PieCharts data={datas} />
+              <div
+                className="information-chart"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {datas?.map((info) => {
+                  return (
+                    <div
+                      key={JSON.stringify(info)}
+                      style={{
+                        border: `1px solid ${info.color}`,
+                        padding: "10px",
+                        margin: "10px",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Ngày thực hiện :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {info.dateTime.slice(0, 10)}
+                        </Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Số lần thực hiện :{" "}
+                        </Tag>
+                        <Tag color={info.color}>{Number(info.quantities)}</Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Giờ làm việc :{" "}
+                        </Tag>
+                        <Tag color={info.color}>{Number(info.hours)} giờ</Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Hoa hồng :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {Number(info.commission).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Lương :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {Number(info.salary).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Doanh thu :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {(
+                            Number(info.commission) + Number(info.salary)
+                          ).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </Tag>
+                      </div>
+                    </div>
+                  );
                 })}
-              </Tag>
-            </p>
-            <p>
-              <b>Hoa hồng:</b>{" "}
-              <Tag color={color}>
-                {Number(item.commissions).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </Tag>
-            </p>
-            <p>
-              <b>Doanh thu:</b>{" "}
-              <Tag color={color}>
-                {Number(item.revenue).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </Tag>
-            </p>
+              </div>
+            </div>
           </div>
         );
+      }
 
-      case "product":
+      case "product": {
+        const response = await getStatisticAppointmentDetailByProductId(
+          token,
+          item.id,
+          branchId,
+          dateFormat[1],
+          dateFormat[0]
+        );
+        const COLORS = generateRandomColors(response?.data?.length);
+        const datas = response?.data?.map((o, index: number) => {
+          return {
+            ...o,
+            quantities: Number(o.quantities),
+            color: COLORS[index % COLORS.length],
+          };
+        });
         return (
-          <div>
-            <p>
-              <b>Tên sản phẩm:</b> <Tag color={color}>{item.name}</Tag>
-            </p>
-            <p>
-              <b>Doanh thu:</b>{" "}
-              <Tag color={color}>
-                {Number(item.revenue).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                border: `1px solid ${color}`,
+                padding: "10px",
+                margin: "10px",
+                borderRadius: "10px",
+              }}
+            >
+              <p>
+                <Tag color={color} style={{ width: "90px" }}>
+                  Tên sản phẩm:
+                </Tag>{" "}
+                <Tag color={color}>{item.name}</Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "90px" }}>
+                  Doanh thu:
+                </Tag>{" "}
+                <Tag color={color}>
+                  {Number(item.revenue).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Tag>
+              </p>
+              <p>
+                <Tag color={color} style={{ width: "90px" }}>
+                  Số lượng bán:
+                </Tag>{" "}
+                <Tag color={color}>{item.quantities}</Tag>
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <PieCharts data={datas} />
+              <div
+                className="information-chart"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {datas?.map((info) => {
+                  return (
+                    <div
+                      key={JSON.stringify(info)}
+                      style={{
+                        border: `1px solid ${info.color}`,
+                        padding: "10px",
+                        margin: "10px",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Ngày thực hiện :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {info.dateTime.slice(0, 10)}
+                        </Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Số lần thực hiện :{" "}
+                        </Tag>
+                        <Tag color={info.color}>{Number(info.quantities)}</Tag>
+                      </div>
+                      <div className="content">
+                        <Tag
+                          color={info.color}
+                          style={{
+                            width: "110px",
+                          }}
+                        >
+                          Doanh thu :{" "}
+                        </Tag>
+                        <Tag color={info.color}>
+                          {Number(info.revenue).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </Tag>
+                      </div>
+                    </div>
+                  );
                 })}
-              </Tag>
-            </p>
-            <p>
-              <b>Số lượng bán:</b> <Tag color={color}>{item.quantities}</Tag>
-            </p>
+              </div>
+            </div>
           </div>
         );
+      }
 
       default:
         return <Tag color={color}>{"Thông tin không xác định"}</Tag>;
@@ -177,7 +618,6 @@ export default function BarCharts({ datas }) {
           fill="#8884d8"
           shape={<TriangleBar />}
           label={{ position: "top" }}
-          onClick={() => console.log("Hello")}
         >
           {datas?.map((entry, index) => (
             <Cell
@@ -193,9 +633,9 @@ export default function BarCharts({ datas }) {
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        width={800}
       >
-        {data ? renderDetails(data) : <p>Không có dữ liệu</p>}
-        {/* <PieCharts data={data} /> */}
+        {modalContent || <p>Đang tải dữ liệu...</p>}
       </Modal>
     </>
   );

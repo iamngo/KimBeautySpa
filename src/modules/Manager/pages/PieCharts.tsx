@@ -1,5 +1,5 @@
-import React, { PureComponent } from "react";
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
+import React, { useEffect } from "react";
+import { PieChart, Pie, Cell } from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -31,22 +31,20 @@ const renderCustomizedLabel = ({
 };
 
 export default function PieCharts({ data }) {
-  console.log(data);
-
   return (
     <PieChart width={400} height={400}>
       <Pie
         data={data}
-        cx="60%"
+        cx="50%"
         cy="50%"
         labelLine={false}
         label={renderCustomizedLabel}
         outerRadius={150}
         fill="#8884d8"
-        dataKey="value"
+        dataKey="quantities"
       >
-        {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        {data?.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={entry.color} />
         ))}
       </Pie>
     </PieChart>
