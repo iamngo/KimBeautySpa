@@ -41,7 +41,7 @@ const EmployeePage: React.FC = () => {
 
   useEffect(() => {
     fetchEmployees();
-  }, [storedEmployees, visibleModal]);
+  }, [storedEmployees, visibleModal, branchId]);
 
   const fetchEmployees = async () => {
     try {

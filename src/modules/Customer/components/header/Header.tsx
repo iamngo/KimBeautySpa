@@ -148,9 +148,9 @@ const HeaderHomepage: React.FC = () => {
         ""
       )}
       
-      <Menu.Item key="profile" icon={<UserOutlined />}>
+     {customer && <Menu.Item key="profile" icon={<UserOutlined />}>
         Cập nhật thông tin
-      </Menu.Item>
+      </Menu.Item>} 
       <Menu.Item key="logout" icon={<LogoutOutlined />}>
         Đăng xuất
       </Menu.Item>

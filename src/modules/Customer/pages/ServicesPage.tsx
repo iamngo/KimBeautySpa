@@ -45,7 +45,9 @@ Thông tin chi tiết:
 ${service.specialPrice ? `- Khuyến mãi còn: ${new Intl.NumberFormat('vi-VN').format(service.specialPrice)} VNĐ` : ''}
 Bạn có thể đặt lịch ngay hoặc tìm hiểu thêm thông tin chi tiết.`;
 
-    chatboxRef.current?.openChatbox(consultMessage);
+    setTimeout(() => {
+      chatboxRef.current?.openChatbox(consultMessage, service.name);
+    }, 1000);
   };
 
   //lọc dịch vụ dựa trên từ khóa tìm kiếm đã debounce

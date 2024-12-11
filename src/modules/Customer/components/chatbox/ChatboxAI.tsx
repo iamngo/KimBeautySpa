@@ -56,10 +56,12 @@ const ChatboxAI = forwardRef<ChatboxAIRef, ChatboxAIProps>((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    openChatbox: (message?: string) => {
+    openChatbox: (message?: string, serviceName?: string) => {
       setIsOpen(true);
       addWelcomeMessage();
-      
+      if (serviceName) {
+        setMessages(prev => [...prev, { text: serviceName, isUser: true }]);
+      }
       if (message) {
         setIsTyping(true);
         setTimeout(() => {
@@ -153,7 +155,7 @@ const generateResponse = (message: string) => {
   'đẹp': 'Bạn rất xinh đẹp',
         // Thông tin chung
         'giá': 'Các dịch vụ của chúng tôi có giá từ 300.000đ đến 2.000.000đ tùy loại. Bạn quan tâm đến dịch vụ nào?',
-        'đặt lịch': 'Để đặt lịch, bạn có thể click vào nút "Đặt lịch ngay" hoặc gọi số 0123456789',
+        'đặt lịch': 'Để đặt lịch, bạn có thể click vào nút "Đặt lịch ngay" hoặc gọi số 0375950082',
         'địa chỉ': 'Kim Beauty & Spa tọa lạc tại 123 Đường ABC, Quận XYZ, TP.HCM',
         'giờ làm việc': 'Chúng tôi mở cửa từ 9:00 - 21:00 các ngày trong tuần',
         

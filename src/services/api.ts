@@ -1337,3 +1337,20 @@ export const updatePrice = async (
   });
   return response?.data;
 };
+
+export const updateStatusAppointmentDetailByAppointmentId = async (
+  token: string | null,
+  status: string,
+  id: number
+) => {
+  if (!token || !status || !id) return;
+  const response = await axios.put(
+    `${API_URL}/${APPOINTMENT_DETAIL}/${APPOINTMENT}/${id}/status`,{status: status},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response?.data;
+};
