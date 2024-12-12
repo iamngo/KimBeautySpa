@@ -311,9 +311,9 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
                 <Select.Option key={1} value="manager">
                   Manager
                 </Select.Option>
-                <Select.Option key={2} value="admin">
+                {/* <Select.Option key={2} value="admin">
                   Admin
-                </Select.Option>
+                </Select.Option> */}
                 <Select.Option key={3} value="employee">
                   Employee
                 </Select.Option>

@@ -327,7 +327,7 @@ const AppointmentPage: React.FC = () => {
           <div>
             <Button
               type="link"
-              style={{ color: record.status === "unpaid" ? "red" :'' }}
+              style={{ color: record.status === "unpaid" ? "red" : "" }}
               onClick={() => handleCancelAppointment(record)}
               disabled={record.status === "unpaid" ? false : true}
             >
@@ -461,6 +461,7 @@ const AppointmentPage: React.FC = () => {
           <div>
             <Button
               type="link"
+              disabled={selectedAppointment?.status !== "unpaid"}
               onClick={() => handleEditAppointmentDetail(record)}
             >
               <BiEdit />
@@ -486,12 +487,21 @@ const AppointmentPage: React.FC = () => {
       okText: "Có",
       cancelText: "Không",
       onOk: async () => {
-        const response = await updateStatusAppointment(token, appointment.id, 'canceled');
-        const responseDetail = await updateStatusAppointmentDetailByAppointmentId(token,"canceled", appointment.id);
+        const response = await updateStatusAppointment(
+          token,
+          appointment.id,
+          "canceled"
+        );
+        const responseDetail =
+          await updateStatusAppointmentDetailByAppointmentId(
+            token,
+            "canceled",
+            appointment.id
+          );
         console.log(responseDetail);
-        
-        if( response.data && responseDetail.data){
-          message.success('Hủy lịch hẹn thành công!');
+
+        if (response.data && responseDetail.data) {
+          message.success("Hủy lịch hẹn thành công!");
           fetchServicesAndAppointments();
           handleRefreshDetail();
         } else {
@@ -512,6 +522,9 @@ const AppointmentPage: React.FC = () => {
 
   const handleDateChange = (date: any, dateString: string) => {
     setSearchDate(dateString);
+    setLoadingDetails(true);
+    setAppointmentDetails(null);
+    setLoadingDetails(false);
   };
 
   const handleRowClick = async (record: Appointment) => {
@@ -684,8 +697,9 @@ const AppointmentPage: React.FC = () => {
             icon={<TiPlusOutline />}
             size="large"
             onClick={handleAddAppointmentDetail}
+            disabled={selectedAppointment?.status !== "unpaid"}
             style={{
-              opacity: selectedAppointment ? 1 : 0.5,
+              opacity: selectedAppointment?.status !== "unpaid" ? 0.5 : 1,
               pointerEvents: selectedAppointment ? "auto" : "none",
             }}
           >
