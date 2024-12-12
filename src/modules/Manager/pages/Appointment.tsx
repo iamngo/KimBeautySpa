@@ -522,6 +522,9 @@ const AppointmentPage: React.FC = () => {
 
   const handleDateChange = (date: any, dateString: string) => {
     setSearchDate(dateString);
+    setLoadingDetails(true);
+    setAppointmentDetails(null);
+    setLoadingDetails(false);
   };
 
   const handleRowClick = async (record: Appointment) => {
