@@ -559,6 +559,16 @@ export const createAccount = async (account: Account) => {
   return response?.data;
 };
 
+export const updateAccount = async (token: string | null, data: Account) => {
+  if (!token || !data) return;
+  const response = await axios.put(`${API_URL}/${ACCOUNT}/${data?.id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response?.data;
+};
+
 export const createEmployee = async (
   token: string | null,
   formData: FormData
@@ -1345,7 +1355,8 @@ export const updateStatusAppointmentDetailByAppointmentId = async (
 ) => {
   if (!token || !status || !id) return;
   const response = await axios.put(
-    `${API_URL}/${APPOINTMENT_DETAIL}/${APPOINTMENT}/${id}/status`,{status: status},
+    `${API_URL}/${APPOINTMENT_DETAIL}/${APPOINTMENT}/${id}/status`,
+    { status: status },
     {
       headers: {
         Authorization: `Bearer ${token}`,

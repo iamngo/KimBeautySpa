@@ -132,14 +132,14 @@ export default function BarCharts({ datas, dateFormat }) {
               <p>
                 <Tag
                   color={color}
-                  style={{ width: "80px", marginRight: "16px" }}
+                  style={{ width: "100px", marginRight: "16px" }}
                 >
                   Tên dịch vụ:
                 </Tag>
                 <Tag color={color}>{item.name}</Tag>
               </p>
               <p>
-                <Tag color={color} style={{ width: "80px" }}>
+                <Tag color={color} style={{ width: "100px" }}>
                   Doanh thu:
                 </Tag>{" "}
                 <Tag color={color}>
@@ -152,7 +152,7 @@ export default function BarCharts({ datas, dateFormat }) {
               <p>
                 <Tag
                   color={color}
-                  style={{ width: "80px", marginRight: "16px" }}
+                  style={{ width: "100px", marginRight: "16px" }}
                 >
                   Số lần thực hiện:
                 </Tag>

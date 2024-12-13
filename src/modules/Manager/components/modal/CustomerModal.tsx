@@ -71,7 +71,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
         const formData = new FormData();
         const account = {
           phone: values.phone,
-          password: "123456",
+          password: "Customer@123",
           type: "customer",
           status: "active",
         };
@@ -108,7 +108,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
       console.log(values);
       try {
         const formData = new FormData();
-        const customer= {
+        const customer = {
           id: values.id,
           fullName: values.fullName,
           gender: values.gender,
@@ -116,7 +116,8 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
           phone: values.phone,
           email: values.email ? values.email : null,
           address: values.address,
-          image: "image.png",
+          image:
+            "https://kimbeautyspas.s3.ap-southeast-1.amazonaws.com/9b0c8e11-7887-4319-af7b-e2b8112d01e3-quynh-aka-la-ai-99-hinh-anh-ve-quynh-aka-hai-huoc-1535_901.jpg",
           accountId: values.accountId,
         };
         formData.append(
@@ -128,20 +129,19 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
         if (response?.data !== null) {
           message.success("Cập nhật thành công!");
           setVisible(!visible);
-        }else{
-          message.error('Cập nhật thất bại!');
+        } else {
+          message.error("Cập nhật thất bại!");
           console.log(response.error);
         }
       } catch (error) {
         console.log(error);
-        
       }
     }
   };
 
   return (
     <Modal
-    centered
+      centered
       open={visible}
       onCancel={handleCancel}
       footer={null}
