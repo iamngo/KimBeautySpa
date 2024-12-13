@@ -56,13 +56,9 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
   const currentDateTime = new Date();
   const currentDate = currentDateTime.toISOString().split("T")[0]; // Format: YYYY-MM-DD
   const currentHour = currentDateTime.getHours();
-  const dateTimeString = `${currentDate} ${currentHour
-    .toString()
-    .padStart(2, "0")}:00:00`;
   const token = localStorage.getItem("accessToken");
   const [listTime, setListTime] = useState(null);
   const [time, setTime] = useState(null);
-  const [selectedDate, setSelectedDate] = useState<moment.Moment>(moment());
 
   useEffect(() => {
     console.log(appointment);
@@ -89,7 +85,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
     if (room?.roomId) {
       getBedByServiceAndDate();
     }
-  }, [room, dateTimeString]);
+  }, [room, appointment, time, selectedServiceId]);
 
   useEffect(() => {
     if (
@@ -128,7 +124,20 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
       appointment?.dateTime,
       branchId
     );
-    setListTime(response?.data);
+    
+    const currentDate = moment().format('YYYY-MM-DD'); // Ngày hiện tại
+    const selectedDateMoment = appointment?.dateTime;
+    const date = moment();
+    // Nếu ngày được chọn là ngày hiện tại, chỉ hiển thị các giờ sau thời gian hiện tại cộng thêm 1 giờ
+    if (currentDate === selectedDateMoment) {
+      const oneHourLater = date.add(1, 'hours').format("HH:mm"); // Thêm 1 giờ vào thời gian hiện tại
+      const filteredTimes = response?.data.filter(
+        (timeSlot: { time: string }) => timeSlot.time > oneHourLater
+      );
+      setListTime(filteredTimes);
+    } else {
+      setListTime(response?.data); // Nếu không phải ngày hiện tại, hiển thị tất cả giờ
+    }
   };
 
   const fetchProduct = async () => {
@@ -227,7 +236,7 @@ const AppointmentDetailModal: React.FC<UpdateAppointmentModalProps> = ({
 
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
-      dateTimeString,
+      `${appointment?.dateTime} ${time}:00`,
       Number(branchId),
       room?.roomId
     );

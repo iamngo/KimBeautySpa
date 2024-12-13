@@ -230,7 +230,7 @@ const AttendanceChecking: React.FC = () => {
 
         if (record.checkOutTime === "00:00:00" || !record.checkOutTime) {
           return (
-            <Button type="primary" onClick={() => handleCheckOut(record)}>Check-out</Button>
+            <Button type="primary" onClick={() => handleCheckOut(record)} disabled={!isToday} style={{opacity: isToday? 1: 0.5}}>Check-out</Button>
           );
         }
 
