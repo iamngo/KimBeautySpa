@@ -49,7 +49,7 @@ const ServiceDetail: React.FC = () => {
   }, [id]);
 
   const fetchServiceDetail = async () => {
-    const response = await getServiceById(id); // Gọi API để lấy thông tin chi tiết dịch vụ
+    const response = await getServiceById(id);
     if (response.data !== null) {
       const price = await getPricesByForeignKeyId(id);
       const detailsResponse = await getDetailServiceByServiceId(id);
@@ -57,7 +57,7 @@ const ServiceDetail: React.FC = () => {
       { image: response.data.image },
       ...detailsResponse.data,
     ];
-      setService(response.data);
+      setService(response?.data);
       setPrice(price.data[0]);
       setDetails(mergedDetails);
       setSelectedImage(response.data.image);
@@ -79,7 +79,7 @@ const ServiceDetail: React.FC = () => {
         visible={visible}
         setVisible={setVisible}
         userId={userId}
-        serviceId={service.id}
+        serviceId={service?.id}
         categoryId={category?.id}
       />
       <Breadcrumb className="breadcrumb">

@@ -79,15 +79,21 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
     getBedByServiceAndDate();
   }, [selectedBranch, selectedDate, selectedServiceId, time]);
 
+
   useEffect(() => {
     if (serviceId && categoryId) {
-      form.setFieldsValue({
-        service: serviceId,
-      });
-      setSelectedCategoryId(categoryId);
-      setSelectedServiceId(serviceId);
+      // Tìm tên dịch vụ tương ứng với serviceId
+      const service = servicesByCategory[categoryId]?.find(service => service.id === serviceId);
+      
+      if (service) {
+        form.setFieldsValue({
+          service: `${service.id}-${service.specialPrice}`,
+        });
+        setSelectedCategoryId(categoryId);
+        setSelectedServiceId(serviceId);
+      }
     }
-  }, [serviceId, categoryId, form]);
+  }, [visible, serviceId, categoryId, form]);
 
   const getInfoCustomer = async () => {
     const response = await getInfoByAccountId(token, userId);
@@ -170,8 +176,6 @@ const ModalRegister: React.FC<ModalRegisterProps> = ({
 
   const fetchCategoryById = async () => {
     const response = await getCategoryServiceById(selectedCategoryId);
-    console.log(response?.data);
-
     setRoom(response?.data);
   };
 
