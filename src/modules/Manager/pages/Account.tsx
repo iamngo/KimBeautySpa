@@ -157,6 +157,7 @@ const AccountPage: React.FC = () => {
         setVisible={setVisibleModal}
         mode={mode}
         account={dataEdit}
+        token={token}
       />
       <div className="header-container">
         <h2>Quản lý tài khoản</h2>

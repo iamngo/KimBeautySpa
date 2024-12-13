@@ -56,7 +56,7 @@ const Authenticate: React.FC = () => {
         {
           size: "invisible", // Invisible hoặc normal
           callback: (response) => {
-            console.log("Recaptcha verified successfully");
+            console.log("Recaptcha verified successfully", response);
           },
           "expired-callback": () => {
             console.log("Recaptcha expired, please verify again.");
@@ -64,6 +64,7 @@ const Authenticate: React.FC = () => {
         }
       );
       window.recaptchaVerifier.render().then((widgetId) => {
+        window.recaptchaWidgetId = widgetId;
         console.log(`Recaptcha widget ID: ${widgetId}`);
       });
     }
@@ -87,7 +88,14 @@ const Authenticate: React.FC = () => {
             auth,
             formatPh,
             appVerifier
-          );
+          )
+            .then((confirmationResult) => {
+              window.confirmationResult = confirmationResult;
+              console.log("SMS sent. Awaiting user input for OTP...");
+            })
+            .catch((error) => {
+              console.error("Error during sign-in:", error);
+            });
           setLoading(false);
           console.log("OTP sent successfully:", confirmationResult);
           message.success("Gửi OTP thành công!");
@@ -121,7 +129,7 @@ const Authenticate: React.FC = () => {
           const payload = response.data.data.access_token.split(".")[1];
           const decodedPayload = JSON.parse(atob(payload));
           console.log(decodedPayload);
-          
+
           message.success("Đăng nhập thành công!");
           localStorage.setItem("accessToken", response.data.data.access_token);
           navigate(`${HOME}`);

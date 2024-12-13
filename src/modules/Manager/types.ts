@@ -1,6 +1,7 @@
 export interface Account {
   id?: number;
   phone: string;
+  password: string;
   type: string;
   status: string;
 }

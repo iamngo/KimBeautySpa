@@ -107,7 +107,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         const formData = new FormData();
         const account = {
           phone: values.phone,
-          password: "123456",
+          password: "Employee@123",
           type: "employee",
           status: "active",
         };
@@ -120,7 +120,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
           address: values.address,
           role: values.role,
           status: values.status,
-          image: "image.png",
+          image:
+            "https://kimbeautyspas.s3.ap-southeast-1.amazonaws.com/53453e3e-b94c-4698-9815-efe27ba0ece4-quynh-aka-5-e1680714220964.jpg",
           wageId: wageId,
           branchId: branchId,
         };
@@ -176,8 +177,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({
         if (response?.data !== null) {
           message.success("Cập nhật thành công!");
           setVisible(!visible);
-        }else{
-          message.error('Cập nhật thất bại!');
+        } else {
+          message.error("Cập nhật thất bại!");
           console.log(response.error);
         }
       } catch (error) {
