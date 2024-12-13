@@ -126,18 +126,17 @@ const RoomManagement: React.FC = () => {
     setIsBedModalVisible(false);
   };
 
-  const handleUpdateBedStatus = async (
-    bed
-  ) => {
+  const handleUpdateBedStatus = async (bed) => {
     const newStatus = bed.status === "active" ? "inactive" : "active";
     const bedUpdate = {
-      name: bed.name,
+      name: bed?.name,
       status: newStatus,
-      roomId: bed.roomId
-    }
+      roomId: bed?.roomId,
+    };
     try {
-      const response = await updateBed(token, bedUpdate, bed.id);
+      const response = await updateBed(token, bedUpdate, bed?.id);
       console.log("Cập nhật trạng thái giường:", response.data);
+
       if (response.data) {
         setBeds((prev) => ({
           ...prev,
@@ -161,15 +160,15 @@ const RoomManagement: React.FC = () => {
       <div className="header-container">
         <h2>Quản lý phòng và giường</h2>
         <div className="status-indicators">
-        <div className="status-item">
-          <span className="status-color active"></span>
-          <span>Giường đang hoạt động</span>
+          <div className="status-item">
+            <span className="status-color active"></span>
+            <span>Giường đang hoạt động</span>
+          </div>
+          <div className="status-item">
+            <span className="status-color inactive"></span>
+            <span>Giường tạm ngưng</span>
+          </div>
         </div>
-        <div className="status-item">
-          <span className="status-color inactive"></span>
-          <span>Giường tạm ngưng</span>
-        </div>
-      </div>
         <Button
           className="btn-add"
           type="primary"

@@ -140,7 +140,6 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
     setEmployees(response?.data);
     console.log(`${selectedDate} ${time}:00`);
-    
   };
   const getBedByServiceAndDate = async () => {
     const response = await getBedByServiceIdAndDate(
@@ -237,10 +236,12 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
   };
 
   const onFinish = async (values) => {
+    console.log(values);
+
     if (mode === MODE.ADD) {
       try {
         const appointment = {
-          dateTime: `${values.date.format("YYYY-MM-DD")}`,
+          dateTime: `${values.date.format("YYYY-MM-DD")} ${values.time}:00`,
           time: `${values.time}:00`,
           status: "confirmed",
           category: "services",
@@ -270,13 +271,12 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
         status: values.status,
       });
       console.log(response);
-      
-      if(response.data){
-        message.success('Cập nhật trạng thái thành công!');
-        setVisible(!visible);
 
+      if (response.data) {
+        message.success("Cập nhật trạng thái thành công!");
+        setVisible(!visible);
       } else {
-        message.error('Cập nhật trạng thái thất bại');
+        message.error("Cập nhật trạng thái thất bại");
       }
     }
   };
@@ -289,218 +289,235 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       title={mode === MODE.ADD ? "Thêm lịch hẹn" : "Cập nhật lịch hẹn"}
     >
       <Form key={mode} layout="vertical" form={form} onFinish={onFinish}>
-      {mode === MODE.ADD ? 
-      <>
-        <Row gutter={16}>
-          <Col span={4}>
-            <Form.Item label="ID" name="id">
-              <Input type="number" placeholder="ID" disabled />
-            </Form.Item>
-          </Col>
-          <Col span={10}>
-            <Form.Item label="Trạng thái" name="status">
-            <Select
-                placeholder="Chọn trạng thái"
-                disabled={mode === MODE.ADD ? true : false}
-              >
-                <Select.Option key={1} value={"unpaid"}>
-                  Chưa thanh toán
-                </Select.Option>
-                <Select.Option key={2} value={"paid"}>
-                  Đã thanh toán
-                </Select.Option>
-                <Select.Option key={3} value={"canceled"}>
-                  Đã hủy
-                </Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={10}>
-            <Form.Item
-              label="Chọn tài khoản"
-              name="accountId"
-              rules={[{ required: true, message: "Vui lòng chọn tài khoản" }]}
-            >
-              <Select
-                placeholder="Chọn tài khoản"
-                showSearch
-                onChange={(value) => {
-                  handleSelectAccount(value);
-                }}
-                filterOption={(input, option) =>
-                  option && option.children
-                    ? option.children.includes(input)
-                    : false
-                }
-                allowClear
-              >
-                {accounts?.map((account) => (
-                  <Select.Option key={account.id} value={account.id}>
-                    ID{account.id} - {account.phone}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="Họ và tên"
-              name="fullName"
-              rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
-            >
-              <Input placeholder="Nhập họ và tên" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Số điện thoại:"
-              name="phone"
-              rules={[
-                { required: true, message: "Vui lòng nhập số điện thoại" },
-              ]}
-            >
-              <Input placeholder="Nhập số điện thoại" />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item
-              label="B1. Chọn dịch vụ:"
-              name="service"
-              rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
-            >
-              <Select
-                placeholder="Chọn dịch vụ"
-                onChange={(value) => {
-                  setSelectedServiceId(Number(value.split(" - ")[0]));
-                  setExpense(Number(value.split(" - ")[1]));
-                  const categoryId = Object.keys(servicesByCategory).find(
-                    (categoryId) =>
-                      servicesByCategory[categoryId].some(
-                        (service) =>
-                          service.id === Number(value.split(" - ")[0])
-                      )
-                  );
-                  setSelectedCategoryId(Number(categoryId)); // Lưu ID của category
-                }}
-              >
-                {/* Sử dụng OptGroup để nhóm dịch vụ theo phân loại */}
-                {serviceCategory?.map((category) => (
-                  <Select.OptGroup key={category.id} label={category.name}>
-                    {servicesByCategory[category.id]?.map((service) => (
-                      <Select.Option
-                        key={service.id}
-                        value={`${service.id} - ${service.specialPrice}`}
-                      >
-                        {service.name} -{" "}
-                        {service.specialPrice.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
+        {mode === MODE.ADD ? (
+          <>
+            <Row gutter={16}>
+              <Col span={4}>
+                <Form.Item label="ID" name="id">
+                  <Input type="number" placeholder="ID" disabled />
+                </Form.Item>
+              </Col>
+              <Col span={10}>
+                <Form.Item label="Trạng thái" name="status">
+                  <Select
+                    placeholder="Chọn trạng thái"
+                    disabled={mode === MODE.ADD ? true : false}
+                  >
+                    <Select.Option key={1} value={"unpaid"}>
+                      Chưa thanh toán
+                    </Select.Option>
+                    <Select.Option key={2} value={"paid"}>
+                      Đã thanh toán
+                    </Select.Option>
+                    <Select.Option key={3} value={"canceled"}>
+                      Đã hủy
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={10}>
+                <Form.Item
+                  label="Chọn tài khoản"
+                  name="accountId"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn tài khoản" },
+                  ]}
+                >
+                  <Select
+                    placeholder="Chọn tài khoản"
+                    showSearch
+                    onChange={(value) => {
+                      handleSelectAccount(value);
+                    }}
+                    filterOption={(input, option) =>
+                      option && option.children
+                        ? option.children.includes(input)
+                        : false
+                    }
+                    allowClear
+                  >
+                    {accounts?.map((account) => (
+                      <Select.Option key={account.id} value={account.id}>
+                        ID{account.id} - {account.phone}
                       </Select.Option>
                     ))}
-                  </Select.OptGroup>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Họ và tên"
+                  name="fullName"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập họ và tên" },
+                  ]}
+                >
+                  <Input placeholder="Nhập họ và tên" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Số điện thoại:"
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số điện thoại" },
+                  ]}
+                >
+                  <Input placeholder="Nhập số điện thoại" />
+                </Form.Item>
+              </Col>
+            </Row>
 
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="B2. Chọn ngày:"
-              name="date"
-              rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
-            >
-              <DatePicker
-                style={{ width: "100%" }}
-                onChange={handleDateChange}
-                disabledDate={disabledDate}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="B3. Chọn thời gian:"
-              name="time"
-              rules={[{ required: true, message: "Vui lòng chọn thời gian" }]}
-            >
-              <Select
-                placeholder="Chọn thời gian"
-                onChange={(value) => setTime(value)}
-              >
-                {listTime &&
-                  listTime?.map(
-                    (timeSlot: {
-                      id: number;
-                      time: string;
-                      status: string;
-                    }) => (
-                      <Select.Option key={timeSlot.id} value={timeSlot.time}>
-                        {timeSlot.time}
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  label="B1. Chọn dịch vụ:"
+                  name="service"
+                  rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
+                >
+                  <Select
+                    placeholder="Chọn dịch vụ"
+                    onChange={(value) => {
+                      setSelectedServiceId(Number(value.split(" - ")[0]));
+                      setExpense(Number(value.split(" - ")[1]));
+                      const categoryId = Object.keys(servicesByCategory).find(
+                        (categoryId) =>
+                          servicesByCategory[categoryId].some(
+                            (service) =>
+                              service.id === Number(value.split(" - ")[0])
+                          )
+                      );
+                      setSelectedCategoryId(Number(categoryId)); // Lưu ID của category
+                    }}
+                  >
+                    {/* Sử dụng OptGroup để nhóm dịch vụ theo phân loại */}
+                    {serviceCategory?.map((category) => (
+                      <Select.OptGroup key={category.id} label={category.name}>
+                        {servicesByCategory[category.id]?.map((service) => (
+                          <Select.Option
+                            key={service.id}
+                            value={`${service.id} - ${service.specialPrice}`}
+                          >
+                            {service.name} -{" "}
+                            {service.specialPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                          </Select.Option>
+                        ))}
+                      </Select.OptGroup>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="B2. Chọn ngày:"
+                  name="date"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn thời gian" },
+                  ]}
+                >
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    onChange={handleDateChange}
+                    disabledDate={disabledDate}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="B3. Chọn thời gian:"
+                  name="time"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn thời gian" },
+                  ]}
+                >
+                  <Select
+                    placeholder="Chọn thời gian"
+                    onChange={(value) => setTime(value)}
+                  >
+                    {listTime &&
+                      listTime?.map(
+                        (timeSlot: {
+                          id: number;
+                          time: string;
+                          status: string;
+                        }) => (
+                          <Select.Option
+                            key={timeSlot.id}
+                            value={timeSlot.time}
+                          >
+                            {timeSlot.time}
+                          </Select.Option>
+                        )
+                      )}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="B4. Chọn giường:"
+                  name="bed"
+                  rules={[{ required: true, message: "Vui lòng chọn giường" }]}
+                >
+                  <Select
+                    placeholder="Chọn giường"
+                    onChange={(value) => setSelectedBed(value)}
+                  >
+                    {bed?.map((item) => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.name}
                       </Select.Option>
-                    )
-                  )}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="B4. Chọn giường:"
-              name="bed"
-              rules={[{ required: true, message: "Vui lòng chọn giường" }]}
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="B5. Chọn nhân viên:"
+                  name="staff"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn nhân viên" },
+                  ]}
+                >
+                  <Select placeholder="Chọn nhân viên">
+                    {employees?.map((item) => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.fullName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+          </>
+        ) : (
+          <Form.Item label="Trạng thái" name="status">
+            <Select
+              placeholder="Chọn trạng thái"
+              disabled={mode === MODE.ADD ? true : false}
             >
-              <Select
-                placeholder="Chọn giường"
-                onChange={(value) => setSelectedBed(value)}
-              >
-                {bed?.map((item) => (
-                  <Select.Option key={item.id} value={item.id}>
-                    {item.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="B5. Chọn nhân viên:"
-              name="staff"
-              rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}
-            >
-              <Select placeholder="Chọn nhân viên">
-                {employees?.map((item) => (
-                  <Select.Option key={item.id} value={item.id}>
-                    {item.fullName}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row></>: <Form.Item label="Trạng thái" name="status">
-              <Select
-                placeholder="Chọn trạng thái"
-                disabled={mode === MODE.ADD ? true : false}
-              >
-                <Select.Option key={1} value={"unpaid"}>
-                  Chưa thanh toán
-                </Select.Option>
-                <Select.Option key={2} value={"paid"}>
-                  Đã thanh toán
-                </Select.Option>
-                <Select.Option key={3} value={"canceled"}>
-                  Đã hủy
-                </Select.Option>
-              </Select>
-            </Form.Item>}
+              <Select.Option key={1} value={"unpaid"}>
+                Chưa thanh toán
+              </Select.Option>
+              <Select.Option key={2} value={"paid"}>
+                Đã thanh toán
+              </Select.Option>
+              <Select.Option key={3} value={"canceled"}>
+                Đã hủy
+              </Select.Option>
+            </Select>
+          </Form.Item>
+        )}
 
         <Form.Item>
           <Button htmlType="submit" block className="btn-custom">

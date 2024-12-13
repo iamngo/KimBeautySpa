@@ -154,7 +154,7 @@ export default function BarCharts({ datas, dateFormat }) {
                   color={color}
                   style={{ width: "80px", marginRight: "16px" }}
                 >
-                  Số lượng:
+                  Số lần thực hiện:
                 </Tag>
                 <Tag color={color}>{item.quantities}</Tag>
               </p>
@@ -563,7 +563,7 @@ export default function BarCharts({ datas, dateFormat }) {
                             width: "110px",
                           }}
                         >
-                          Số lần thực hiện :{" "}
+                          Số lượng bán :{" "}
                         </Tag>
                         <Tag color={info.color}>{Number(info.quantities)}</Tag>
                       </div>
