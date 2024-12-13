@@ -8,8 +8,9 @@ import { CgSpinner } from "react-icons/cg";
 import { Input, DatePicker, Radio, Button, message, Form, Row } from "antd";
 import "leaflet/dist/leaflet.css";
 import { auth } from "../../../config/firebase.config";
-import { checkAccountByPhone, login, register } from "../../../services/api";
+import { checkAccountByPhone, login, register, registerCustomer } from "../../../services/api";
 import OTP from "antd/es/input/OTP";
+import moment from "moment";
 interface Account {
   phone: string;
   password: string;
@@ -28,7 +29,7 @@ interface Customer {
 
 const Authenticate: React.FC = () => {
   const location = useLocation();
-  const [isSignUp, setIsSignUp] = useState(location.state.signUp);
+  const [isSignUp, setIsSignUp] = useState(location.state?.signUp);
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [showOTP, setShowOTP] = useState(false);
@@ -36,9 +37,9 @@ const Authenticate: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [gender, setGender] = useState("male");
-  const [address, setAddress] = useState(null); // To store the selected address from the map
   const [showFormRegister, setShowFormRegister] = useState(false);
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const handleSignUpClick = () => {
     setIsSignUp(true);
@@ -154,25 +155,29 @@ const Authenticate: React.FC = () => {
     }
   };
 
-  function onOTPVerify() {
-    setShowFormRegister(true);
+  const onOTPVerify = (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     window.confirmationResult
       .confirm(otp)
       .then(async (res) => {
         console.log(res);
         setLoading(false);
+        setIsSignUp(true);
+        setShowFormRegister(true);
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
+        message.error('Xác thực OTP không thành công!');
       });
-  }
+  };
 
   const onRegisterAccount = async () => {
     try {
       const values = await form.validateFields();
       console.log("Form values:", values);
+      const formData = new FormData();
       const account = {
         phone: ph,
         password: values.password,
@@ -191,13 +196,19 @@ const Authenticate: React.FC = () => {
         account: account,
         customer: customer,
       };
-      console.log(dataToSend);
-      const response = await register(dataToSend);
+      formData.append(
+        "file",
+        fileList[0]?.originFileObj ? fileList[0].originFileObj : null
+      );
+      formData.append("data", JSON.stringify(dataToSend));
+      const response = await registerCustomer(formData);
       console.log(response);
 
       if (response.data !== null) {
         message.success("Đăng ký thành công!");
         navigate(`${HOME}`);
+      } else {
+        message.error("Đăng ký thất bại!");
       }
     } catch (errorInfo) {
       console.log("Validation failed:", errorInfo);
@@ -207,6 +218,10 @@ const Authenticate: React.FC = () => {
   const isValidPhoneNumber = (phoneNumber: string) => {
     const phoneRegex = /^(?:\+84|0)\d{9}$/; // Kiểm tra định dạng số điện thoại Việt Nam
     return phoneRegex.test(phoneNumber);
+  };
+
+  const disabledDate = (current: moment.Moment) => {
+    return current > moment().subtract(12, 'years'); // Ngăn chọn ngày sinh nhỏ hơn 12 tuổi
   };
 
   return (
@@ -293,6 +308,7 @@ const Authenticate: React.FC = () => {
                   style={{ marginBottom: "8px" }}
                 >
                   <DatePicker
+                  disabledDate={disabledDate}
                     placeholder="Chọn ngày sinh"
                     style={{ width: "300px" }}
                   />
