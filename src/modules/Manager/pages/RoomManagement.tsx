@@ -136,9 +136,6 @@ const RoomManagement: React.FC = () => {
     try {
       const response = await updateBed(token, bedUpdate, bed?.id);
       console.log("Cập nhật trạng thái giường:", response.data);
-      console.log(bed?.id);
-      console.log(bedId);
-      console.log(response?.data);
 
       if (response.data) {
         setBeds((prev) => ({
