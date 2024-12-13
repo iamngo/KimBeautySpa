@@ -526,6 +526,7 @@ const AppointmentPage: React.FC = () => {
     setAppointmentDetails(null);
     setLoadingDetails(false);
     setSelectedRow(null);
+    setSelectedAppointment(null);
   };
 
   const handleRowClick = async (record: Appointment) => {
