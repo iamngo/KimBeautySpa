@@ -107,6 +107,7 @@ const ModalUpdateProfile: React.FC<ModalUpdateProfileProps> = ({
       title="Cập nhật thông tin tài khoản"
       onCancel={handleCancel}
       footer={null}
+      centered
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item name="avatar" label="Ảnh đại diện">

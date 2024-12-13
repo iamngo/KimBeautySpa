@@ -64,7 +64,7 @@ const RoomManagement: React.FC = () => {
       setSelectedRoom(null);
     } else {
       const response = await getBedByRoomId(token, roomId);
-      setBeds((prev) => ({ ...prev, [roomId]: response.data }));
+      setBeds((prev) => ({ ...prev, [roomId]: response?.data }));
       setSelectedRoom(roomId);
     }
   };
@@ -143,10 +143,11 @@ const RoomManagement: React.FC = () => {
       if (response.data) {
         setBeds((prev) => ({
           ...prev,
-          [currentRoomId]: prev[currentRoomId]?.map((bed) =>
-            bed?.id === bedId ? { ...bed, status: newStatus } : bed
+          [currentRoomId]: prev[currentRoomId]?.map((b) =>
+            b.id === bed.id ? { ...b, status: newStatus } : b
           ),
         }));
+        handleRoomClick(currentRoomId);
         message.success("Cập nhật trạng thái giường thành công!");
       } else {
         message.error("Lỗi cập nhật giường");
@@ -161,6 +162,16 @@ const RoomManagement: React.FC = () => {
     <Content className="room-management">
       <div className="header-container">
         <h2>Quản lý phòng và giường</h2>
+        <div className="status-indicators">
+          <div className="status-item">
+            <span className="status-color active"></span>
+            <span>Giường đang hoạt động</span>
+          </div>
+          <div className="status-item">
+            <span className="status-color inactive"></span>
+            <span>Giường tạm ngưng</span>
+          </div>
+        </div>
         <Button
           className="btn-add"
           type="primary"
@@ -211,7 +222,7 @@ const RoomManagement: React.FC = () => {
                       style={{
                         cursor: "pointer",
                         backgroundColor:
-                          bed.status === "active" ? "#d4edda" : "#f8d7da",
+                          bed.status === "active" ? "#60ff85" : "#ff6874",
                       }} // Thay đổi màu nền dựa trên trạng thái
                     >
                       <FaBed style={{ marginRight: "5px" }} />

@@ -436,6 +436,33 @@ body {
     color: var(--primaryColor1);
     font-size: 24px;
   }}
+
+  .status-indicators {
+    display: flex;
+    align-items: center;
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+
+      .status-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+
+      .active {
+        background-color: #60ff85; // Màu cho giường đang hoạt động
+      }
+
+      .inactive {
+        background-color: #ff6874; // Màu cho giường tạm ngưng
+      }
+    }
+  }
+  
   .room-card {
     border: 1px solid #e0e0e0;
     border-radius: 12px;
@@ -450,7 +477,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     height: 200px; 
-
+    overflow: hidden;
     &:hover {
       transform: translateY(-5px);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
