@@ -98,7 +98,7 @@ const AppointmentPage: React.FC = () => {
   useEffect(() => {
     if (branchId) {
       fetchServicesAndAppointments();
-      handleRowClick(selectedAppointment);
+      // handleRowClick(selectedAppointment);
     }
   }, [branchId, visibleModal, refreshPage]);
 
@@ -525,6 +525,7 @@ const AppointmentPage: React.FC = () => {
     setLoadingDetails(true);
     setAppointmentDetails(null);
     setLoadingDetails(false);
+    setSelectedRow(null);
   };
 
   const handleRowClick = async (record: Appointment) => {
