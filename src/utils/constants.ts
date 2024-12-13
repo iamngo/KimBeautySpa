@@ -1,5 +1,5 @@
-export const API_URL = "http://localhost:3000";
-// export const API_URL = "https://kltn-spa.onrender.com";
+// export const API_URL = "http://localhost:3000";
+export const API_URL = "https://kltn-spa.onrender.com";
 export const ACCOUNT = "account";
 export const CUSTOMER = "customer";
 export const EMPLOYEE = "employee";

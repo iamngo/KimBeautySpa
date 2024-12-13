@@ -126,23 +126,25 @@ const RoomManagement: React.FC = () => {
     setIsBedModalVisible(false);
   };
 
-  const handleUpdateBedStatus = async (
-    bed
-  ) => {
+  const handleUpdateBedStatus = async (bed) => {
     const newStatus = bed.status === "active" ? "inactive" : "active";
     const bedUpdate = {
-      name: bed.name,
+      name: bed?.name,
       status: newStatus,
-      roomId: bed.roomId
-    }
+      roomId: bed?.roomId,
+    };
     try {
-      const response = await updateBed(token, bedUpdate, bed.id);
+      const response = await updateBed(token, bedUpdate, bed?.id);
       console.log("Cập nhật trạng thái giường:", response.data);
+      console.log(bed?.id);
+      console.log(bedId);
+      console.log(response?.data);
+
       if (response.data) {
         setBeds((prev) => ({
           ...prev,
           [currentRoomId]: prev[currentRoomId]?.map((bed) =>
-            bed.id === bedId ? { ...bed, status: newStatus } : bed
+            bed?.id === bedId ? { ...bed, status: newStatus } : bed
           ),
         }));
         message.success("Cập nhật trạng thái giường thành công!");
