@@ -102,6 +102,15 @@ const ManagerLayout: React.FC = () => {
             <FaHome />
             <span>Dashboard</span>
           </Menu.Item>
+          {/* Quản lý Lịch Hẹn */}
+          <Menu.Item
+            className="appointment"
+              key="5"
+              onClick={() => handleMenuClick("5", APPOINTMENT)}
+            >
+              <FaCalendarAlt />
+              <span>Quản lý Lịch hẹn</span>
+            </Menu.Item>
 
           {/* Quản lý Nhân sự */}
           <SubMenu key="2" icon={<FaUserTie />} title="QL Nhân sự">
@@ -187,15 +196,7 @@ const ManagerLayout: React.FC = () => {
             </Menu.Item>
           </SubMenu>
 
-          {/* Quản lý Lịch Hẹn */}
-            <Menu.Item
-            className="appointment"
-              key="5"
-              onClick={() => handleMenuClick("5", APPOINTMENT)}
-            >
-              <FaCalendarAlt />
-              <span>Quản lý Lịch hẹn</span>
-            </Menu.Item>
+          
 
           {/* Quản lý Cơ sở & Phòng */}
           {employee?.role === 'admin' && <SubMenu key="6" icon={<FaBuilding />} title="QL Cơ sở & Phòng">
